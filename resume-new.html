@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sourabh Suneja - Software Developer & Innovator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Palette: Harvard Crimson/Slate mix for authority + Gold for achievement */
+            /* Adjusted slightly for a sleek tech feel while maintaining original theme */
+            --primary-dark: #1e293b; 
+            --primary-accent: #8e1b1b; /* Academic Red/Crimson */
+            --gold-accent: #b48a3c;   /* For Awards */
+            --bg-color: #f8f9fa;
+            --sidebar-bg: #ffffff;
+            --text-color: #333;
+            --text-muted: #555;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Typography Overrides for "Harvard" feel */
+        h1, h2, h3, h4, h5 {
+            font-family: 'Merriweather', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-accent);
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Layout Grid */
+        .container {
+            display: grid;
+            grid-template-columns: 290px 1fr; /* Sidebar | Main */
+            max-width: 1024px;
+            margin: 40px auto;
+            background: var(--white);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--primary-accent);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #f0f2f5; 
+            padding: 30px;
+            border-right: 1px solid #e1e4e8;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .profile-pic-container {
+            text-align: center;
+        }
+
+        .profile-pic {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        .contact-info {
+            font-size: 0.9rem;
+        }
+
+        .contact-info div {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .contact-info i {
+            color: var(--primary-accent);
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .education-item {
+            margin-bottom: 18px;
+        }
+
+        .education-item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .education-item .year {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+            color: var(--primary-accent);
+            font-size: 0.85rem;
+        }
+
+        .education-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .skill-group {
+            margin-bottom: 15px;
+        }
+        
+        .skill-group strong {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .skill-tag {
+            background: #e2e8f0;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            padding: 40px 45px;
+            background-color: var(--white);
+        }
+
+        header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 2.6rem;
+            color: var(--primary-dark);
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+
+        header .subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1.1rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .summary {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.7;
+            border-left: 3px solid var(--primary-accent);
+            padding-left: 15px;
+        }
+
+        /* Awards Section (Prominent) */
+        .awards-section {
+            background: linear-gradient(to right, #fffcf5, #ffffff);
+            border: 1px solid #eaddc5;
+            border-left: 5px solid var(--gold-accent);
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 35px;
+        }
+
+        .awards-section h3 {
+            color: var(--gold-accent);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .award-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .award-item:last-child { margin-bottom: 0; }
+
+        .award-item i {
+            color: var(--gold-accent);
+            margin-top: 4px;
+        }
+
+        .award-item strong {
+            color: var(--primary-dark);
+            font-family: 'Merriweather', serif;
+        }
+
+        /* General Section Styling */
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--primary-dark);
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i { font-size: 1rem; opacity: 0.8; }
+
+        /* Experience Grid */
+        .exp-item {
+            margin-bottom: 25px;
+        }
+
+        .exp-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .exp-head h4 {
+            font-size: 1.15rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .exp-head .date {
+            font-style: italic;
+            color: var(--text-muted);
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .exp-role {
+            font-weight: 600;
+            color: var(--primary-accent);
+            margin-bottom: 8px;
+            display: block;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        ul.bullet-list {
+            list-style: none;
+        }
+
+        ul.bullet-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 6px;
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        ul.bullet-list li::before {
+            content: "•";
+            color: var(--primary-accent);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Innovations Grid */
+        .innovations-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .project-card {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 4px;
+            background: #fdfdfd;
+            transition: transform 0.2s;
+        }
+        
+        .project-card:hover {
+            border-color: var(--primary-accent);
+            background: #fff;
+        }
+
+        .project-card h5 {
+            color: var(--primary-dark);
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .project-card p {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .project-links a {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Creative Section */
+        .creative-section {
+            margin-top: 25px;
+            background: #f4f6f8;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-family: 'Open Sans', sans-serif;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        
+        .print-btn:hover { background: var(--primary-accent); transform: translateY(-2px); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; margin: 0; border-top: none; }
+            .sidebar { padding: 20px; border-right: none; border-bottom: 1px solid #eee; }
+            .main-content { padding: 25px; }
+            .innovations-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 2rem; }
+        }
+
+        /* Print Settings */
+        @media print {
+            .print-btn { display: none; }
+            .container { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 100%; 
+                max-width: 100%; 
+                border: none;
+            }
+            body { background-color: white; }
+            .sidebar { background-color: #fcfcfc !important; }
+            .awards-section { background-color: #fffcf5 !important; -webkit-print-color-adjust: exact; }
+            a { text-decoration: none; color: black; }
+            
+            /* Add hrefs to print */
+            a[href^="http"]:after {
+                content: " (" attr(href) ")";
+                font-size: 0.7em;
+                color: #555;
+                font-weight: normal;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">
+        <i class="fas fa-file-pdf"></i> Download PDF / Print
+    </button>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="profile-pic-container">
+                <img src="https://sourabhsuneja.github.io/jvp-spark/images/sourabh_suneja.jpg" alt="Sourabh Suneja" class="profile-pic">
+            </div>
+
+            <div class="contact-info">
+                <div><i class="fas fa-phone"></i> +91 8619153370</div>
+                <div><i class="fas fa-map-marker-alt"></i> Jaipur, Rajasthan</div>
+                <div style="align-items: flex-start;">
+                    <i class="fas fa-envelope" style="margin-top: 4px;"></i> 
+                    <span>sourabhsuneja021@gmail.com</span> </div>
+                <div style="align-items: flex-start;">
+                    <i class="fas fa-home" style="margin-top: 4px;"></i> 
+                    <span>605, Balaji Tower 2nd,<br>Sec-5, Vidhyadhar Nagar</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Education</h3>
+                <div class="education-item">
+                    <h4>B.Com</h4>
+                    <div class="year">2019</div>
+                    <p>University of Rajasthan</p>
+                </div>
+                <div class="education-item">
+                    <h4>Senior Secondary</h4>
+                    <div class="year">2016</div>
+                    <p>SVM Public School (CBSE)</p>
+                </div>
+                <div class="education-item">
+                    <h4>Secondary</h4>
+                    <div class="year">2014</div>
+                    <p>SVM Public School (CBSE)</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Competencies</h3>
+                
+                <div class="skill-group">
+                    <strong>Tech Stack & Dev</strong>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Android Dev</span>
+                        <span class="skill-tag">React Native</span>
+                        <span class="skill-tag">Full-stack Web Dev</span>
+                        <span class="skill-tag">PHP/MySQL</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">HTML5/CSS3</span>
+                        <span class="skill-tag">Supabase</span>
+                    </div>
+                </div>
+
+                <div class="skill-group">
+                    <strong>Core Skills</strong>
+                    <div class="skill-tags">
+                        <span class="skill-tag">App Lifecycle Mgmt</span>
+                        <span class="skill-tag">Play Store Deployment</span>
+                        <span class="skill-tag">AI Integration</span>
+                        <span class="skill-tag">Game Logic & Physics</span>
+                        <span class="skill-tag">UI/UX Design</span>
+                        <span class="skill-tag">EdTech Innovation</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>Sourabh Suneja</h1>
+                <div class="subtitle">Mobile App Developer &bull; Full-Stack Web Developer &bull; Innovator</div>
+            </header>
+
+            <div class="summary">
+                <p>"To engineer scalable solutions on the canvas of digital possibilities." <br>
+                A dynamic software developer with a strong focus on mobile app and full-stack development. I bring extensive experience in managing the entire application lifecycle—from ideation, UI/UX, and core logic to AI integration and Play Store publishing—creating high-performance, user-centric digital products.</p>
+            </div>
+
+            <section class="awards-section">
+                <h3><i class="fas fa-trophy"></i> Honors & Recognition</h3>
+                <div class="award-item">
+                    <i class="fas fa-medal"></i>
+                    <div>
+                        <strong>Dronacharya Teacher's Excellence Award</strong><br>
+                        <span style="font-size: 0.9rem;">Honoured by Mr. Madan Dilawar, Hon'ble Education Minister of Rajasthan.</span>
+                    </div>
+                </div>
+                <div class="award-item">
+                    <i class="fas fa-certificate"></i>
+                    <div>
+                        <strong>"Engine of Innovation" Award</strong><br>
+                        <span style="font-size: 0.9rem;">Awarded by Jamna Vidyapeeth for incessant technological innovations in the school ecosystem.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="section-title"><i class="fas fa-code-branch"></i> Key Projects & Apps</h3>
+                <div class="innovations-grid">
+                    
+                    <div class="project-card" style="border-left: 3px solid var(--primary-accent);">
+                        <h5><i class="fas fa-mobile-alt"></i> JVP Teachers App</h5>
+                        <p>All-in-one mobile app to simplify daily academic tasks (attendance, marks records) equipped with AI-powered features to assist teachers.</p>
+                        <div class="project-links">
+                            <a href="https://play.google.com/store/apps/details?id=com.jvp.teachers" target="_blank">Play Store <i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h5><i class="fas fa-gamepad"></i> Neon Carrom Game</h5>
+                        <p>Classic Android Carrom Game developed with custom physics, striking neon graphics, and highly engaging visual aesthetics.</p>
+                        <div class="project-links">
+                            <a href="https://play.google.com/store/apps/details?id=io.github.neon_carrom_game.twa" target="_blank">Play Store <i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h5><i class="fab fa-android"></i> JVP Spark App</h5>
+                        <p>Android ecosystem for schools featuring gamified learning, AI Chatbots, and automated assignment tools.</p>
+                        <div class="project-links">
+                            <a href="https://myjvp.in/jvp-spark/" target="_blank">Play Store <i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h5><i class="fas fa-running"></i> Live Sports AI Tracker</h5>
+                        <p>Real-time score tracking for annual sports meets featuring AI-driven notifications and match predictions.</p>
+                        <div class="project-links">
+                            <a href="https://myjvp.in/annual-sports-meet/live/" target="_blank">View Live App <i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h5><i class="fas fa-globe"></i> My JVP Web Portal</h5>
+                        <p>Full-stack web portal for automated mark entry, complex result calculation, and dynamic lesson plan generation.</p>
+                        <div class="project-links">
+                            <a href="https://myjvp.in" target="_blank">Visit Portal <i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h5><i class="fas fa-robot"></i> AI Integration Suite</h5>
+                        <p>Developed AI-based paper generation tools, automated quiz conductors, and intelligent Parent Support ChatBots.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section style="margin-top: 30px;">
+                <h3 class="section-title"><i class="fas fa-briefcase"></i> Professional Experience</h3>
+                
+                <div class="exp-item">
+                    <div class="exp-head">
+                        <h4>Jamna Vidyapeeth Sr. Sec. School</h4>
+                        <span class="date">2022 - Present</span>
+                    </div>
+                    <span class="exp-role">Technical Coordinator & Lead IT Educator</span>
+                    <ul class="bullet-list">
+                        <li><strong>System Architecture:</strong> Designed QR-based digital result dissemination and built full-stack live scoring systems for large-scale school events.</li>
+                        <li><strong>App & Web Deployment:</strong> Spearheaded the development of internal portals and Android applications to digitalize school workflows.</li>
+                        <li><strong>Software Innovation:</strong> Pioneered DMIT-based analysis using self-developed software to chart student intelligence profiles.</li>
+                        <li><strong>Technical Mentorship:</strong> Introduced an advanced Coding & Robotics curriculum; guided students in deploying live websites and games.</li>
+                        <li><strong>Robotics:</strong> Pioneered the introduction of robotics in the school curriculum and mentored students in designing sensor-based vehicles.</li>
+                    </ul>
+                </div>
+
+                <div class="exp-item">
+                    <div class="exp-head">
+                        <h4>SVM Public School</h4>
+                        <span class="date">2020 - 2022</span>
+                    </div>
+                    <span class="exp-role">Computer Educator & Tech Integrator</span>
+                    <ul class="bullet-list">
+                        <li>Successfully integrated IoT (Amazon Alexa) into daily classroom learning environments.</li>
+                        <li>Focused on 100% practical lab-based strategies, guiding students in foundational programming.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section style="margin-top: 20px;">
+                <h3 class="section-title"><i class="fas fa-layer-group"></i> Development Portfolio</h3>
+                <div class="creative-section">
+                    <ul class="bullet-list">
+                        <li><strong>End-to-End Mobile Lifecycle:</strong> Proven ability to conceptualize, develop, and publish multiple Android apps and games on the Google Play Store, handling UI/UX, core logic, and final deployment.</li>
+                        <li><strong>Student App Mentorship:</strong> Mentored 8th graders in building and deploying a Python-based COVID-19 prediction application and personal web portfolios.</li>
+                        <li><strong>Creative Content (Kuku FM):</strong> Authored engaging audio episodes, demonstrating strong narrative structuring and logical flow.</li>
+                        <li><strong>Digital Publication:</strong> Designed and developed digital interfaces for "Ujali Kiran," transforming the traditional annual magazine into an interactive web experience.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
