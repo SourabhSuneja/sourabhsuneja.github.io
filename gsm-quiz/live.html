@@ -244,7 +244,7 @@ footer.foot{
   <div class="idle-msg" id="idleMsg">
     <i class="fa-solid fa-flag"></i>
     <h2>Scan a QR code to begin</h2>
-    <p>Every correct answer lights up this wall. Grab your phone, scan a code from the display, and become part of the Freedom Trail.</p>
+    <p>Every correct answer lights up this wall. Grab your phone, scan a QR code from the display board, and become part of the Freedom Trail.</p>
   </div>
 </div>
 
@@ -264,9 +264,9 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
    can show the fighter's photo & one-line achievement.
    ============================================================ */
 const riddles = [
-  { id: 1,  fighter: "Mahatma Gandhi",            image: "https://placehold.co/200x200/FF9933/142027?text=1",  description: "Led the Dandi Salt March and the philosophy of Satyagraha (non-violent resistance)." },
-  { id: 2,  fighter: "Bhagat Singh",               image: "https://placehold.co/200x200/128807/FFF8ED?text=2",  description: "Revolutionary executed at 23 whose fearless defiance inspired a generation." },
-  { id: 3,  fighter: "Subhas Chandra Bose",        image: "https://placehold.co/200x200/0B1F4D/FFF8ED?text=3",  description: "Founded the Indian National Army with the cry 'Give me blood, and I shall give you freedom.'" },
+  { id: 1,  fighter: "Mahatma Gandhi",            image: "https://cdn.wallpapersafari.com/77/20/9rshxv.jpg",  description: "Led the Dandi Salt March and the philosophy of Satyagraha (non-violent resistance)." },
+  { id: 2,  fighter: "Bhagat Singh",               image: "https://alchetron.com/cdn/bhagat-singh-7079ec46-00e3-4504-8bf1-6c6dd2eb0d3-resize-750.jpeg",  description: "Revolutionary executed at 23 whose fearless defiance inspired a generation." },
+  { id: 3,  fighter: "Subhash Chandra Bose",        image: "https://pwonlyias.com/wp-content/uploads/2024/08/b07d96aa62bf0c543b5b54b6fb83f7bc-223x300.jpg",  description: "Founded the Indian National Army with the cry 'Give me blood, and I shall give you freedom.'" },
   { id: 4,  fighter: "Rani Lakshmibai",            image: "https://placehold.co/200x200/E9711C/FFF8ED?text=4",  description: "The Rani of Jhansi who fought valiantly during the Revolt of 1857." },
   { id: 5,  fighter: "Bal Gangadhar Tilak",        image: "https://placehold.co/200x200/128807/FFF8ED?text=5",  description: "Popularised the slogan 'Swaraj is my birthright' and united India through festivals." },
   { id: 6,  fighter: "Chandrashekhar Azad",        image: "https://placehold.co/200x200/0B1F4D/FFF8ED?text=6",  description: "Vowed never to be captured alive and kept his word at Alfred Park, Allahabad." },
