@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 <title>GSMS | Freedom Trail — 80 Years of Independence</title>
 
-<!-- Google Fonts: Baloo 2 (festive display), Yatra One (banner accent), Inter (body/UI) -->
+<!-- Google Fonts: Baloo 2 (festive display), Yatra One (banner accent), Inter (body/UI), Hind (Hindi body) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Yatra+One&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Yatra+One&family=Inter:wght@400;500;600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -45,12 +45,13 @@
   --radius-lg: 22px;
   --radius-md: 14px;
   --shadow-soft: 0 20px 60px -20px rgba(11,31,77,0.45);
+  --font-body:'Inter',sans-serif;
 }
 
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-body);
   color:var(--ink);
   min-height:100vh;
   background:
@@ -62,6 +63,12 @@ body{
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
   position:relative;
+}
+
+/* Hindi text gets the Hind typeface for readability, everything else keeps its family */
+body.lang-hi{ --font-body:'Hind',sans-serif; }
+body.lang-hi .hint-text, body.lang-hi .state-screen p, body.lang-hi .hero-title p.tag{
+  font-family:'Hind',sans-serif;
 }
 
 /* ambient animated tricolour wash behind everything */
@@ -112,6 +119,23 @@ body::before{
 .banner .school-sub{
   font-size:0.72rem; font-weight:600; letter-spacing:.04em;
   color:var(--saffron-deep); text-transform:uppercase;
+}
+
+/* small language switcher pill, always available top-right of banner */
+.lang-switch{
+  margin-left:auto; display:flex; gap:4px;
+  background:rgba(11,31,77,0.08); border-radius:999px; padding:3px;
+  flex-shrink:0;
+}
+.lang-switch button{
+  border:none; background:transparent; cursor:pointer;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:0.72rem;
+  padding:6px 10px; border-radius:999px; color:var(--chakra-navy);
+  transition:background .2s, color .2s;
+}
+.lang-switch button.active{
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy));
+  color:#fff;
 }
 
 .hero-title{
@@ -178,7 +202,7 @@ input[type="text"]{
   border-radius:var(--radius-md);
   border:1.5px solid rgba(11,31,77,0.18);
   background:rgba(255,255,255,0.75);
-  font-family:'Inter',sans-serif; font-size:0.95rem;
+  font-family:var(--font-body); font-size:0.95rem;
   outline:none; transition:border-color .2s, box-shadow .2s;
 }
 input[type="text"]:focus{
@@ -186,6 +210,36 @@ input[type="text"]:focus{
   box-shadow:0 0 0 4px rgba(233,113,28,0.15);
 }
 .hint-note{ font-size:0.74rem; color:#6b6b6b; margin-top:4px; }
+
+/* ---------- PROFILE SCREEN (who am I / language) ---------- */
+.profile-heading{
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:1.3rem;
+  color:var(--chakra-navy); margin:0 0 4px;
+}
+.profile-sub{ font-size:0.85rem; color:#555; margin:0 0 18px; }
+.choice-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+.choice-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 10px; text-align:center;
+  border-radius:var(--radius-md);
+  border:1.5px solid rgba(11,31,77,0.15);
+  background:rgba(255,255,255,0.7);
+  font-family:'Inter',sans-serif; font-weight:700; font-size:0.9rem;
+  color:var(--ink); cursor:pointer;
+  transition:transform .15s, border-color .15s, background .15s;
+}
+.choice-btn i{ font-size:1rem; color:var(--saffron-deep); }
+.choice-btn:hover{ transform:translateY(-1px); border-color:var(--saffron-deep); }
+.choice-btn.selected{
+  border-color:var(--india-green);
+  background:rgba(18,136,7,0.1);
+}
+.choice-btn.selected i{ color:var(--india-green); }
+.profile-section{ margin-bottom:20px; }
+.profile-section-label{
+  font-weight:700; font-size:0.82rem; color:var(--chakra-navy); margin-bottom:10px;
+  display:flex; align-items:center; gap:6px;
+}
 
 /* ---------- RIDDLE BLOCK ---------- */
 .riddle-badge{
@@ -206,6 +260,7 @@ input[type="text"]:focus{
   font-size:1.15rem; line-height:1.4; color:var(--ink);
   margin:0 0 18px;
 }
+body.lang-hi .hint-text{ font-weight:600; font-size:1.1rem; }
 
 .options{ display:grid; gap:10px; margin-bottom:6px; }
 .option-btn{
@@ -215,7 +270,7 @@ input[type="text"]:focus{
   border-radius:var(--radius-md);
   border:1.5px solid rgba(11,31,77,0.15);
   background:rgba(255,255,255,0.7);
-  font-family:'Inter',sans-serif; font-weight:600; font-size:0.92rem;
+  font-family:var(--font-body); font-weight:600; font-size:0.92rem;
   color:var(--ink); cursor:pointer;
   transition:transform .15s, border-color .15s, background .15s;
 }
@@ -276,15 +331,11 @@ footer.foot{
 }
 footer.foot i{ color:var(--saffron-deep); }
 
-/* loading spinner uses the chakra */
-.loading-wrap{ display:flex; flex-direction:column; align-items:center; padding:60px 10px; gap:14px; }
-.loading-wrap .chakra{ width:52px; height:52px; }
-.loading-wrap p{ font-size:0.85rem; color:#555; }
-
 .hidden{ display:none !important; }
 
 @media (max-width:380px){
   .hero-title h1{ font-size:1.65rem; }
+  .choice-grid{ grid-template-columns:1fr 1fr; }
 }
 </style>
 </head>
@@ -299,7 +350,11 @@ footer.foot i{ color:var(--saffron-deep); }
       <div class="school-name">Gopal Sharma Memorial School</div>
       <div class="school-sub">80 Years of Independence · 15 Aug 2026</div>
     </div>
-    <svg class="chakra" viewBox="0 0 100 100" style="margin-left:auto;">
+    <div class="lang-switch" id="langSwitch">
+      <button type="button" data-lang="en" id="langBtnEn">EN</button>
+      <button type="button" data-lang="hi" id="langBtnHi">हिं</button>
+    </div>
+    <svg class="chakra" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="44" fill="none" stroke="#0B1F4D" stroke-width="4"/>
       <circle cx="50" cy="50" r="6" fill="#0B1F4D"/>
       <g stroke="#0B1F4D" stroke-width="3">
@@ -315,41 +370,56 @@ footer.foot i{ color:var(--saffron-deep); }
 
   <div class="hero-title">
     <span class="eyebrow">स्वतंत्रता की राह</span>
-    <h1>The Freedom Trail</h1>
-    <p class="tag">Scan. Solve. Salute a hero. Match the clue to the freedom fighter who shaped our nation.</p>
-  </div>
-
-  <!-- ===================== LOADING ===================== -->
-  <div id="loadingScreen" class="card loading-wrap">
-    <svg class="chakra" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="44" fill="none" stroke="#0B1F4D" stroke-width="4"/>
-      <circle cx="50" cy="50" r="6" fill="#0B1F4D"/>
-      <g stroke="#0B1F4D" stroke-width="3">
-        <line x1="50" y1="6" x2="50" y2="94"/><line x1="6" y1="50" x2="94" y2="50"/>
-        <line x1="15" y1="15" x2="85" y2="85"/><line x1="15" y1="85" x2="85" y2="15"/>
-      </g>
-    </svg>
-    <p>Loading your riddle…</p>
+    <h1 id="heroH1">The Freedom Trail</h1>
+    <p class="tag" id="heroTag">Scan. Solve. Salute a hero. Match the clue to the freedom fighter who shaped our nation.</p>
   </div>
 
   <!-- ===================== NO RIDDLE / INVALID PARAM ===================== -->
   <div id="noRiddleScreen" class="card state-screen hidden">
     <i class="fa-solid fa-flag state-icon" style="color:var(--saffron-deep);"></i>
-    <h2>No riddle found</h2>
-    <p>This link is missing a valid riddle number. Please scan one of the QR codes on the display wall to begin — each one has a <code>?riddle=</code> number attached.</p>
+    <h2 id="noRiddleH2">No riddle found</h2>
+    <p id="noRiddleP">This link is missing a valid riddle number. Please scan one of the QR codes on the display wall to begin — each one has a <code>?riddle=</code> number attached.</p>
+  </div>
+
+  <!-- ===================== PROFILE SCREEN (who + language) ===================== -->
+  <div id="profileScreen" class="card hidden">
+    <h2 class="profile-heading" id="profileHeading">Welcome! Tell us about yourself</h2>
+    <p class="profile-sub" id="profileSub">Just two quick questions before your riddle appears.</p>
+
+    <div class="profile-section">
+      <div class="profile-section-label" id="roleLabel"><i class="fa-solid fa-user-group"></i> I am a...</div>
+      <div class="choice-grid" id="roleOptions">
+        <button type="button" class="choice-btn" data-role="Teacher"><i class="fa-solid fa-chalkboard-user"></i> <span>Teacher</span></button>
+        <button type="button" class="choice-btn" data-role="Parent"><i class="fa-solid fa-people-roof"></i> <span>Parent</span></button>
+        <button type="button" class="choice-btn" data-role="Student"><i class="fa-solid fa-graduation-cap"></i> <span>Student</span></button>
+        <button type="button" class="choice-btn" data-role="Guest"><i class="fa-solid fa-star"></i> <span>Guest</span></button>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-label" id="langLabel"><i class="fa-solid fa-language"></i> Language</div>
+      <div class="choice-grid" id="langOptions">
+        <button type="button" class="choice-btn" data-lang-choice="en"><i class="fa-solid fa-a"></i> <span>English</span></button>
+        <button type="button" class="choice-btn" data-lang-choice="hi"><i class="fa-solid fa-om"></i> <span>हिंदी</span></button>
+      </div>
+    </div>
+
+    <button type="button" class="submit-btn" id="profileContinueBtn" disabled>
+      <i class="fa-solid fa-arrow-right"></i> <span id="profileContinueLabel">Continue</span>
+    </button>
   </div>
 
   <!-- ===================== QUIZ FORM ===================== -->
   <form id="quizForm" class="hidden">
     <div class="card">
       <div class="field">
-        <label for="participantName">Your Name</label>
+        <label id="nameFieldLabel" for="participantName">Your Name</label>
         <input type="text" id="participantName" placeholder="e.g. Anjali Sharma" required autocomplete="off">
       </div>
-      <div class="field">
-        <label for="studentName">Ward / Student Name <span style="font-weight:500;color:#888;">(optional for parents)</span></label>
+      <div class="field" id="studentNameField">
+        <label id="studentFieldLabel" for="studentName">Ward / Student Name <span style="font-weight:500;color:#888;" id="studentFieldOptionalTag">(optional for parents)</span></label>
         <input type="text" id="studentName" placeholder="e.g. Rohan Sharma, Class 6-B" autocomplete="off">
-        <div class="hint-note">Students answering for themselves can leave this blank.</div>
+        <div class="hint-note" id="studentFieldHint">You can leave this blank if you prefer.</div>
       </div>
     </div>
 
@@ -359,7 +429,7 @@ footer.foot i{ color:var(--saffron-deep); }
       <p class="hint-text" id="riddleHint"></p>
       <div class="options" id="optionsContainer"></div>
       <button type="submit" class="submit-btn" id="submitBtn" disabled>
-        <i class="fa-solid fa-check-to-slot"></i> Lock In My Answer
+        <i class="fa-solid fa-check-to-slot"></i> <span id="submitBtnLabel">Lock In My Answer</span>
       </button>
     </div>
   </form>
@@ -367,17 +437,17 @@ footer.foot i{ color:var(--saffron-deep); }
   <!-- ===================== SUCCESS SCREEN ===================== -->
   <div id="successScreen" class="card state-screen success hidden">
     <i class="fa-solid fa-circle-check state-icon"></i>
-    <h2>Shabaash! That's correct 🇮🇳</h2>
+    <h2 id="successH2">Shabaash! That's correct 🇮🇳</h2>
     <p id="successMsg">You identified the freedom fighter correctly.</p>
     <div class="fighter-reveal" id="fighterReveal"></div>
-    <p class="next-hint">Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!</p>
+    <p class="next-hint" id="nextHint">Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!</p>
   </div>
 
   <!-- ===================== ERROR / TRY AGAIN SCREEN ===================== -->
   <div id="wrongScreen" class="card state-screen error hidden">
     <i class="fa-solid fa-face-frown state-icon"></i>
-    <h2>Not quite!</h2>
-    <p>That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!</p>
+    <h2 id="wrongH2">Not quite!</h2>
+    <p id="wrongP">That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!</p>
   </div>
 
   <footer class="foot">
@@ -395,113 +465,296 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ============================================================
-   2. RIDDLE DATA — centralized, edit freely.
+   2. UI TRANSLATIONS — English & simple, kid-friendly Hindi
+   ============================================================ */
+const UI = {
+  en: {
+    heroH1: "The Freedom Trail",
+    heroTag: "Scan. Solve. Salute a hero. Match the clue to the freedom fighter who shaped our nation.",
+    noRiddleH2: "No riddle found",
+    noRiddleP: 'This link is missing a valid riddle number. Please scan one of the QR codes on the display wall to begin — each one has a <code>?riddle=</code> number attached.',
+    profileHeading: "Welcome! Tell us about yourself",
+    profileSub: "Just two quick questions before your riddle appears.",
+    roleLabel: "I am a...",
+    roleTeacher: "Teacher",
+    roleParent: "Parent",
+    roleStudent: "Student",
+    roleGuest: "Guest",
+    langLabel: "Language",
+    langEnglish: "English",
+    langHindi: "हिंदी",
+    profileContinueLabel: "Continue",
+    nameFieldLabel: "Your Name",
+    namePlaceholder: "e.g. Anjali Sharma",
+    studentFieldLabel: "Ward / Student Name",
+    studentFieldOptionalTag: "(optional)",
+    studentPlaceholder: "e.g. Rohan Sharma, Class 6-B",
+    studentFieldHint: "You can leave this blank if you prefer.",
+    riddleBadge: "Riddle",
+    submitBtnLabel: "Lock In My Answer",
+    submittingLabel: "Submitting…",
+    successH2: "Shabaash! That's correct 🇮🇳",
+    successMsg: "You identified the freedom fighter correctly.",
+    nextHint: "Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!",
+    wrongH2: "Not quite!",
+    wrongP: "That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!"
+  },
+  hi: {
+    heroH1: "आज़ादी की राह",
+    heroTag: "स्कैन करें। सोचें। सही जवाब दें। पहेली को हल करके उस वीर सेनानी को पहचानें जिसने हमारे देश को आज़ाद कराया।",
+    noRiddleH2: "कोई पहेली नहीं मिली",
+    noRiddleP: 'इस लिंक में सही पहेली नंबर नहीं है। कृपया स्क्रीन पर दिखाए गए किसी भी QR कोड को स्कैन करें — हर कोड में एक <code>?riddle=</code> नंबर होता है।',
+    profileHeading: "स्वागत है! पहले हमें अपने बारे में बताएं",
+    profileSub: "पहेली दिखने से पहले सिर्फ दो छोटे सवाल।",
+    roleLabel: "मैं हूँ एक...",
+    roleTeacher: "शिक्षक",
+    roleParent: "अभिभावक",
+    roleStudent: "छात्र",
+    roleGuest: "अतिथि",
+    langLabel: "भाषा",
+    langEnglish: "English",
+    langHindi: "हिंदी",
+    profileContinueLabel: "आगे बढ़ें",
+    nameFieldLabel: "आपका नाम",
+    namePlaceholder: "जैसे: अंजलि शर्मा",
+    studentFieldLabel: "बच्चे का नाम",
+    studentFieldOptionalTag: "(वैकल्पिक)",
+    studentPlaceholder: "जैसे: रोहन शर्मा, कक्षा 6-बी",
+    studentFieldHint: "आप चाहें तो इसे खाली छोड़ सकते हैं।",
+    riddleBadge: "पहेली",
+    submitBtnLabel: "अपना उत्तर दें",
+    submittingLabel: "भेजा जा रहा है…",
+    successH2: "शाबाश! सही जवाब 🇮🇳",
+    successMsg: "आपने सही स्वतंत्रता सेनानी को पहचाना।",
+    nextHint: "आपका नाम जल्द ही बड़ी LED स्क्रीन पर दिख सकता है। खेलते रहने के लिए एक और QR कोड स्कैन करें!",
+    wrongH2: "थोड़ा सा गलत!",
+    wrongP: "यह वह स्वतंत्रता सेनानी नहीं है जिसे हम खोज रहे थे। कोई बात नहीं — इतिहास में कई वीर हैं। दीवार पर कोई और QR कोड स्कैन करके फिर कोशिश करें!"
+  }
+};
+
+/* ============================================================
+   3. RIDDLE DATA — centralized, edit freely.
    To add a riddle: copy an object, give it the next `id`, and
    make sure a QR code is printed pointing to ?riddle=<id>.
    `image` accepts any public URL; swap placeholders any time.
+   Each riddle carries both English and Hindi text; `answer` and
+   each option's `en` value are the canonical (language-independent)
+   strings used to check correctness and to store in the database.
    ============================================================ */
 const riddles = [
   {
     id: 1,
-    fighter: "Mahatma Gandhi",
     image: "https://placehold.co/400x300/FF9933/142027?text=Riddle+1",
-    hint: "I led the Salt March to the sea and taught a nation that truth and non-violence could break an empire. Who am I?",
-    options: ["Mahatma Gandhi", "Bal Gangadhar Tilak", "Lala Lajpat Rai", "Chandrashekhar Azad"],
+    fighter: { en: "Mahatma Gandhi", hi: "महात्मा गांधी" },
+    hint: {
+      en: "I led the Salt March to the sea and taught a nation that truth and non-violence could break an empire. Who am I?",
+      hi: "मैंने नमक बनाने के लिए समुद्र तक 'डांडी मार्च' किया और देश को सिखाया कि सच और अहिंसा से भी बड़ी लड़ाई जीती जा सकती है। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Mahatma Gandhi", hi: "महात्मा गांधी" },
+      { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" }
+    ],
     answer: "Mahatma Gandhi",
-    description: "Led the Dandi Salt March and the philosophy of Satyagraha (non-violent resistance)."
+    description: {
+      en: "Led the Dandi Salt March and the philosophy of Satyagraha (non-violent resistance).",
+      hi: "डांडी नमक मार्च का नेतृत्व किया और सत्याग्रह (अहिंसक प्रतिरोध) का रास्ता दिखाया।"
+    }
   },
   {
     id: 2,
-    fighter: "Bhagat Singh",
     image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+2",
-    hint: "At just 23, I embraced the gallows with a smile, believing my sacrifice would awaken the youth of India. Who am I?",
-    options: ["Khudiram Bose", "Bhagat Singh", "Udham Singh", "Rajguru"],
+    fighter: { en: "Bhagat Singh", hi: "भगत सिंह" },
+    hint: {
+      en: "At just 23, I embraced the gallows with a smile, believing my sacrifice would awaken the youth of India. Who am I?",
+      hi: "मैंने सिर्फ 23 साल की उम्र में मुस्कुराते हुए फांसी को गले लगाया, यह सोचकर कि मेरा बलिदान देश के युवाओं को जगा देगा। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Khudiram Bose", hi: "खुदीराम बोस" },
+      { en: "Bhagat Singh", hi: "भगत सिंह" },
+      { en: "Udham Singh", hi: "उधम सिंह" },
+      { en: "Rajguru", hi: "राजगुरु" }
+    ],
     answer: "Bhagat Singh",
-    description: "Revolutionary executed at 23 whose fearless defiance inspired a generation of freedom fighters."
+    description: {
+      en: "Revolutionary executed at 23 whose fearless defiance inspired a generation of freedom fighters.",
+      hi: "23 साल की उम्र में शहीद हुए क्रांतिकारी, जिनकी निडरता ने पूरी पीढ़ी को प्रेरित किया।"
+    }
   },
   {
     id: 3,
-    fighter: "Subhas Chandra Bose",
     image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+3",
-    hint: "I promised my soldiers freedom in exchange for blood, and led the Indian National Army from foreign soil. Who am I?",
-    options: ["Subhas Chandra Bose", "Sardar Patel", "Jawaharlal Nehru", "Rash Behari Bose"],
+    fighter: { en: "Subhas Chandra Bose", hi: "सुभाष चंद्र बोस" },
+    hint: {
+      en: "I promised my soldiers freedom in exchange for blood, and led the Indian National Army from foreign soil. Who am I?",
+      hi: "मैंने अपने सैनिकों से कहा 'तुम मुझे खून दो, मैं तुम्हें आज़ादी दूंगा' और विदेशी धरती से आज़ाद हिंद फौज का नेतृत्व किया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Subhas Chandra Bose", hi: "सुभाष चंद्र बोस" },
+      { en: "Sardar Patel", hi: "सरदार पटेल" },
+      { en: "Jawaharlal Nehru", hi: "जवाहरलाल नेहरू" },
+      { en: "Rash Behari Bose", hi: "रास बिहारी बोस" }
+    ],
     answer: "Subhas Chandra Bose",
-    description: "Founded and led the Indian National Army (INA) with the cry 'Give me blood, and I shall give you freedom.'"
+    description: {
+      en: "Founded and led the Indian National Army (INA) with the cry 'Give me blood, and I shall give you freedom.'",
+      hi: "आज़ाद हिंद फौज (INA) की स्थापना की और नारा दिया — 'तुम मुझे खून दो, मैं तुम्हें आज़ादी दूंगा।'"
+    }
   },
   {
     id: 4,
-    fighter: "Rani Lakshmibai",
     image: "https://placehold.co/400x300/E9711C/FFF8ED?text=Riddle+4",
-    hint: "I strapped my son to my back and rode into battle on horseback, refusing to give up my kingdom of Jhansi. Who am I?",
-    options: ["Rani Lakshmibai", "Begum Hazrat Mahal", "Sarojini Naidu", "Kittur Chennamma"],
+    fighter: { en: "Rani Lakshmibai", hi: "रानी लक्ष्मीबाई" },
+    hint: {
+      en: "I strapped my son to my back and rode into battle on horseback, refusing to give up my kingdom of Jhansi. Who am I?",
+      hi: "मैंने अपने बेटे को पीठ पर बांधकर घोड़े पर सवार होकर युद्ध लड़ा और अपने झांसी राज्य को नहीं छोड़ा। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Rani Lakshmibai", hi: "रानी लक्ष्मीबाई" },
+      { en: "Begum Hazrat Mahal", hi: "बेगम हज़रत महल" },
+      { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+      { en: "Kittur Chennamma", hi: "कित्तूर चेन्नम्मा" }
+    ],
     answer: "Rani Lakshmibai",
-    description: "The Rani of Jhansi who fought valiantly against the British during the Revolt of 1857."
+    description: {
+      en: "The Rani of Jhansi who fought valiantly against the British during the Revolt of 1857.",
+      hi: "झांसी की रानी, जिन्होंने 1857 के विद्रोह में अंग्रेज़ों से बहादुरी से लड़ाई की।"
+    }
   },
   {
     id: 5,
-    fighter: "Bal Gangadhar Tilak",
     image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+5",
-    hint: "I declared 'Freedom is my birthright, and I shall have it,' turning a simple slogan into a national roar. Who am I?",
-    options: ["Gopal Krishna Gokhale", "Bal Gangadhar Tilak", "Lala Lajpat Rai", "Bipin Chandra Pal"],
+    fighter: { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+    hint: {
+      en: "I declared 'Freedom is my birthright, and I shall have it,' turning a simple slogan into a national roar. Who am I?",
+      hi: "मैंने कहा था 'स्वराज मेरा जन्मसिद्ध अधिकार है, और मैं इसे लेकर रहूंगा' — यह नारा पूरे देश की आवाज़ बन गया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Gopal Krishna Gokhale", hi: "गोपाल कृष्ण गोखले" },
+      { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Bipin Chandra Pal", hi: "बिपिन चंद्र पाल" }
+    ],
     answer: "Bal Gangadhar Tilak",
-    description: "Popularised the slogan 'Swaraj is my birthright' and revived public Ganesh festivals as unity gatherings."
+    description: {
+      en: "Popularised the slogan 'Swaraj is my birthright' and revived public Ganesh festivals as unity gatherings.",
+      hi: "'स्वराज मेरा जन्मसिद्ध अधिकार है' का नारा दिया और गणेश उत्सव को एकता का पर्व बनाया।"
+    }
   },
   {
     id: 6,
-    fighter: "Chandrashekhar Azad",
     image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+6",
-    hint: "I vowed I would die a free man, and when surrounded by the police, I kept my word with my own last bullet. Who am I?",
-    options: ["Chandrashekhar Azad", "Ram Prasad Bismil", "Ashfaqulla Khan", "Batukeshwar Dutt"],
+    fighter: { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" },
+    hint: {
+      en: "I vowed I would die a free man, and when surrounded by the police, I kept my word with my own last bullet. Who am I?",
+      hi: "मैंने कसम खाई थी कि मैं आज़ाद ही मरूंगा, और पुलिस से घिरे होने पर अपनी ही आख़िरी गोली से अपना वचन निभाया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" },
+      { en: "Ram Prasad Bismil", hi: "राम प्रसाद बिस्मिल" },
+      { en: "Ashfaqulla Khan", hi: "अशफ़ाक़उल्ला खान" },
+      { en: "Batukeshwar Dutt", hi: "बटुकेश्वर दत्त" }
+    ],
     answer: "Chandrashekhar Azad",
-    description: "Vowed never to be captured alive and took his own life at Alfred Park, Allahabad, in 1931."
+    description: {
+      en: "Vowed never to be captured alive and took his own life at Alfred Park, Allahabad, in 1931.",
+      hi: "कभी जिंदा गिरफ्तार न होने की कसम खाई और 1931 में इलाहाबाद के अल्फ्रेड पार्क में अपनी जान दे दी।"
+    }
   },
   {
     id: 7,
-    fighter: "Sardar Vallabhbhai Patel",
     image: "https://placehold.co/400x300/FF9933/142027?text=Riddle+7",
-    hint: "I stitched over 500 princely states into one nation and earned the title 'Iron Man of India.' Who am I?",
-    options: ["Jawaharlal Nehru", "Sardar Vallabhbhai Patel", "Rajendra Prasad", "C. Rajagopalachari"],
+    fighter: { en: "Sardar Vallabhbhai Patel", hi: "सरदार वल्लभभाई पटेल" },
+    hint: {
+      en: "I stitched over 500 princely states into one nation and earned the title 'Iron Man of India.' Who am I?",
+      hi: "मैंने 500 से ज़्यादा छोटे-छोटे राज्यों को जोड़कर एक भारत बनाया, इसलिए मुझे 'भारत का लौह पुरुष' कहा जाता है। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Jawaharlal Nehru", hi: "जवाहरलाल नेहरू" },
+      { en: "Sardar Vallabhbhai Patel", hi: "सरदार वल्लभभाई पटेल" },
+      { en: "Rajendra Prasad", hi: "राजेंद्र प्रसाद" },
+      { en: "C. Rajagopalachari", hi: "सी. राजगोपालाचारी" }
+    ],
     answer: "Sardar Vallabhbhai Patel",
-    description: "Known as the 'Iron Man of India' for unifying princely states into the Indian Union after independence."
+    description: {
+      en: "Known as the 'Iron Man of India' for unifying princely states into the Indian Union after independence.",
+      hi: "आज़ादी के बाद रियासतों को जोड़कर भारत को एक करने के कारण 'भारत का लौह पुरुष' कहलाए।"
+    }
   },
   {
     id: 8,
-    fighter: "Sarojini Naidu",
     image: "https://placehold.co/400x300/E9711C/FFF8ED?text=Riddle+8",
-    hint: "Known as the 'Nightingale of India,' I was also the first woman to become the President of the Indian National Congress. Who am I?",
-    options: ["Sarojini Naidu", "Vijaya Lakshmi Pandit", "Kasturba Gandhi", "Annie Besant"],
+    fighter: { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+    hint: {
+      en: "Known as the 'Nightingale of India,' I was also the first woman to become the President of the Indian National Congress. Who am I?",
+      hi: "मुझे 'भारत कोकिला' कहा जाता है, और मैं भारतीय राष्ट्रीय कांग्रेस की पहली महिला अध्यक्ष बनी। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+      { en: "Vijaya Lakshmi Pandit", hi: "विजय लक्ष्मी पंडित" },
+      { en: "Kasturba Gandhi", hi: "कस्तूरबा गांधी" },
+      { en: "Annie Besant", hi: "एनी बेसेंट" }
+    ],
     answer: "Sarojini Naidu",
-    description: "Poet and freedom fighter, fondly called the 'Nightingale of India,' and first woman president of the INC."
+    description: {
+      en: "Poet and freedom fighter, fondly called the 'Nightingale of India,' and first woman president of the INC.",
+      hi: "कवयित्री और स्वतंत्रता सेनानी, जिन्हें प्यार से 'भारत कोकिला' कहा जाता है।"
+    }
   },
   {
     id: 9,
-    fighter: "Mangal Pandey",
     image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+9",
-    hint: "My defiance at the Barrackpore parade ground in 1857 lit the very first spark of India's struggle for freedom. Who am I?",
-    options: ["Mangal Pandey", "Tantia Tope", "Nana Saheb", "Veer Kunwar Singh"],
+    fighter: { en: "Mangal Pandey", hi: "मंगल पांडे" },
+    hint: {
+      en: "My defiance at the Barrackpore parade ground in 1857 lit the very first spark of India's struggle for freedom. Who am I?",
+      hi: "1857 में बैरकपुर की परेड में मेरे विद्रोह ने भारत की आज़ादी की लड़ाई की पहली चिंगारी जलाई। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Mangal Pandey", hi: "मंगल पांडे" },
+      { en: "Tantia Tope", hi: "तात्या टोपे" },
+      { en: "Nana Saheb", hi: "नाना साहेब" },
+      { en: "Veer Kunwar Singh", hi: "वीर कुंवर सिंह" }
+    ],
     answer: "Mangal Pandey",
-    description: "Sepoy whose act of rebellion in 1857 is often seen as the spark that ignited the First War of Independence."
+    description: {
+      en: "Sepoy whose act of rebellion in 1857 is often seen as the spark that ignited the First War of Independence.",
+      hi: "सिपाही जिनके 1857 के विद्रोह ने भारत के पहले स्वतंत्रता संग्राम को जन्म दिया।"
+    }
   },
   {
     id: 10,
-    fighter: "Lala Lajpat Rai",
     image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+10",
-    hint: "Known as 'Punjab Kesari' — the Lion of Punjab — I lost my life to injuries from a protest march against a foreign commission. Who am I?",
-    options: ["Lala Lajpat Rai", "Bipin Chandra Pal", "Madan Mohan Malaviya", "Ajit Singh"],
+    fighter: { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+    hint: {
+      en: "Known as 'Punjab Kesari' — the Lion of Punjab — I lost my life to injuries from a protest march against a foreign commission. Who am I?",
+      hi: "मुझे 'पंजाब केसरी' कहा जाता है, और साइमन कमीशन के विरोध में हुई चोटों के कारण मेरी जान चली गई। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Bipin Chandra Pal", hi: "बिपिन चंद्र पाल" },
+      { en: "Madan Mohan Malaviya", hi: "मदन मोहन मालवीय" },
+      { en: "Ajit Singh", hi: "अजीत सिंह" }
+    ],
     answer: "Lala Lajpat Rai",
-    description: "The 'Lion of Punjab' who succumbed to injuries sustained while leading a protest against the Simon Commission."
+    description: {
+      en: "The 'Lion of Punjab' who succumbed to injuries sustained while leading a protest against the Simon Commission.",
+      hi: "'पंजाब केसरी' जिन्होंने साइमन कमीशन के विरोध में घायल होकर अपनी जान गंवाई।"
+    }
   }
 ];
 
 /* ============================================================
-   3. STATE
+   4. STATE
    ============================================================ */
 let currentRiddle = null;
 let selectedAnswer = null;
+let selectedRole = null;
+let selectedLang = null; // 'en' | 'hi'
 
 const els = {
-  loading: document.getElementById('loadingScreen'),
   noRiddle: document.getElementById('noRiddleScreen'),
+  profile: document.getElementById('profileScreen'),
   form: document.getElementById('quizForm'),
   success: document.getElementById('successScreen'),
   wrong: document.getElementById('wrongScreen'),
@@ -510,21 +763,124 @@ const els = {
   riddleHint: document.getElementById('riddleHint'),
   optionsContainer: document.getElementById('optionsContainer'),
   submitBtn: document.getElementById('submitBtn'),
+  submitBtnLabel: document.getElementById('submitBtnLabel'),
   participantName: document.getElementById('participantName'),
   studentName: document.getElementById('studentName'),
+  studentNameField: document.getElementById('studentNameField'),
   successMsg: document.getElementById('successMsg'),
   fighterReveal: document.getElementById('fighterReveal')
 };
 
 function showOnly(el){
-  [els.loading, els.noRiddle, els.form, els.success, els.wrong].forEach(s => s.classList.add('hidden'));
+  [els.noRiddle, els.profile, els.form, els.success, els.wrong].forEach(s => s.classList.add('hidden'));
   el.classList.remove('hidden');
 }
 
 /* ============================================================
-   4. INITIALISE — read ?riddle= from the URL
+   5. LANGUAGE — swap all static UI text + <html lang> + font class
+   ============================================================ */
+function applyLanguage(lang){
+  selectedLang = lang;
+  const t = UI[lang];
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.body.classList.toggle('lang-hi', lang === 'hi');
+
+  document.getElementById('heroH1').textContent = t.heroH1;
+  document.getElementById('heroTag').textContent = t.heroTag;
+  document.getElementById('noRiddleH2').textContent = t.noRiddleH2;
+  document.getElementById('noRiddleP').innerHTML = t.noRiddleP;
+  document.getElementById('profileHeading').textContent = t.profileHeading;
+  document.getElementById('profileSub').textContent = t.profileSub;
+  document.getElementById('profileContinueLabel').textContent = t.profileContinueLabel;
+
+  document.getElementById('roleLabel').innerHTML = `<i class="fa-solid fa-user-group"></i> ${t.roleLabel}`;
+  document.querySelector('[data-role="Teacher"] span').textContent = t.roleTeacher;
+  document.querySelector('[data-role="Parent"] span').textContent = t.roleParent;
+  document.querySelector('[data-role="Student"] span').textContent = t.roleStudent;
+  document.querySelector('[data-role="Guest"] span').textContent = t.roleGuest;
+
+  document.getElementById('langLabel').innerHTML = `<i class="fa-solid fa-language"></i> ${t.langLabel}`;
+  document.querySelector('[data-lang-choice="en"] span').textContent = t.langEnglish;
+  document.querySelector('[data-lang-choice="hi"] span').textContent = t.langHindi;
+
+  document.getElementById('nameFieldLabel').textContent = t.nameFieldLabel;
+  els.participantName.placeholder = t.namePlaceholder;
+  document.getElementById('studentFieldLabel').childNodes[0].textContent = t.studentFieldLabel + " ";
+  document.getElementById('studentFieldOptionalTag').textContent = t.studentFieldOptionalTag;
+  els.studentName.placeholder = t.studentPlaceholder;
+  document.getElementById('studentFieldHint').textContent = t.studentFieldHint;
+
+  els.riddleBadge.innerHTML = `<i class="fa-solid fa-scroll"></i> ${t.riddleBadge}` + (currentRiddle ? ` #${currentRiddle.id}` : '');
+  els.submitBtnLabel.textContent = t.submitBtnLabel;
+
+  document.getElementById('successH2').textContent = t.successH2;
+  document.getElementById('successMsg').textContent = t.successMsg;
+  document.getElementById('nextHint').textContent = t.nextHint;
+  document.getElementById('wrongH2').textContent = t.wrongH2;
+  document.getElementById('wrongP').textContent = t.wrongP;
+
+  // language switcher pill state
+  document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
+  document.getElementById('langBtnHi').classList.toggle('active', lang === 'hi');
+
+  // re-render riddle text in the new language if one is showing
+  if (currentRiddle && !els.form.classList.contains('hidden')){
+    renderRiddle(currentRiddle);
+  }
+}
+
+/* top-of-page language pill also works even before the profile choice is made */
+document.getElementById('langBtnEn').addEventListener('click', () => applyLanguage('en'));
+document.getElementById('langBtnHi').addEventListener('click', () => applyLanguage('hi'));
+
+/* ============================================================
+   6. PROFILE SCREEN — role + language pickers
+   ============================================================ */
+const profileContinueBtn = document.getElementById('profileContinueBtn');
+
+function checkProfileReady(){
+  profileContinueBtn.disabled = !(selectedRole && selectedLang);
+}
+
+document.querySelectorAll('#roleOptions .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#roleOptions .choice-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedRole = btn.getAttribute('data-role');
+    checkProfileReady();
+  });
+});
+
+document.querySelectorAll('#langOptions .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#langOptions .choice-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    applyLanguage(btn.getAttribute('data-lang-choice'));
+    checkProfileReady();
+  });
+});
+
+profileContinueBtn.addEventListener('click', () => {
+  if (!selectedRole || !selectedLang) return;
+
+  // Rule 2: only Parents see/fill the student name field
+  if (selectedRole === 'Parent'){
+    els.studentNameField.classList.remove('hidden');
+  } else {
+    els.studentNameField.classList.add('hidden');
+    els.studentName.value = '';
+  }
+
+  renderRiddle(currentRiddle);
+  showOnly(els.form);
+});
+
+/* ============================================================
+   7. INITIALISE — read ?riddle= from the URL
    ============================================================ */
 function init(){
+  applyLanguage('en'); // sensible default until the user picks one
+
   const params = new URLSearchParams(window.location.search);
   const riddleId = parseInt(params.get('riddle'), 10);
 
@@ -535,15 +891,17 @@ function init(){
     return;
   }
 
-  renderRiddle(currentRiddle);
-  showOnly(els.form);
+  showOnly(els.profile);
 }
 
 function renderRiddle(riddle){
-  els.riddleBadge.innerHTML = `<i class="fa-solid fa-scroll"></i> Riddle #${riddle.id}`;
+  const lang = selectedLang || 'en';
+  const t = UI[lang];
+
+  els.riddleBadge.innerHTML = `<i class="fa-solid fa-scroll"></i> ${t.riddleBadge} #${riddle.id}`;
   els.riddleImage.src = riddle.image;
   els.riddleImage.alt = "Mystery freedom fighter";
-  els.riddleHint.textContent = riddle.hint;
+  els.riddleHint.textContent = riddle.hint[lang] || riddle.hint.en;
 
   els.optionsContainer.innerHTML = '';
   selectedAnswer = null;
@@ -552,40 +910,41 @@ function renderRiddle(riddle){
   // Shuffle a copy of the options so the correct answer isn't always in the same slot
   const shuffled = [...riddle.options].sort(() => Math.random() - 0.5);
 
-  shuffled.forEach(optionText => {
+  shuffled.forEach(option => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="radio-dot"></span><span>${optionText}</span>`;
-    btn.addEventListener('click', () => selectOption(btn, optionText));
+    btn.innerHTML = `<span class="radio-dot"></span><span>${option[lang] || option.en}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, option.en));
     els.optionsContainer.appendChild(btn);
   });
 }
 
-function selectOption(btn, optionText){
+function selectOption(btn, optionEnText){
   document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  selectedAnswer = optionText;
+  selectedAnswer = optionEnText; // canonical English value, independent of displayed language
   els.submitBtn.disabled = false;
 }
 
 /* ============================================================
-   5. SUBMISSION
+   8. SUBMISSION
    ============================================================ */
 els.form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!selectedAnswer || !currentRiddle) return;
 
   const participantName = els.participantName.value.trim();
-  const studentName = els.studentName.value.trim();
+  const studentName = selectedRole === 'Parent' ? els.studentName.value.trim() : '';
 
   if (!participantName){
     els.participantName.focus();
     return;
   }
 
+  const t = UI[selectedLang || 'en'];
   els.submitBtn.disabled = true;
-  els.submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting…`;
+  els.submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t.submittingLabel}`;
 
   const isCorrect = selectedAnswer === currentRiddle.answer;
 
@@ -598,8 +957,10 @@ els.form.addEventListener('submit', async (e) => {
         riddle_number: currentRiddle.id,
         selected_answer: selectedAnswer,
         correct_answer: currentRiddle.answer,
-        freedom_fighter_name: currentRiddle.fighter,
-        is_correct: isCorrect
+        freedom_fighter_name: currentRiddle.fighter.en,
+        is_correct: isCorrect,
+        participant_role: selectedRole,
+        language: selectedLang
       }]);
 
     if (error) console.error('Supabase insert error:', error);
@@ -615,11 +976,12 @@ els.form.addEventListener('submit', async (e) => {
 });
 
 function showSuccess(){
+  const lang = selectedLang || 'en';
   els.fighterReveal.innerHTML = `
-    <img src="${currentRiddle.image}" alt="${currentRiddle.fighter}">
+    <img src="${currentRiddle.image}" alt="${currentRiddle.fighter[lang] || currentRiddle.fighter.en}">
     <div>
-      <div class="name">${currentRiddle.fighter}</div>
-      <div class="desc">${currentRiddle.description}</div>
+      <div class="name">${currentRiddle.fighter[lang] || currentRiddle.fighter.en}</div>
+      <div class="desc">${currentRiddle.description[lang] || currentRiddle.description.en}</div>
     </div>
   `;
   showOnly(els.success);
