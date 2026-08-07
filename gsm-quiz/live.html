@@ -114,13 +114,14 @@ body::before{
 }
 @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-/* ---------- STAGE (where floating cards appear) ---------- */
+/* ---------- STAGE (where floating cards + story appear) ---------- */
 #stage{
   position:relative; z-index:2;
   width:100%; height:calc(100vh - 170px);
   padding:20px 46px;
 }
 
+/* small fallback message, only used if the story slideshow hasn't started yet */
 .idle-msg{
   position:absolute; inset:0; display:flex; flex-direction:column;
   align-items:center; justify-content:center; text-align:center;
@@ -129,6 +130,110 @@ body::before{
 .idle-msg i{ font-size:3rem; color:var(--saffron); opacity:0.7; }
 .idle-msg h2{ font-family:'Baloo 2',cursive; font-size:1.8rem; margin:0; color:rgba(255,255,255,0.85); }
 .idle-msg p{ max-width:480px; font-size:1.05rem; }
+
+/* ============================================================
+   IDLE STORYTELLING SLIDESHOW
+   Fills the wall with India's Independence struggle — visual,
+   immersive, low on text — whenever no answer card is on screen.
+   ============================================================ */
+.story-stage{
+  position:absolute; inset:0; z-index:1;
+  border-radius:28px; overflow:hidden;
+  box-shadow:0 30px 90px -24px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.08);
+  background:#05070f;
+}
+.story-dots{
+  position:absolute; top:22px; left:50%; transform:translateX(-50%);
+  display:flex; gap:8px; z-index:3;
+}
+.story-dot{
+  width:28px; height:4px; border-radius:2px;
+  background:rgba(255,255,255,0.28);
+  transition:background .4s;
+}
+.story-dot.active{ background:linear-gradient(90deg,var(--saffron),var(--india-green)); }
+
+.story-slide{
+  position:absolute; inset:0; opacity:0;
+}
+.story-slide.animate-in{ animation: storyFade 8s ease forwards; }
+@keyframes storyFade{
+  0%{ opacity:0; }
+  6%{ opacity:1; }
+  93%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+.story-bg{
+  position:absolute; inset:-6%;
+  background-size:cover; background-position:center;
+  animation: kenburns 8.6s ease-in-out forwards;
+  filter:saturate(1.05) contrast(1.02);
+}
+.story-slide.zoom-out .story-bg{ animation-name: kenburnsOut; }
+@keyframes kenburns{
+  0%{ transform:scale(1) translate(0,0); }
+  100%{ transform:scale(1.14) translate(-1.5%, -1%); }
+}
+@keyframes kenburnsOut{
+  0%{ transform:scale(1.14) translate(-1.5%, -1%); }
+  100%{ transform:scale(1) translate(0,0); }
+}
+
+.story-overlay{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg, rgba(5,7,15,0.05) 0%, rgba(5,7,15,0.25) 45%, rgba(5,7,15,0.94) 100%),
+    linear-gradient(90deg, rgba(5,7,15,0.55) 0%, rgba(5,7,15,0) 40%);
+}
+
+.story-accent{
+  position:absolute; left:0; right:0; bottom:0; height:6px;
+  background:linear-gradient(90deg, var(--saffron), #fff 50%, var(--india-green));
+  opacity:0.9;
+}
+
+.story-content{
+  position:absolute; left:0; right:0; bottom:0; padding:44px 56px 54px;
+  z-index:2;
+  animation: storyTextUp 1s cubic-bezier(.2,.8,.3,1) .35s both;
+}
+@keyframes storyTextUp{
+  from{ opacity:0; transform:translateY(30px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.story-era{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Yatra One',cursive; font-size:1.15rem;
+  color:var(--saffron); text-shadow:0 2px 12px rgba(0,0,0,0.6);
+  margin-bottom:8px;
+}
+.story-era i{ font-size:0.85rem; }
+.story-title{
+  font-family:'Baloo 2',cursive; font-weight:800; font-size:2.9rem;
+  margin:0 0 12px; color:#fff; line-height:1.05;
+  text-shadow:0 6px 30px rgba(0,0,0,0.55);
+}
+.story-text{
+  font-size:1.15rem; color:#f2f2f2; max-width:620px; line-height:1.55;
+  text-shadow:0 2px 14px rgba(0,0,0,0.55);
+}
+
+.story-hint{
+  position:absolute; bottom:18px; right:24px; z-index:3;
+  display:flex; align-items:center; gap:8px;
+  font-size:0.82rem; color:rgba(255,255,255,0.8);
+  background:rgba(0,0,0,0.28); backdrop-filter:blur(6px);
+  padding:8px 14px; border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);
+}
+.story-hint i{ color:var(--saffron); }
+
+@media (prefers-reduced-motion: reduce){
+  .story-bg{ animation:none !important; }
+  .story-slide.animate-in{ animation:none !important; opacity:1 !important; }
+  .story-content{ animation:none !important; opacity:1 !important; transform:none !important; }
+}
 
 /* ---------- FLOATING WINNER CARD ---------- */
 .winner-card{
@@ -146,6 +251,7 @@ body::before{
     0 0 60px -10px rgba(18,136,7,0.4);
   animation: cardEnter 0.7s cubic-bezier(.2,.9,.3,1.3) forwards, cardFloat 4s ease-in-out infinite 0.7s;
   opacity:0;
+  z-index:4;
 }
 .winner-card.leaving{
   animation: cardExit 0.9s ease forwards !important;
@@ -211,6 +317,8 @@ footer.foot{
   text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.4);
   padding:10px 0 18px;
 }
+
+.hidden{ display:none !important; }
 </style>
 </head>
 <body>
@@ -241,7 +349,24 @@ footer.foot{
 </div>
 
 <div id="stage">
-  <div class="idle-msg" id="idleMsg">
+  <!-- Idle storytelling slideshow: fills the wall between correct answers -->
+  <div class="story-stage hidden" id="storyStage">
+    <div class="story-dots" id="storyDots"></div>
+    <div class="story-slide" id="storySlide">
+      <div class="story-bg" id="storyBg"></div>
+      <div class="story-overlay"></div>
+      <div class="story-content">
+        <div class="story-era" id="storyEra"><i class="fa-solid fa-flag"></i> <span></span></div>
+        <h2 class="story-title" id="storyTitle"></h2>
+        <p class="story-text" id="storyText"></p>
+      </div>
+      <div class="story-accent"></div>
+    </div>
+    <div class="story-hint"><i class="fa-solid fa-qrcode"></i> Scan a QR code on the display board to join the trail</div>
+  </div>
+
+  <!-- Minimal fallback, shown only before the story slideshow has ever started -->
+  <div class="idle-msg hidden" id="idleMsg">
     <i class="fa-solid fa-flag"></i>
     <h2>Scan a QR code to begin</h2>
     <p>Every correct answer lights up this wall. Grab your phone, scan a QR code from the display board, and become part of the Freedom Trail.</p>
@@ -278,7 +403,7 @@ const riddles = [
 function findRiddle(num){ return riddles.find(r => r.id === num); }
 
 /* ============================================================
-   3. STAGE MANAGEMENT
+   3. STAGE MANAGEMENT — winner cards
    ============================================================ */
 const stage = document.getElementById('stage');
 const idleMsg = document.getElementById('idleMsg');
@@ -300,7 +425,7 @@ function randomPosition(){
 }
 
 function spawnWinnerCard(record){
-  idleMsg.style.display = 'none';
+  pauseStoryForActivity();
   totalCorrect += 1;
   activeCards += 1;
   counterText.textContent = `${totalCorrect} hero${totalCorrect === 1 ? '' : 'es'} identified so far`;
@@ -354,7 +479,7 @@ function spawnWinnerCard(record){
       card.remove();
       activeCards -= 1;
       if (activeCards === 0){
-        idleMsg.style.display = 'flex';
+        scheduleStoryResume();
       }
     }, { once: true });
   }, CARD_LIFETIME_MS);
@@ -380,7 +505,185 @@ function burstConfettiAt(pos){
 }
 
 /* ============================================================
-   4. SUPABASE REALTIME SUBSCRIPTION
+   4. IDLE STORYTELLING SLIDESHOW
+   Whenever no winner card has appeared for a few seconds, the
+   wall tells India's Independence story as a slow, cinematic,
+   image-led slideshow — kept light on text, heavy on visuals.
+   ============================================================ */
+const storySlides = [
+  {
+    era: "1600s – 1857",
+    title: "Under a Foreign Flag",
+    text: "For almost 200 years, a trading company — and later the British Crown — ruled over India.",
+    image: "https://placehold.co/1600x900/0B1F4D/FFF8ED?text=Under+the+Crown",
+    icon: "fa-solid fa-landmark-dome"
+  },
+  {
+    era: "1857",
+    title: "The First Spark",
+    text: "A young soldier named Mangal Pandey refused to stay silent — and lit the flame of India's first great uprising.",
+    image: "https://i.pinimg.com/236x/79/a0/cc/79a0ccee61272741c1099139d50c102e.jpg?nii=t",
+    icon: "fa-solid fa-fire"
+  },
+  {
+    era: "1857",
+    title: "The Rani Who Rode to War",
+    text: "Rani Lakshmibai of Jhansi fought on horseback, sword in hand, refusing to hand over her kingdom.",
+    image: "https://wallpaperaccess.com/full/16277836.jpg",
+    icon: "fa-solid fa-chess-knight"
+  },
+  {
+    era: "1905 – 1920",
+    title: "Swaraj is My Birthright",
+    text: "Bal Gangadhar Tilak turned a simple phrase into a roar that echoed across the whole country.",
+    image: "https://alchetron.com/cdn/bal-gangadhar-tilak-54d64227-7511-42ed-b4d2-a82a2062105-resize-750.jpeg",
+    icon: "fa-solid fa-bullhorn"
+  },
+  {
+    era: "1920s",
+    title: "The Lion of Punjab",
+    text: "Lala Lajpat Rai led thousands in peaceful protest, and gave his life so the next generation could be free.",
+    image: "https://cdn1.byjus.com/wp-content/uploads/2021/01/Lala-Lajpat-Rai-amp.jpg",
+    icon: "fa-solid fa-shield-heart"
+  },
+  {
+    era: "1930",
+    title: "A Pinch of Salt, A Nation Awakened",
+    text: "Mahatma Gandhi walked 240 miles to the sea, and taught the world that truth and non-violence could break an empire.",
+    image: "https://cdn.wallpapersafari.com/77/20/9rshxv.jpg",
+    icon: "fa-solid fa-person-walking"
+  },
+  {
+    era: "1931",
+    title: "Free, or Not At All",
+    text: "Chandrashekhar Azad vowed he would never be captured alive — and kept his word to the very end.",
+    image: "https://wallpaperaccess.com/full/8893991.jpg",
+    icon: "fa-solid fa-dove"
+  },
+  {
+    era: "1931",
+    title: "Smiling at the Gallows",
+    text: "At just 23, Bhagat Singh faced death fearlessly, believing his sacrifice would awaken India's youth.",
+    image: "https://alchetron.com/cdn/bhagat-singh-7079ec46-00e3-4504-8bf1-6c6dd2eb0d3-resize-750.jpeg",
+    icon: "fa-solid fa-star"
+  },
+  {
+    era: "1942 – 1945",
+    title: "Give Me Blood, I'll Give You Freedom",
+    text: "Subhas Chandra Bose raised an army on foreign soil, calling every Indian to rise for the nation.",
+    image: "https://pwonlyias.com/wp-content/uploads/2024/08/b07d96aa62bf0c543b5b54b6fb83f7bc-223x300.jpg",
+    icon: "fa-solid fa-flag"
+  },
+  {
+    era: "Freedom's Voice",
+    title: "The Nightingale of India",
+    text: "Poet and leader Sarojini Naidu became the first woman to lead the Indian National Congress.",
+    image: "https://banglajagotv.com/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-1.49.55-PM.jpeg",
+    icon: "fa-solid fa-feather"
+  },
+  {
+    era: "15 August 1947",
+    title: "At the Stroke of Midnight",
+    text: "India woke to a new dawn — free at last, after generations of struggle and sacrifice.",
+    image: "https://placehold.co/1600x900/E9711C/FFF8ED?text=Midnight+of+Freedom",
+    icon: "fa-solid fa-sun"
+  },
+  {
+    era: "After 1947",
+    title: "One Nation, Stitched Together",
+    text: "Sardar Vallabhbhai Patel united over 500 princely states into a single India, earning the name 'Iron Man.'",
+    image: "https://wallpaperaccess.com/full/9465065.jpg",
+    icon: "fa-solid fa-link"
+  },
+  {
+    era: "Today · 2026",
+    title: "80 Years of Freedom",
+    text: "Eighty years later, Gopal Sharma Memorial School carries their courage forward. Scan a QR code and become part of the story.",
+    image: "https://placehold.co/1600x900/128807/FFF8ED?text=80+Years+of+Independence",
+    icon: "fa-solid fa-heart"
+  }
+];
+
+const storyStage = document.getElementById('storyStage');
+const storySlideEl = document.getElementById('storySlide');
+const storyBgEl = document.getElementById('storyBg');
+const storyEraEl = document.querySelector('#storyEra span');
+const storyTitleEl = document.getElementById('storyTitle');
+const storyTextEl = document.getElementById('storyText');
+const storyDotsEl = document.getElementById('storyDots');
+
+let storyIndex = 0;
+let storyTimer = null;
+let idleRestartTimer = null;
+const STORY_SLIDE_MS = 8000;
+const STORY_RESUME_DELAY_MS = 4500; // grace period after the last winner card leaves
+
+// build the progress dots once
+storySlides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'story-dot' + (i === 0 ? ' active' : '');
+  storyDotsEl.appendChild(dot);
+});
+
+function updateStoryDots(){
+  document.querySelectorAll('.story-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === storyIndex);
+  });
+}
+
+function renderStorySlide(){
+  const slide = storySlides[storyIndex];
+
+  // restart the CSS animation cleanly
+  storySlideEl.classList.remove('animate-in');
+  void storySlideEl.offsetWidth; // force reflow
+
+  storyBgEl.style.backgroundImage = `url('${slide.image}')`;
+  storyEraEl.textContent = slide.era;
+  document.querySelector('#storyEra i').className = slide.icon || 'fa-solid fa-flag';
+  storyTitleEl.textContent = slide.title;
+  storyTextEl.textContent = slide.text;
+
+  storySlideEl.classList.add('animate-in');
+  updateStoryDots();
+}
+
+function nextStorySlide(){
+  storyIndex = (storyIndex + 1) % storySlides.length;
+  renderStorySlide();
+}
+
+function startStory(){
+  if (storyTimer || activeCards > 0) return;
+  idleMsg.classList.add('hidden');
+  storyStage.classList.remove('hidden');
+  renderStorySlide();
+  storyTimer = setInterval(nextStorySlide, STORY_SLIDE_MS);
+}
+
+function stopStory(){
+  if (storyTimer){
+    clearInterval(storyTimer);
+    storyTimer = null;
+  }
+  storyStage.classList.add('hidden');
+}
+
+function pauseStoryForActivity(){
+  clearTimeout(idleRestartTimer);
+  idleMsg.classList.add('hidden');
+  stopStory();
+}
+
+function scheduleStoryResume(){
+  clearTimeout(idleRestartTimer);
+  idleRestartTimer = setTimeout(() => {
+    if (activeCards === 0) startStory();
+  }, STORY_RESUME_DELAY_MS);
+}
+
+/* ============================================================
+   5. SUPABASE REALTIME SUBSCRIPTION
    Listens for new rows inserted into `submissions` where
    is_correct = true, and spawns a floating card for each.
    ============================================================ */
@@ -416,6 +719,9 @@ window.demoWinner = function(){
     is_correct: true
   });
 };
+
+/* Kick off the story slideshow as soon as the wall loads, since it starts idle */
+startStory();
 </script>
 </body>
 </html>
