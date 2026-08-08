@@ -192,6 +192,19 @@ body::before{
   opacity:0.9;
 }
 
+.story-fighter-name{
+  position:absolute; left:50%; bottom:130px; transform:translateX(-50%);
+  z-index:3;
+  font-family:'Baloo 2',cursive; font-weight:800; font-size:2.2rem;
+  color:#fff; text-align:center; white-space:nowrap;
+  text-shadow:0 4px 20px rgba(0,0,0,0.7);
+  background:rgba(0,0,0,0.28); backdrop-filter:blur(8px);
+  padding:8px 30px; border-radius:999px;
+  border:1px solid rgba(255,255,255,0.2);
+  letter-spacing:.02em;
+}
+.story-fighter-name:empty{ display:none; }
+
 .story-content{
   position:absolute; left:0; right:0; bottom:0; padding:44px 56px 54px;
   z-index:2;
@@ -354,6 +367,7 @@ footer.foot{
     <div class="story-slide" id="storySlide">
       <div class="story-bg" id="storyBg"></div>
       <div class="story-overlay"></div>
+      <div class="story-fighter-name" id="storyFighterName"></div>
       <div class="story-content">
         <div class="story-era" id="storyEra"><i class="fa-solid fa-flag"></i> <span></span></div>
         <h2 class="story-title" id="storyTitle"></h2>
@@ -522,63 +536,72 @@ const storySlides = [
     title: "The First Spark",
     text: "A young soldier named Mangal Pandey refused to stay silent — and lit the flame of India's first great uprising.",
     image: "https://thumbs.dreamstime.com/b/portrait-mangal-pandey-captures-his-resolute-spirit-fierce-determination-reflects-unwavering-honoring-hero-india-383629072.jpg",
-    icon: "fa-solid fa-fire"
+    icon: "fa-solid fa-fire",
+    fighter:"Mangal Pandey"
   },
   {
     era: "1857",
     title: "The Rani Who Rode to War",
     text: "Rani Lakshmibai of Jhansi fought on horseback, sword in hand, refusing to hand over her kingdom.",
     image: "https://images.storychief.com/account_3193/8773003d-b391-4fa4-870d-8fea114760b3_4e021ec44328e2a1840bae7c7d423ff8_800.jpeg",
-    icon: "fa-solid fa-chess-knight"
+    icon: "fa-solid fa-chess-knight",
+    fighter:"Rani Lakshmibai"
   },
   {
     era: "1905 – 1920",
     title: "Swaraj is My Birthright",
     text: "Bal Gangadhar Tilak turned a simple phrase into a roar that echoed across the whole country.",
     image: "https://alchetron.com/cdn/bal-gangadhar-tilak-54d64227-7511-42ed-b4d2-a82a2062105-resize-750.jpeg",
-    icon: "fa-solid fa-bullhorn"
+    icon: "fa-solid fa-bullhorn",
+    fighter:"Bal Gangadhar Tilak"
   },
   {
     era: "1920s",
     title: "The Lion of Punjab",
     text: "Lala Lajpat Rai led thousands in peaceful protest, and gave his life so the next generation could be free.",
     image: "https://cdn1.byjus.com/wp-content/uploads/2021/01/Lala-Lajpat-Rai-amp.jpg",
-    icon: "fa-solid fa-shield-heart"
+    icon: "fa-solid fa-shield-heart",
+    fighter:"Lala Lajpat Rai"
   },
   {
     era: "1930",
     title: "A Pinch of Salt, A Nation Awakened",
     text: "Mahatma Gandhi walked 240 miles to the sea, and taught the world that truth and non-violence could break an empire.",
     image: "https://cdn.wallpapersafari.com/77/20/9rshxv.jpg",
-    icon: "fa-solid fa-person-walking"
+    icon: "fa-solid fa-person-walking",
+    fighter:"Mahatma Gandhi"
   },
   {
     era: "1931",
     title: "Free, or Not At All",
     text: "Chandrashekhar Azad vowed he would never be captured alive — and kept his word to the very end.",
     image: "https://wallpaperaccess.com/full/8893991.jpg",
-    icon: "fa-solid fa-dove"
+    icon: "fa-solid fa-dove",
+    fighter:"Chandrashekhar Azad"
   },
   {
     era: "1931",
     title: "Smiling at the Gallows",
     text: "At just 23, Bhagat Singh faced death fearlessly, believing his sacrifice would awaken India's youth.",
     image: "https://alchetron.com/cdn/bhagat-singh-7079ec46-00e3-4504-8bf1-6c6dd2eb0d3-resize-750.jpeg",
-    icon: "fa-solid fa-star"
+    icon: "fa-solid fa-star",
+    fighter:"Bhagat Singh"
   },
   {
     era: "1942 – 1945",
     title: "Give Me Blood, I'll Give You Freedom",
     text: "Subhas Chandra Bose raised an army on foreign soil, calling every Indian to rise for the nation.",
     image: "https://pwonlyias.com/wp-content/uploads/2024/08/b07d96aa62bf0c543b5b54b6fb83f7bc-223x300.jpg",
-    icon: "fa-solid fa-flag"
+    icon: "fa-solid fa-flag",
+    fighter:"Subhas Chandra Bose"
   },
   {
     era: "Freedom's Voice",
     title: "The Nightingale of India",
     text: "Poet and leader Sarojini Naidu became the first woman to lead the Indian National Congress.",
     image: "https://banglajagotv.com/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-1.49.55-PM.jpeg",
-    icon: "fa-solid fa-feather"
+    icon: "fa-solid fa-feather",
+    fighter:"Sarojini Naidu"
   },
   {
     era: "15 August 1947",
@@ -592,7 +615,8 @@ const storySlides = [
     title: "One Nation, Stitched Together",
     text: "Sardar Vallabhbhai Patel united over 500 princely states into a single India, earning the name 'Iron Man.'",
     image: "https://wallpaperaccess.com/full/9465065.jpg",
-    icon: "fa-solid fa-link"
+    icon: "fa-solid fa-link",
+    fighter:"Sardar Vallabhbhai Patel"
   },
   {
     era: "Today · 2026",
@@ -610,6 +634,7 @@ const storyEraEl = document.querySelector('#storyEra span');
 const storyTitleEl = document.getElementById('storyTitle');
 const storyTextEl = document.getElementById('storyText');
 const storyDotsEl = document.getElementById('storyDots');
+const storyFighterNameEl = document.getElementById('storyFighterName');
 
 let storyIndex = 0;
 let storyTimer = null;
@@ -642,6 +667,7 @@ function renderStorySlide(){
   document.querySelector('#storyEra i').className = slide.icon || 'fa-solid fa-flag';
   storyTitleEl.textContent = slide.title;
   storyTextEl.textContent = slide.text;
+  storyFighterNameEl.textContent = slide.fighter || '';
 
   storySlideEl.classList.add('animate-in');
   updateStoryDots();
