@@ -383,6 +383,26 @@ footer.foot i{ color:var(--saffron-deep); }
 .cert-status{
   text-align:center; font-size:0.78rem; color:#a13a1f; margin:10px 0 0;
 }
+.cert-whatsapp-banner{
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:var(--radius-md);
+  background:linear-gradient(90deg, rgba(37,211,102,0.15), rgba(37,211,102,0.05));
+  border:1.5px solid rgba(37,211,102,0.4);
+  display:flex; align-items:flex-start; gap:12px;
+}
+.cert-whatsapp-banner i.wa-icon{ font-size:1.6rem; color:#25D366; flex-shrink:0; margin-top:2px; }
+.cert-whatsapp-banner p{ margin:0 0 8px; font-size:0.85rem; font-weight:700; color:var(--chakra-navy); line-height:1.3; }
+.cert-whatsapp-banner .wa-sub{ font-weight:500; font-size:0.76rem; color:#555; margin:0 0 10px; }
+.whatsapp-status-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 16px; border:none; border-radius:999px; cursor:pointer;
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:0.88rem;
+  color:#fff; background:#25D366;
+  box-shadow:0 8px 18px -8px rgba(37,211,102,0.6);
+  transition:transform .15s;
+}
+.whatsapp-status-btn:hover{ transform:translateY(-1px); }
 
 @media (max-width:380px){
   .hero-title h1{ font-size:1.65rem; }
@@ -513,6 +533,16 @@ footer.foot i{ color:var(--saffron-deep); }
           <i class="fa-solid fa-share-nodes"></i> <span id="shareCertLabel">Share</span>
         </button>
       </div>
+      <div class="cert-whatsapp-banner" id="whatsappBanner">
+        <i class="fa-brands fa-whatsapp wa-icon"></i>
+        <div>
+            <p id="whatsappCalloutText">Show it off! Post your certificate as your WhatsApp Status 🎉</p>
+            <p class="wa-sub" id="whatsappSubText">Tap below, then choose WhatsApp → "My Status"</p>
+            <button type="button" class="whatsapp-status-btn" id="whatsappStatusBtn">
+               <i class="fa-brands fa-whatsapp"></i> <span id="whatsappBtnLabel">Post to WhatsApp Status</span>
+            </button>
+        </div>
+      </div>
       <p class="cert-status hidden" id="certStatus"></p>
     </div>
   </div>
@@ -582,11 +612,14 @@ const UI = {
     certCertifiesText: "This certifies that",
     certBodyLine1: "has successfully solved Riddle #{id} of The Freedom Trail",
     certBodyLine2: "by correctly identifying the courageous freedom fighter",
-    certBodyLine3: "as part of Gopal Sharma Memorial School's 79th Independence Day Celebration",
+    certBodyLine3: "as part of Gopal Sharma Memorial School's First Independence Day Celebration",
     certDateText: "15 August 2026",
     certIssuedText: "Digitally Issued",
     certSignatureText: "Convenor, GSMS",
-    certHashtagText: "#GSMS79 · Freedom Trail"
+    certHashtagText: "#GSMS79 · Freedom Trail",
+    whatsappCalloutText: "Show it off! Post your certificate as your WhatsApp Status 🎉",
+    whatsappSubText: 'Tap below, then choose WhatsApp → "My Status"',
+    whatsappBtnLabel: "Post to WhatsApp Status"
   },
   hi: {
     heroH1: "आज़ादी की राह",
@@ -628,11 +661,14 @@ const UI = {
     certCertifiesText: "यह प्रमाणित करता है कि",
     certBodyLine1: "ने द फ्रीडम ट्रेल की पहेली #{id} को सफलतापूर्वक हल किया",
     certBodyLine2: "और इस वीर स्वतंत्रता सेनानी को सही पहचाना",
-    certBodyLine3: "गोपाल शर्मा मेमोरियल स्कूल के 79वें स्वतंत्रता दिवस समारोह के भाग के रूप में",
+    certBodyLine3: "गोपाल शर्मा मेमोरियल स्कूल के प्रथम स्वतंत्रता दिवस समारोह के भाग के रूप में",
     certDateText: "15 अगस्त 2026",
     certIssuedText: "डिजिटल रूप से जारी",
     certSignatureText: "संयोजक, GSMS",
-    certHashtagText: "#GSMS79 · फ्रीडम ट्रेल"
+    certHashtagText: "#GSMS79 · फ्रीडम ट्रेल",
+    whatsappCalloutText: "इसे दिखाएं! अपना प्रमाणपत्र WhatsApp स्टेटस पर लगाएं 🎉",
+    whatsappSubText: 'नीचे टैप करें, फिर WhatsApp → "My Status" चुनें',
+    whatsappBtnLabel: "WhatsApp स्टेटस पर लगाएं"
   }
 };
 
