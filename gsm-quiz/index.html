@@ -305,7 +305,7 @@ body.lang-hi .hint-text{ font-weight:600; font-size:1.1rem; }
 .state-screen h2{
   font-family:'Baloo 2',cursive; font-size:1.4rem; margin:6px 0 8px;
 }
-.state-screen p{ font-size:0.92rem; color:#444; max-width:340px; margin:0 auto; }
+.state-screen p{ font-size:0.92rem; color:#444; max-width:340px; margin:0 auto; margin-top: 18px; }
 
 .success .state-icon{ color:var(--india-green); }
 .error .state-icon{ color:var(--saffron-deep); }
@@ -332,9 +332,82 @@ footer.foot i{ color:var(--saffron-deep); }
 
 .hidden{ display:none !important; }
 
+/* ---------- CERTIFICATE ---------- */
+.cert-section{
+  margin-top:22px;
+  padding-top:20px;
+  border-top:1.5px dashed rgba(11,31,77,0.22);
+  text-align:left;
+}
+.cert-eyebrow{
+  font-weight:700; font-size:0.78rem; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--chakra-navy); margin:0 0 12px;
+  display:flex; align-items:center; gap:6px; justify-content:center;
+}
+.cert-eyebrow i{ color:var(--saffron-deep); }
+.cert-preview-wrap{
+  position:relative;
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  border:1px solid var(--glass-border);
+  box-shadow:0 14px 34px -16px rgba(11,31,77,0.4);
+  background:#fff;
+  min-height:150px;
+  display:flex; align-items:center; justify-content:center;
+}
+.cert-preview-img{ width:100%; display:block; }
+.cert-preview-placeholder{
+  padding:40px 10px; text-align:center; color:var(--chakra-navy);
+}
+.cert-preview-placeholder i{ font-size:1.6rem; margin-bottom:10px; display:block; color:var(--saffron-deep); }
+.cert-preview-placeholder span{ font-size:0.85rem; font-weight:600; }
+.cert-actions{ display:flex; gap:10px; margin-top:14px; }
+.cert-btn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px; border-radius:var(--radius-md); border:none; cursor:pointer;
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:0.92rem;
+  transition:transform .15s, opacity .15s;
+}
+.cert-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+.cert-btn:not(:disabled):hover{ transform:translateY(-1px); }
+.cert-btn-primary{
+  color:#fff;
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy) 60%, var(--green-deep));
+  box-shadow:0 12px 28px -10px rgba(11,31,77,0.5);
+}
+.cert-btn-secondary{
+  color:var(--chakra-navy);
+  background:rgba(11,31,77,0.08);
+  border:1.5px solid rgba(11,31,77,0.18);
+}
+.cert-status{
+  text-align:center; font-size:0.78rem; color:#a13a1f; margin:10px 0 0;
+}
+.cert-whatsapp-banner{
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:var(--radius-md);
+  background:linear-gradient(90deg, rgba(37,211,102,0.15), rgba(37,211,102,0.05));
+  border:1.5px solid rgba(37,211,102,0.4);
+  display:flex; align-items:flex-start; gap:12px;
+}
+.cert-whatsapp-banner i.wa-icon{ font-size:1.6rem; color:#25D366; flex-shrink:0; margin-top:2px; }
+.cert-whatsapp-banner p{ margin:0 0 8px; font-size:0.85rem; font-weight:700; color:var(--chakra-navy); line-height:1.3; }
+.cert-whatsapp-banner .wa-sub{ font-weight:500; font-size:0.76rem; color:#555; margin:0 0 10px; }
+.whatsapp-status-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 16px; border:none; border-radius:999px; cursor:pointer;
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:0.88rem;
+  color:#fff; background:#25D366;
+  box-shadow:0 8px 18px -8px rgba(37,211,102,0.6);
+  transition:transform .15s;
+}
+.whatsapp-status-btn:hover{ transform:translateY(-1px); }
+
 @media (max-width:380px){
   .hero-title h1{ font-size:1.65rem; }
   .choice-grid{ grid-template-columns:1fr 1fr; }
+  .cert-actions{ flex-direction:column; }
 }
 </style>
 </head>
@@ -436,10 +509,42 @@ footer.foot i{ color:var(--saffron-deep); }
   <!-- ===================== SUCCESS SCREEN ===================== -->
   <div id="successScreen" class="card state-screen success hidden">
     <i class="fa-solid fa-circle-check state-icon"></i>
-    <h2 id="successH2">Shabaash! That's correct 🇮🇳</h2>
+    <h2 id="successH2">Shabaash! That's correct answer.</h2>
     <p id="successMsg">You identified the freedom fighter correctly.</p>
     <div class="fighter-reveal" id="fighterReveal"></div>
     <p class="next-hint" id="nextHint">Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!</p>
+
+    <!-- ===================== DIGITAL CERTIFICATE ===================== -->
+    <div class="cert-section" id="certSection">
+      <p class="cert-eyebrow"><i class="fa-solid fa-award"></i> <span id="certEyebrow">Your Certificate</span></p>
+      <div class="cert-preview-wrap" id="certPreviewWrap">
+        <div class="cert-preview-placeholder" id="certPlaceholder">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span id="certPreparingLabel">Preparing your certificate…</span>
+        </div>
+        <img id="certPreviewImg" class="cert-preview-img hidden" alt="Your GSMS Freedom Trail certificate preview">
+      </div>
+      <canvas id="certCanvas" width="1600" height="1131" style="display:none;"></canvas>
+      <div class="cert-actions">
+        <button type="button" class="cert-btn cert-btn-primary" id="downloadCertBtn" disabled>
+          <i class="fa-solid fa-download"></i> <span id="downloadCertLabel">Download Certificate</span>
+        </button>
+        <button type="button" class="cert-btn cert-btn-secondary hidden" id="shareCertBtn" disabled>
+          <i class="fa-solid fa-share-nodes"></i> <span id="shareCertLabel">Share</span>
+        </button>
+      </div>
+      <div class="cert-whatsapp-banner" id="whatsappBanner">
+        <i class="fa-brands fa-whatsapp wa-icon"></i>
+        <div>
+            <p id="whatsappCalloutText">Show it off! Post your certificate as your WhatsApp Status 🎉</p>
+            <p class="wa-sub" id="whatsappSubText">Tap below, then choose WhatsApp → "My Status"</p>
+            <button type="button" class="whatsapp-status-btn" id="whatsappStatusBtn">
+               <i class="fa-brands fa-whatsapp"></i> <span id="whatsappBtnLabel">Post to WhatsApp Status</span>
+            </button>
+        </div>
+      </div>
+      <p class="cert-status hidden" id="certStatus"></p>
+    </div>
   </div>
 
   <!-- ===================== ERROR / TRY AGAIN SCREEN ===================== -->
@@ -492,11 +597,29 @@ const UI = {
     riddleBadge: "Riddle",
     submitBtnLabel: "Lock In My Answer",
     submittingLabel: "Submitting…",
-    successH2: "Shabaash! That's correct 🇮🇳",
+    successH2: "Shabaash! That's correct answer.",
     successMsg: "You identified the freedom fighter correctly.",
     nextHint: "Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!",
     wrongH2: "Not quite!",
-    wrongP: "That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!"
+    wrongP: "That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!",
+    certEyebrow: "Your Certificate",
+    certPreparingLabel: "Preparing your certificate…",
+    downloadCertLabel: "Download Certificate",
+    shareCertLabel: "Share",
+    certErrorLabel: "Couldn't generate the certificate — please try downloading again.",
+    certTitleText: "CERTIFICATE OF ACHIEVEMENT",
+    certSubtitleText: "The Freedom Trail · Independence Day Celebration",
+    certCertifiesText: "This certifies that",
+    certBodyLine1: "has successfully solved Riddle #{id} of The Freedom Trail",
+    certBodyLine2: "by correctly identifying the courageous freedom fighter",
+    certBodyLine3: "as part of Gopal Sharma Memorial School's First Independence Day Celebration",
+    certDateText: "15 August 2026",
+    certIssuedText: "Digitally Issued",
+    certSignatureText: "Convenor, GSMS",
+    certHashtagText: "#GSMS79 · Freedom Trail",
+    whatsappCalloutText: "Show it off! Post your certificate as your WhatsApp Status.",
+    whatsappSubText: 'Tap below, then choose WhatsApp → "My Status"',
+    whatsappBtnLabel: "Post to WhatsApp Status"
   },
   hi: {
     heroH1: "आज़ादी की राह",
@@ -527,7 +650,25 @@ const UI = {
     successMsg: "आपने सही स्वतंत्रता सेनानी को पहचाना।",
     nextHint: "आपका नाम जल्द ही बड़ी LED स्क्रीन पर दिख सकता है। खेलते रहने के लिए एक और QR कोड स्कैन करें!",
     wrongH2: "थोड़ा सा गलत!",
-    wrongP: "यह वह स्वतंत्रता सेनानी नहीं है जिसे हम खोज रहे थे। कोई बात नहीं — इतिहास में कई वीर हैं। दीवार पर कोई और QR कोड स्कैन करके फिर कोशिश करें!"
+    wrongP: "यह वह स्वतंत्रता सेनानी नहीं है जिसे हम खोज रहे थे। कोई बात नहीं — इतिहास में कई वीर हैं। दीवार पर कोई और QR कोड स्कैन करके फिर कोशिश करें!",
+    certEyebrow: "आपका प्रमाणपत्र",
+    certPreparingLabel: "आपका प्रमाणपत्र तैयार किया जा रहा है…",
+    downloadCertLabel: "प्रमाणपत्र डाउनलोड करें",
+    shareCertLabel: "शेयर करें",
+    certErrorLabel: "प्रमाणपत्र नहीं बन सका — कृपया फिर से कोशिश करें।",
+    certTitleText: "उपलब्धि प्रमाणपत्र",
+    certSubtitleText: "द फ्रीडम ट्रेल · स्वतंत्रता दिवस समारोह",
+    certCertifiesText: "यह प्रमाणित करता है कि",
+    certBodyLine1: "ने द फ्रीडम ट्रेल की पहेली #{id} को सफलतापूर्वक हल किया",
+    certBodyLine2: "और इस वीर स्वतंत्रता सेनानी को सही पहचाना",
+    certBodyLine3: "गोपाल शर्मा मेमोरियल स्कूल के प्रथम स्वतंत्रता दिवस समारोह के भाग के रूप में",
+    certDateText: "15 अगस्त 2026",
+    certIssuedText: "डिजिटल रूप से जारी",
+    certSignatureText: "संयोजक, GSMS",
+    certHashtagText: "#GSMS79 · फ्रीडम ट्रेल",
+    whatsappCalloutText: "इसे दिखाएं! अपना प्रमाणपत्र WhatsApp स्टेटस पर लगाएं।",
+    whatsappSubText: 'नीचे टैप करें, फिर WhatsApp → "My Status" चुनें',
+    whatsappBtnLabel: "WhatsApp स्टेटस पर लगाएं"
   }
 };
 
@@ -767,7 +908,13 @@ const els = {
   studentName: document.getElementById('studentName'),
   studentNameField: document.getElementById('studentNameField'),
   successMsg: document.getElementById('successMsg'),
-  fighterReveal: document.getElementById('fighterReveal')
+  fighterReveal: document.getElementById('fighterReveal'),
+  certPlaceholder: document.getElementById('certPlaceholder'),
+  certPreviewImg: document.getElementById('certPreviewImg'),
+  certCanvas: document.getElementById('certCanvas'),
+  downloadCertBtn: document.getElementById('downloadCertBtn'),
+  shareCertBtn: document.getElementById('shareCertBtn'),
+  certStatus: document.getElementById('certStatus')
 };
 
 function showOnly(el){
@@ -817,6 +964,11 @@ function applyLanguage(lang){
   document.getElementById('nextHint').textContent = t.nextHint;
   document.getElementById('wrongH2').textContent = t.wrongH2;
   document.getElementById('wrongP').textContent = t.wrongP;
+
+  document.getElementById('certEyebrow').textContent = t.certEyebrow;
+  document.getElementById('certPreparingLabel').textContent = t.certPreparingLabel;
+  document.getElementById('downloadCertLabel').textContent = t.downloadCertLabel;
+  document.getElementById('shareCertLabel').textContent = t.shareCertLabel;
 
   // language switcher pill state
   document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
@@ -985,6 +1137,7 @@ function showSuccess(){
   `;
   showOnly(els.success);
   fireConfetti();
+  renderCertificateUI();
 }
 
 function fireConfetti(){
@@ -993,6 +1146,387 @@ function fireConfetti(){
   confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 }, colors });
   setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 }, colors }), 300);
 }
+
+/* ============================================================
+   9. DIGITAL CERTIFICATE
+   Drawn entirely on a <canvas>, branded with the school name,
+   logo (or a graceful fallback monogram if the logo can't be
+   loaded), the participant's name, and the freedom fighter they
+   correctly identified. Exposed as a downloadable / shareable PNG.
+   ============================================================ */
+const LOGO_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1rWveziFKznsuC8vpORc2j_aUyt6Dx-3cp8E5V4JNiBp7wWrcUkLXLKut&s=10";
+let logoImgCache = null;
+let logoLoadAttempted = false;
+let lastCertDataUrl = null;
+
+function loadImageSafe(src){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawChakra(ctx, cx, cy, r, color, alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha != null ? alpha : 1;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = Math.max(1, r * 0.045);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.12, 0, Math.PI * 2);
+  ctx.fill();
+  for (let i = 0; i < 24; i++){
+    const angle = (Math.PI * 2 * i) / 24;
+    const x1 = cx + Math.cos(angle) * r * 0.12;
+    const y1 = cy + Math.sin(angle) * r * 0.12;
+    const x2 = cx + Math.cos(angle) * r * 0.92;
+    const y2 = cy + Math.sin(angle) * r * 0.92;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function wrapCenteredText(ctx, text, cx, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let i = 0; i < words.length; i++){
+    const test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxWidth && line){
+      lines.push(line);
+      line = words[i];
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineHeight));
+  return lines.length;
+}
+
+async function generateCertificate(){
+  const canvas = els.certCanvas;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const lang = selectedLang || 'en';
+  const t = UI[lang];
+
+  const rawStudent = els.studentName.value.trim();
+  const rawParticipant = els.participantName.value.trim();
+  const displayName = (selectedRole === 'Parent' && rawStudent) ? rawStudent : rawParticipant;
+  const parentLine = (selectedRole === 'Parent' && rawStudent) ? rawParticipant : null;
+  const fighterName = currentRiddle.fighter[lang] || currentRiddle.fighter.en;
+  const certificateId = 'GSMS-FT-' + String(currentRiddle.id).padStart(2, '0') + '-' +
+    Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  if (!logoLoadAttempted){
+    logoLoadAttempted = true;
+    logoImgCache = await loadImageSafe(LOGO_URL);
+  }
+
+  try{
+    if (document.fonts){
+      await Promise.all([
+        document.fonts.load('800 90px "Baloo 2"'),
+        document.fonts.load('700 46px "Baloo 2"'),
+        document.fonts.load('600 30px "Baloo 2"'),
+        document.fonts.load('400 40px "Yatra One"'),
+        document.fonts.load('600 28px "Inter"'),
+        document.fonts.load('700 30px "Hind"'),
+        document.fonts.load('600 26px "Hind"')
+      ]);
+      if (document.fonts.ready) await document.fonts.ready;
+    }
+  } catch(e){ /* proceed with whatever fonts are available */ }
+
+  const nameFont = lang === 'hi' ? 'Hind' : 'Baloo 2';
+  const bodyFont = lang === 'hi' ? 'Hind' : 'Inter';
+
+  function paint(useLogo){
+    ctx.clearRect(0, 0, W, H);
+
+    // background
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#FFF8ED');
+    bg.addColorStop(0.4, '#FFEFD6');
+    bg.addColorStop(0.7, '#EAF7E8');
+    bg.addColorStop(1, '#E7F0FF');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // ambient corner washes
+    const wash1 = ctx.createRadialGradient(W * 0.1, H * 0.05, 10, W * 0.1, H * 0.05, W * 0.35);
+    wash1.addColorStop(0, 'rgba(255,153,51,0.28)');
+    wash1.addColorStop(1, 'rgba(255,153,51,0)');
+    ctx.fillStyle = wash1;
+    ctx.fillRect(0, 0, W, H);
+    const wash2 = ctx.createRadialGradient(W * 0.92, H * 0.05, 10, W * 0.92, H * 0.05, W * 0.32);
+    wash2.addColorStop(0, 'rgba(18,136,7,0.22)');
+    wash2.addColorStop(1, 'rgba(18,136,7,0)');
+    ctx.fillStyle = wash2;
+    ctx.fillRect(0, 0, W, H);
+
+    // watermark chakra
+    drawChakra(ctx, W / 2, H / 2 + 40, H * 0.34, '#0B1F4D', 0.05);
+
+    // outer + tricolour ribbon border
+    ctx.save();
+    ctx.strokeStyle = 'rgba(11,31,77,0.55)';
+    ctx.lineWidth = 3;
+    roundRectPath(ctx, 34, 34, W - 68, H - 68, 22);
+    ctx.stroke();
+    ['#FF9933', '#FFF8ED', '#128807'].forEach((c, i) => {
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 4;
+      roundRectPath(ctx, 46 + i * 7, 46 + i * 7, W - 92 - i * 14, H - 92 - i * 14, 18);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // corner flourishes
+    [[95, 95], [W - 95, 95], [95, H - 95], [W - 95, H - 95]].forEach(([cx, cy]) => {
+      drawChakra(ctx, cx, cy, 26, '#E9711C', 0.5);
+    });
+
+    let cursorY = 150;
+
+    // logo (or monogram fallback) + school name
+    const logoR = 46;
+    const logoCX = W / 2 - 220;
+    if (useLogo && logoImgCache){
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(logoImgCache, logoCX - logoR, cursorY - logoR, logoR * 2, logoR * 2);
+      ctx.restore();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      ctx.save();
+      const monoGrad = ctx.createLinearGradient(logoCX - logoR, cursorY - logoR, logoCX + logoR, cursorY + logoR);
+      monoGrad.addColorStop(0, '#E9711C');
+      monoGrad.addColorStop(1, '#0B1F4D');
+      ctx.fillStyle = monoGrad;
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 40px "Baloo 2"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('GSMS', logoCX, cursorY + 2);
+      ctx.restore();
+    }
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 34px "Baloo 2"';
+    ctx.fillText('Gopal Sharma Memorial School', logoCX + logoR + 20, cursorY - 4);
+    ctx.fillStyle = '#E9711C';
+    ctx.font = '600 20px "Inter"';
+    ctx.fillText('79 YEARS OF INDEPENDENCE · 15 AUG 2026', logoCX + logoR + 20, cursorY + 24);
+
+    cursorY += 100;
+
+    // title
+    ctx.textAlign = 'center';
+    const titleGrad = ctx.createLinearGradient(W / 2 - 380, 0, W / 2 + 380, 0);
+    titleGrad.addColorStop(0, '#E9711C');
+    titleGrad.addColorStop(0.55, '#0B1F4D');
+    titleGrad.addColorStop(1, '#0B5D14');
+    ctx.fillStyle = titleGrad;
+    ctx.font = '800 58px "Baloo 2"';
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '4px';
+    ctx.fillText(t.certTitleText, W / 2, cursorY);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+
+    cursorY += 42;
+    ctx.fillStyle = '#0B5D14';
+    ctx.font = '400 28px "Yatra One"';
+    ctx.fillText(t.certSubtitleText, W / 2, cursorY);
+
+    cursorY += 52;
+    ctx.strokeStyle = 'rgba(11,31,77,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 260, cursorY); ctx.lineTo(W / 2 - 40, cursorY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 + 40, cursorY); ctx.lineTo(W / 2 + 260, cursorY); ctx.stroke();
+    drawChakra(ctx, W / 2, cursorY, 16, '#0B1F4D', 0.8);
+
+    cursorY += 56;
+    ctx.fillStyle = '#444';
+    ctx.font = '600 24px "Inter"';
+    ctx.fillText(t.certCertifiesText, W / 2, cursorY);
+
+    // participant / student name — auto-fit width
+    cursorY += 76;
+    let nameSize = 78;
+    ctx.font = `800 ${nameSize}px "${nameFont}"`;
+    const maxNameWidth = W - 340;
+    while (ctx.measureText(displayName).width > maxNameWidth && nameSize > 34){
+      nameSize -= 2;
+      ctx.font = `800 ${nameSize}px "${nameFont}"`;
+    }
+    const nameGrad = ctx.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0);
+    nameGrad.addColorStop(0, '#E9711C');
+    nameGrad.addColorStop(0.55, '#0B1F4D');
+    nameGrad.addColorStop(1, '#0B5D14');
+    ctx.fillStyle = nameGrad;
+    ctx.fillText(displayName, W / 2, cursorY);
+
+    const uw = Math.min(maxNameWidth, ctx.measureText(displayName).width + 60);
+    ctx.strokeStyle = '#FF9933';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - uw / 2, cursorY + 18);
+    ctx.lineTo(W / 2 + uw / 2, cursorY + 18);
+    ctx.stroke();
+
+    if (parentLine){
+      cursorY += 44;
+      ctx.fillStyle = '#666';
+      ctx.font = '600 20px "Inter"';
+      ctx.fillText((lang === 'hi' ? 'अभिभावक: ' : 'Parent/Guardian: ') + parentLine, W / 2, cursorY);
+    }
+
+    // body copy
+    cursorY += 66;
+    ctx.fillStyle = '#333';
+    ctx.font = `600 26px "${bodyFont}"`;
+    ctx.fillText(t.certBodyLine1.replace('{id}', currentRiddle.id), W / 2, cursorY);
+    cursorY += 38;
+    ctx.fillText(t.certBodyLine2, W / 2, cursorY);
+    cursorY += 48;
+    ctx.font = `700 34px "${nameFont}"`;
+    ctx.fillStyle = '#E9711C';
+    ctx.fillText(fighterName, W / 2, cursorY);
+    cursorY += 46;
+    ctx.font = `600 24px "${bodyFont}"`;
+    ctx.fillStyle = '#333';
+    wrapCenteredText(ctx, t.certBodyLine3, W / 2, cursorY, W - 420, 32);
+
+    // footer
+    const footerY = H - 150;
+    ctx.textAlign = 'left';
+    drawChakra(ctx, 150, footerY, 30, '#0B1F4D', 0.85);
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 20px "Inter"';
+    ctx.fillText(t.certIssuedText, 195, footerY - 4);
+    ctx.fillStyle = '#777';
+    ctx.font = '500 16px "Inter"';
+    ctx.fillText(certificateId, 195, footerY + 18);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 24px "Baloo 2"';
+    ctx.fillText(t.certDateText, W / 2, footerY);
+
+    ctx.textAlign = 'right';
+    ctx.strokeStyle = 'rgba(11,31,77,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W - 340, footerY - 6); ctx.lineTo(W - 150, footerY - 6); ctx.stroke();
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '600 20px "Inter"';
+    ctx.fillText(t.certSignatureText, W - 150, footerY + 20);
+
+    // bottom hashtag
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#888';
+    ctx.font = '600 18px "Inter"';
+    ctx.fillText(t.certHashtagText, W / 2, H - 56);
+  }
+
+  paint(true);
+  try{
+    lastCertDataUrl = canvas.toDataURL('image/png');
+  } catch(e){
+    // Logo image lacked CORS headers and tainted the canvas — redraw with the
+    // vector monogram instead so the download/share still works reliably.
+    paint(false);
+    lastCertDataUrl = canvas.toDataURL('image/png');
+  }
+  return lastCertDataUrl;
+}
+
+async function renderCertificateUI(){
+  const t = UI[selectedLang || 'en'];
+
+  els.certPlaceholder.classList.remove('hidden');
+  els.certPreviewImg.classList.add('hidden');
+  els.downloadCertBtn.disabled = true;
+  els.shareCertBtn.disabled = true;
+  els.certStatus.classList.add('hidden');
+
+  try{
+    const dataUrl = await generateCertificate();
+    els.certPreviewImg.src = dataUrl;
+    els.certPreviewImg.classList.remove('hidden');
+    els.certPlaceholder.classList.add('hidden');
+    els.downloadCertBtn.disabled = false;
+
+    if (navigator.share){
+      els.shareCertBtn.classList.remove('hidden');
+      els.shareCertBtn.disabled = false;
+    }
+  } catch(err){
+    console.error('Certificate generation failed:', err);
+    els.certStatus.textContent = t.certErrorLabel;
+    els.certStatus.classList.remove('hidden');
+    els.certPlaceholder.classList.add('hidden');
+  }
+}
+
+els.downloadCertBtn.addEventListener('click', () => {
+  if (!lastCertDataUrl) return;
+  const safeName = (els.participantName.value.trim() || 'GSMS').replace(/[^a-z0-9]+/gi, '-');
+  const a = document.createElement('a');
+  a.href = lastCertDataUrl;
+  a.download = `GSMS-Freedom-Trail-Certificate-${safeName}.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+els.shareCertBtn.addEventListener('click', () => {
+  els.certCanvas.toBlob(async (blob) => {
+    if (!blob) return;
+    const file = new File([blob], 'gsms-freedom-trail-certificate.png', { type: 'image/png' });
+    const shareText = 'I earned my Freedom Trail certificate at GSMS Independence Day Celebration! 🇮🇳';
+    try{
+      if (navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ files: [file], title: 'GSMS Freedom Trail Certificate', text: shareText });
+      } else {
+        await navigator.share({ title: 'GSMS Freedom Trail Certificate', text: shareText });
+      }
+    } catch(err){
+      /* user cancelled the share sheet — nothing to do */
+    }
+  }, 'image/png');
+});
 
 init();
 </script>
