@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>GSMS | Freedom Trail — 79 Years of Independence</title>
+<!-- Google Fonts: Baloo 2 (festive display), Yatra One (banner accent), Inter (body/UI), Hind (Hindi body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Yatra+One&family=Inter:wght@400;500;600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   Palette:
+     --saffron      : #FF9933  (kite-paper saffron, warm & bright)
+     --saffron-deep : #E9711C  (deeper saffron for gradients/CTAs)
+     --white-cream  : #FFF8ED  (banner white, warm not clinical)
+     --india-green  : #128807  (kite-paper green)
+     --green-deep   : #0B5D14  (deep green for contrast text)
+     --chakra-navy  : #0B1F4D  (Ashoka Chakra navy — anchors the palette so it isn't just o/w/g)
+     --ink          : #142027  (near-black text)
+   Signature element: a slowly-turning Ashoka Chakra rendered in CSS/SVG that
+   doubles as the loading + success motif — ties every screen back to the flag.
+   ============================================================ */
+:root{
+  --saffron:#FF9933;
+  --saffron-deep:#E9711C;
+  --white-cream:#FFF8ED;
+  --india-green:#128807;
+  --green-deep:#0B5D14;
+  --chakra-navy:#0B1F4D;
+  --ink:#142027;
+  --glass-border: rgba(255,255,255,0.35);
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --shadow-soft: 0 20px 60px -20px rgba(11,31,77,0.45);
+  --font-body:'Inter',sans-serif;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(255,153,51,0.55), transparent 45%),
+    radial-gradient(circle at 90% 0%, rgba(18,136,7,0.45), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(11,31,77,0.55), transparent 55%),
+    linear-gradient(160deg, #fff8ed 0%, #ffeccb 35%, #eaf7e8 70%, #e7f0ff 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+}
+
+/* Hindi text gets the Hind typeface for readability, everything else keeps its family */
+body.lang-hi{ --font-body:'Hind',sans-serif; }
+body.lang-hi .hint-text, body.lang-hi .state-screen p, body.lang-hi .hero-title p.tag{
+  font-family:'Hind',sans-serif;
+}
+
+/* ambient animated tricolour wash behind everything */
+body::before{
+  content:"";
+  position:fixed; inset:-20%;
+  background:
+    conic-gradient(from 0deg at 30% 30%, rgba(255,153,51,0.18), transparent 30%),
+    conic-gradient(from 180deg at 75% 70%, rgba(18,136,7,0.18), transparent 30%);
+  animation: drift 26s linear infinite;
+  z-index:0; pointer-events:none;
+}
+@keyframes drift{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+.wrap{
+  position:relative; z-index:1;
+  max-width:560px;
+  margin:0 auto;
+  padding:20px 18px 60px;
+}
+
+/* ---------- HEADER / BANNER ---------- */
+.banner{
+  display:flex; align-items:center; gap:14px;
+  padding:16px 18px;
+  border-radius:var(--radius-lg);
+  background:rgba(255,255,255,0.55);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--shadow-soft);
+  margin-bottom:18px;
+}
+.banner img.logo{
+  width:52px; height:52px; border-radius:50%;
+  object-fit:cover; border:2px solid #fff;
+  box-shadow:0 4px 14px rgba(0,0,0,0.18);
+  flex-shrink:0;
+}
+.banner .school-meta{ line-height:1.15; }
+.banner .school-name{
+  font-family:'Baloo 2',cursive; font-weight:700;
+  font-size:1.02rem; color:var(--chakra-navy);
+}
+.banner .school-sub{
+  font-size:0.72rem; font-weight:600; letter-spacing:.04em;
+  color:var(--saffron-deep); text-transform:uppercase;
+}
+
+/* small language switcher pill, always available top-right of banner */
+.lang-switch{
+  margin-left:auto; display:flex; gap:4px;
+  background:rgba(11,31,77,0.08); border-radius:999px; padding:3px;
+  flex-shrink:0;
+}
+.lang-switch button{
+  border:none; background:transparent; cursor:pointer;
+  font-family:'Inter',sans-serif; font-weight:700; font-size:0.72rem;
+  padding:6px 10px; border-radius:999px; color:var(--chakra-navy);
+  transition:background .2s, color .2s;
+}
+.lang-switch button.active{
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy));
+  color:#fff;
+}
+
+.hero-title{
+  text-align:center; margin:6px 0 22px;
+}
+.hero-title .eyebrow{
+  font-family:'Yatra One',cursive;
+  font-size:1rem;
+  color:var(--green-deep);
+  display:block; margin-bottom:2px;
+}
+.hero-title h1{
+  font-family:'Baloo 2',cursive;
+  font-weight:800;
+  font-size:2rem;
+  margin:0;
+  line-height:1.05;
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy) 55%, var(--green-deep));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-title p.tag{
+  margin:8px auto 0; max-width:380px;
+  font-size:0.9rem; color:#3a3a3a;
+}
+
+/* ---------- CHAKRA SIGNATURE ---------- */
+.chakra{
+  width:34px; height:34px; flex-shrink:0;
+  animation: spin 9s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg);} }
+@media (prefers-reduced-motion: reduce){
+  .chakra, body::before{ animation:none !important; }
+}
+
+/* ---------- CARD ---------- */
+.card{
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-lg);
+  padding:22px 20px;
+  box-shadow:var(--shadow-soft);
+  margin-bottom:18px;
+  position:relative;
+  overflow:hidden;
+}
+.card::after{ /* subtle tricolour rim glow */
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1px;
+  background:linear-gradient(120deg,var(--saffron),transparent 35%, transparent 65%, var(--india-green));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:0.6; pointer-events:none;
+}
+
+label{
+  display:block; font-weight:700; font-size:0.82rem;
+  margin:0 0 6px; color:var(--chakra-navy);
+}
+.field{ margin-bottom:16px; }
+input[type="text"]{
+  width:100%; padding:12px 14px;
+  border-radius:var(--radius-md);
+  border:1.5px solid rgba(11,31,77,0.18);
+  background:rgba(255,255,255,0.75);
+  font-family:var(--font-body); font-size:0.95rem;
+  outline:none; transition:border-color .2s, box-shadow .2s;
+}
+input[type="text"]:focus{
+  border-color:var(--saffron-deep);
+  box-shadow:0 0 0 4px rgba(233,113,28,0.15);
+}
+.hint-note{ font-size:0.74rem; color:#6b6b6b; margin-top:4px; }
+
+/* ---------- PROFILE SCREEN (who am I / language) ---------- */
+.profile-heading{
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:1.3rem;
+  color:var(--chakra-navy); margin:0 0 4px;
+}
+.profile-sub{ font-size:0.85rem; color:#555; margin:0 0 18px; }
+.choice-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px; }
+.choice-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 10px; text-align:center;
+  border-radius:var(--radius-md);
+  border:1.5px solid rgba(11,31,77,0.15);
+  background:rgba(255,255,255,0.7);
+  font-family:'Inter',sans-serif; font-weight:700; font-size:0.9rem;
+  color:var(--ink); cursor:pointer;
+  transition:transform .15s, border-color .15s, background .15s;
+}
+.choice-btn i{ font-size:1rem; color:var(--saffron-deep); }
+.choice-btn:hover{ transform:translateY(-1px); border-color:var(--saffron-deep); }
+.choice-btn.selected{
+  border-color:var(--india-green);
+  background:rgba(18,136,7,0.1);
+}
+.choice-btn.selected i{ color:var(--india-green); }
+.profile-section{ margin-bottom:20px; }
+.profile-section-label{
+  font-weight:700; font-size:0.82rem; color:var(--chakra-navy); margin-bottom:10px;
+  display:flex; align-items:center; gap:6px;
+}
+
+/* ---------- RIDDLE BLOCK ---------- */
+.riddle-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  background:linear-gradient(90deg,var(--saffron),var(--saffron-deep));
+  color:#fff; font-weight:700; font-size:0.72rem;
+  padding:5px 12px; border-radius:999px; margin-bottom:12px;
+  letter-spacing:.03em; text-transform:uppercase;
+}
+.fighter-image{
+  width:100%; aspect-ratio:4/3; object-fit:cover;
+  border-radius:var(--radius-md);
+  margin-bottom:14px; border:1px solid var(--glass-border);
+  box-shadow:0 10px 30px -12px rgba(11,31,77,0.35);
+}
+.hint-text{
+  font-family:'Baloo 2',cursive; font-weight:600;
+  font-size:1.15rem; line-height:1.4; color:var(--ink);
+  margin:0 0 18px;
+}
+body.lang-hi .hint-text{ font-weight:600; font-size:1.1rem; }
+
+.options{ display:grid; gap:10px; margin-bottom:6px; }
+.option-btn{
+  display:flex; align-items:center; gap:10px;
+  width:100%; text-align:left;
+  padding:13px 14px;
+  border-radius:var(--radius-md);
+  border:1.5px solid rgba(11,31,77,0.15);
+  background:rgba(255,255,255,0.7);
+  font-family:var(--font-body); font-weight:600; font-size:0.92rem;
+  color:var(--ink); cursor:pointer;
+  transition:transform .15s, border-color .15s, background .15s;
+}
+.option-btn:hover{ transform:translateY(-1px); border-color:var(--saffron-deep); }
+.option-btn .radio-dot{
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--chakra-navy); flex-shrink:0;
+}
+.option-btn.selected{
+  border-color:var(--india-green);
+  background:rgba(18,136,7,0.1);
+}
+.option-btn.selected .radio-dot{ background:var(--india-green); border-color:var(--india-green); }
+
+.submit-btn{
+  width:100%; margin-top:14px;
+  padding:14px; border:none; border-radius:var(--radius-md);
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem;
+  color:#fff; letter-spacing:.02em;
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy) 60%, var(--green-deep));
+  background-size:200% 100%;
+  cursor:pointer; box-shadow:0 12px 28px -10px rgba(11,31,77,0.5);
+  transition:background-position .3s, transform .15s;
+}
+.submit-btn:hover{ background-position:100% 0; transform:translateY(-1px); }
+.submit-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+
+/* ---------- STATE SCREENS (result / loading / no-riddle) ---------- */
+.state-screen{ text-align:center; padding:30px 10px; }
+.state-screen i.state-icon{
+  font-size:2.6rem; margin-bottom:10px; display:inline-block;
+}
+.state-screen h2{
+  font-family:'Baloo 2',cursive; font-size:1.4rem; margin:6px 0 8px;
+}
+.state-screen p{ font-size:0.92rem; color:#444; max-width:340px; margin:0 auto; }
+
+.success .state-icon{ color:var(--india-green); }
+.error .state-icon{ color:var(--saffron-deep); }
+
+.fighter-reveal{
+  margin-top:16px; padding:14px; border-radius:var(--radius-md);
+  background:rgba(255,255,255,0.55); border:1px solid var(--glass-border);
+  text-align:left; display:flex; gap:12px; align-items:center;
+}
+.fighter-reveal img{
+  width:64px; height:64px; border-radius:14px; object-fit:cover; flex-shrink:0;
+}
+.fighter-reveal .name{ font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem; color:var(--chakra-navy); }
+.fighter-reveal .desc{ font-size:0.82rem; color:#444; margin-top:2px; }
+
+.next-hint{
+  margin-top:18px; font-size:0.8rem; color:#666;
+}
+
+footer.foot{
+  text-align:center; font-size:0.72rem; color:#777; margin-top:22px;
+}
+footer.foot i{ color:var(--saffron-deep); }
+
+.hidden{ display:none !important; }
+
+/* ---------- CERTIFICATE ---------- */
+.cert-section{
+  margin-top:22px;
+  padding-top:20px;
+  border-top:1.5px dashed rgba(11,31,77,0.22);
+  text-align:left;
+}
+.cert-eyebrow{
+  font-weight:700; font-size:0.78rem; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--chakra-navy); margin:0 0 12px;
+  display:flex; align-items:center; gap:6px; justify-content:center;
+}
+.cert-eyebrow i{ color:var(--saffron-deep); }
+.cert-preview-wrap{
+  position:relative;
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  border:1px solid var(--glass-border);
+  box-shadow:0 14px 34px -16px rgba(11,31,77,0.4);
+  background:#fff;
+  min-height:150px;
+  display:flex; align-items:center; justify-content:center;
+}
+.cert-preview-img{ width:100%; display:block; }
+.cert-preview-placeholder{
+  padding:40px 10px; text-align:center; color:var(--chakra-navy);
+}
+.cert-preview-placeholder i{ font-size:1.6rem; margin-bottom:10px; display:block; color:var(--saffron-deep); }
+.cert-preview-placeholder span{ font-size:0.85rem; font-weight:600; }
+.cert-actions{ display:flex; gap:10px; margin-top:14px; }
+.cert-btn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px; border-radius:var(--radius-md); border:none; cursor:pointer;
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:0.92rem;
+  transition:transform .15s, opacity .15s;
+}
+.cert-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+.cert-btn:not(:disabled):hover{ transform:translateY(-1px); }
+.cert-btn-primary{
+  color:#fff;
+  background:linear-gradient(90deg,var(--saffron-deep),var(--chakra-navy) 60%, var(--green-deep));
+  box-shadow:0 12px 28px -10px rgba(11,31,77,0.5);
+}
+.cert-btn-secondary{
+  color:var(--chakra-navy);
+  background:rgba(11,31,77,0.08);
+  border:1.5px solid rgba(11,31,77,0.18);
+}
+.cert-status{
+  text-align:center; font-size:0.78rem; color:#a13a1f; margin:10px 0 0;
+}
+
+@media (max-width:380px){
+  .hero-title h1{ font-size:1.65rem; }
+  .choice-grid{ grid-template-columns:1fr 1fr; }
+  .cert-actions{ flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===================== BANNER ===================== -->
+  <div class="banner">
+    <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1rWveziFKznsuC8vpORc2j_aUyt6Dx-3cp8E5V4JNiBp7wWrcUkLXLKut&s=10" alt="GSMS Logo">
+    <div class="school-meta">
+      <div class="school-name">Gopal Sharma Memorial School</div>
+      <div class="school-sub">79 Years of Independence · 15 Aug 2026</div>
+    </div>
+    <div class="lang-switch" id="langSwitch">
+      <button type="button" data-lang="en" id="langBtnEn">EN</button>
+      <button type="button" data-lang="hi" id="langBtnHi">हिं</button>
+    </div>
+    <svg class="chakra" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="#0B1F4D" stroke-width="4"/>
+      <circle cx="50" cy="50" r="6" fill="#0B1F4D"/>
+      <g stroke="#0B1F4D" stroke-width="3">
+        <line x1="50" y1="6" x2="50" y2="94"/><line x1="6" y1="50" x2="94" y2="50"/>
+        <line x1="15" y1="15" x2="85" y2="85"/><line x1="15" y1="85" x2="85" y2="15"/>
+        <line x1="50" y1="6" x2="35" y2="35"/><line x1="50" y1="6" x2="65" y2="35"/>
+        <line x1="94" y1="50" x2="65" y2="35"/><line x1="94" y1="50" x2="65" y2="65"/>
+        <line x1="50" y1="94" x2="65" y2="65"/><line x1="50" y1="94" x2="35" y2="65"/>
+        <line x1="6" y1="50" x2="35" y2="65"/><line x1="6" y1="50" x2="35" y2="35"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-title">
+    <span class="eyebrow">स्वतंत्रता की राह</span>
+    <h1 id="heroH1">The Freedom Trail</h1>
+    <p class="tag" id="heroTag">Scan. Solve. Salute a hero. Match the clue to the freedom fighter who shaped our nation.</p>
+  </div>
+
+  <!-- ===================== NO RIDDLE / INVALID PARAM ===================== -->
+  <div id="noRiddleScreen" class="card state-screen hidden">
+    <i class="fa-solid fa-flag state-icon" style="color:var(--saffron-deep);"></i>
+    <h2 id="noRiddleH2">No riddle found</h2>
+    <p id="noRiddleP">This link is missing a valid riddle number. Please scan one of the QR codes on the display wall to begin — each one has a <code>?riddle=</code> number attached.</p>
+  </div>
+
+  <!-- ===================== PROFILE SCREEN (who + language) ===================== -->
+  <div id="profileScreen" class="card hidden">
+    <h2 class="profile-heading" id="profileHeading">Welcome! Tell us about yourself</h2>
+    <p class="profile-sub" id="profileSub">Just two quick questions before your riddle appears.</p>
+
+    <div class="profile-section">
+      <div class="profile-section-label" id="roleLabel"><i class="fa-solid fa-user-group"></i> I am a...</div>
+      <div class="choice-grid" id="roleOptions">
+        <button type="button" class="choice-btn" data-role="Teacher"><i class="fa-solid fa-chalkboard-user"></i> <span>Teacher</span></button>
+        <button type="button" class="choice-btn" data-role="Parent"><i class="fa-solid fa-people-roof"></i> <span>Parent</span></button>
+        <button type="button" class="choice-btn" data-role="Student"><i class="fa-solid fa-graduation-cap"></i> <span>Student</span></button>
+        <button type="button" class="choice-btn" data-role="Guest"><i class="fa-solid fa-star"></i> <span>Guest</span></button>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-label" id="langLabel"><i class="fa-solid fa-language"></i> Language</div>
+      <div class="choice-grid" id="langOptions">
+        <button type="button" class="choice-btn" data-lang-choice="en"><i class="fa-solid fa-a"></i> <span>English</span></button>
+        <button type="button" class="choice-btn" data-lang-choice="hi"><i class="fa-solid fa-om"></i> <span>हिंदी</span></button>
+      </div>
+    </div>
+
+    <button type="button" class="submit-btn" id="profileContinueBtn" disabled>
+      <i class="fa-solid fa-arrow-right"></i> <span id="profileContinueLabel">Continue</span>
+    </button>
+  </div>
+
+  <!-- ===================== QUIZ FORM ===================== -->
+  <form id="quizForm" class="hidden">
+    <div class="card">
+      <div class="field">
+        <label id="nameFieldLabel" for="participantName">Your Name</label>
+        <input type="text" id="participantName" placeholder="e.g. Anjali Sharma" required autocomplete="off">
+      </div>
+      <div class="field" id="studentNameField">
+        <label id="studentFieldLabel" for="studentName">Ward / Student Name <span style="font-weight:500;color:#888;" id="studentFieldOptionalTag">(optional for parents)</span></label>
+        <input type="text" id="studentName" placeholder="e.g. Rohan Sharma, Class 6-B" autocomplete="off">
+        <div class="hint-note" id="studentFieldHint">You can leave this blank if you prefer.</div>
+      </div>
+    </div>
+
+    <div class="card" id="riddleCard">
+      <span class="riddle-badge" id="riddleBadge"><i class="fa-solid fa-scroll"></i> Riddle</span>
+      <img class="fighter-image" id="riddleImage" src="" alt="Mystery freedom fighter">
+      <p class="hint-text" id="riddleHint"></p>
+      <div class="options" id="optionsContainer"></div>
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>
+        <i class="fa-solid fa-check-to-slot"></i> <span id="submitBtnLabel">Lock In My Answer</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- ===================== SUCCESS SCREEN ===================== -->
+  <div id="successScreen" class="card state-screen success hidden">
+    <i class="fa-solid fa-circle-check state-icon"></i>
+    <h2 id="successH2">Shabaash! That's correct 🇮🇳</h2>
+    <p id="successMsg">You identified the freedom fighter correctly.</p>
+    <div class="fighter-reveal" id="fighterReveal"></div>
+    <p class="next-hint" id="nextHint">Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!</p>
+
+    <!-- ===================== DIGITAL CERTIFICATE ===================== -->
+    <div class="cert-section" id="certSection">
+      <p class="cert-eyebrow"><i class="fa-solid fa-award"></i> <span id="certEyebrow">Your Certificate</span></p>
+      <div class="cert-preview-wrap" id="certPreviewWrap">
+        <div class="cert-preview-placeholder" id="certPlaceholder">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span id="certPreparingLabel">Preparing your certificate…</span>
+        </div>
+        <img id="certPreviewImg" class="cert-preview-img hidden" alt="Your GSMS Freedom Trail certificate preview">
+      </div>
+      <canvas id="certCanvas" width="1600" height="1131" style="display:none;"></canvas>
+      <div class="cert-actions">
+        <button type="button" class="cert-btn cert-btn-primary" id="downloadCertBtn" disabled>
+          <i class="fa-solid fa-download"></i> <span id="downloadCertLabel">Download Certificate</span>
+        </button>
+        <button type="button" class="cert-btn cert-btn-secondary hidden" id="shareCertBtn" disabled>
+          <i class="fa-solid fa-share-nodes"></i> <span id="shareCertLabel">Share</span>
+        </button>
+      </div>
+      <p class="cert-status hidden" id="certStatus"></p>
+    </div>
+  </div>
+
+  <!-- ===================== ERROR / TRY AGAIN SCREEN ===================== -->
+  <div id="wrongScreen" class="card state-screen error hidden">
+    <i class="fa-solid fa-face-frown state-icon"></i>
+    <h2 id="wrongH2">Not quite!</h2>
+    <p id="wrongP">That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!</p>
+  </div>
+
+  <footer class="foot">
+    Made with <i class="fa-solid fa-heart"></i> for GSMS's Independence Day Celebration
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   1. CONFIGURATION — paste your Supabase project details here
+   ============================================================ */
+const SUPABASE_URL = "https://ckltcwampaagyzneaznt.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbHRjd2FtcGFhZ3l6bmVhem50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1MDI2NjgsImV4cCI6MjA0ODA3ODY2OH0.pUT2kngS0nkzFBjI-P6g8azU5E3tZzGDQGL68-AUWFc";
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ============================================================
+   2. UI TRANSLATIONS — English & simple, kid-friendly Hindi
+   ============================================================ */
+const UI = {
+  en: {
+    heroH1: "The Freedom Trail",
+    heroTag: "Scan. Solve. Salute a hero. Match the clue to the freedom fighter who shaped our nation.",
+    noRiddleH2: "No riddle found",
+    noRiddleP: 'This link is missing a valid riddle number. Please scan one of the QR codes on the display wall to begin — each one has a <code>?riddle=</code> number attached.',
+    profileHeading: "Welcome! Tell us about yourself",
+    profileSub: "Just two quick questions before your riddle appears.",
+    roleLabel: "I am a...",
+    roleTeacher: "Teacher",
+    roleParent: "Parent",
+    roleStudent: "Student",
+    roleGuest: "Guest",
+    langLabel: "Language",
+    langEnglish: "English",
+    langHindi: "हिंदी",
+    profileContinueLabel: "Continue",
+    nameFieldLabel: "Your Name",
+    namePlaceholder: "e.g. Anjali Sharma",
+    studentFieldLabel: "Ward / Student Name",
+    studentFieldOptionalTag: "(optional)",
+    studentPlaceholder: "e.g. Rohan Sharma, Class 6-B",
+    studentFieldHint: "You can leave this blank if you prefer.",
+    riddleBadge: "Riddle",
+    submitBtnLabel: "Lock In My Answer",
+    submittingLabel: "Submitting…",
+    successH2: "Shabaash! That's correct 🇮🇳",
+    successMsg: "You identified the freedom fighter correctly.",
+    nextHint: "Your name may appear on the big LED screen shortly. Scan another QR code to keep playing!",
+    wrongH2: "Not quite!",
+    wrongP: "That's not the freedom fighter we were looking for. No worries — history has many heroes. Try scanning another QR code on the wall!",
+    certEyebrow: "Your Certificate",
+    certPreparingLabel: "Preparing your certificate…",
+    downloadCertLabel: "Download Certificate",
+    shareCertLabel: "Share",
+    certErrorLabel: "Couldn't generate the certificate — please try downloading again.",
+    certTitleText: "CERTIFICATE OF ACHIEVEMENT",
+    certSubtitleText: "The Freedom Trail · Independence Day Celebration",
+    certCertifiesText: "This certifies that",
+    certBodyLine1: "has successfully solved Riddle #{id} of The Freedom Trail",
+    certBodyLine2: "by correctly identifying the courageous freedom fighter",
+    certBodyLine3: "as part of Gopal Sharma Memorial School's 79th Independence Day Celebration",
+    certDateText: "15 August 2026",
+    certIssuedText: "Digitally Issued",
+    certSignatureText: "Convenor, GSMS",
+    certHashtagText: "#GSMS79 · Freedom Trail"
+  },
+  hi: {
+    heroH1: "आज़ादी की राह",
+    heroTag: "स्कैन करें। सोचें। सही जवाब दें। पहेली को हल करके उस वीर सेनानी को पहचानें जिसने हमारे देश को आज़ाद कराया।",
+    noRiddleH2: "कोई पहेली नहीं मिली",
+    noRiddleP: 'इस लिंक में सही पहेली नंबर नहीं है। कृपया स्क्रीन पर दिखाए गए किसी भी QR कोड को स्कैन करें — हर कोड में एक <code>?riddle=</code> नंबर होता है।',
+    profileHeading: "स्वागत है! पहले हमें अपने बारे में बताएं",
+    profileSub: "पहेली दिखने से पहले सिर्फ दो छोटे सवाल।",
+    roleLabel: "मैं हूँ एक...",
+    roleTeacher: "शिक्षक",
+    roleParent: "अभिभावक",
+    roleStudent: "छात्र",
+    roleGuest: "अतिथि",
+    langLabel: "भाषा",
+    langEnglish: "English",
+    langHindi: "हिंदी",
+    profileContinueLabel: "आगे बढ़ें",
+    nameFieldLabel: "आपका नाम",
+    namePlaceholder: "जैसे: अंजलि शर्मा",
+    studentFieldLabel: "बच्चे का नाम",
+    studentFieldOptionalTag: "(वैकल्पिक)",
+    studentPlaceholder: "जैसे: रोहन शर्मा, कक्षा 6-बी",
+    studentFieldHint: "आप चाहें तो इसे खाली छोड़ सकते हैं।",
+    riddleBadge: "पहेली",
+    submitBtnLabel: "अपना उत्तर दें",
+    submittingLabel: "भेजा जा रहा है…",
+    successH2: "शाबाश! सही जवाब 🇮🇳",
+    successMsg: "आपने सही स्वतंत्रता सेनानी को पहचाना।",
+    nextHint: "आपका नाम जल्द ही बड़ी LED स्क्रीन पर दिख सकता है। खेलते रहने के लिए एक और QR कोड स्कैन करें!",
+    wrongH2: "थोड़ा सा गलत!",
+    wrongP: "यह वह स्वतंत्रता सेनानी नहीं है जिसे हम खोज रहे थे। कोई बात नहीं — इतिहास में कई वीर हैं। दीवार पर कोई और QR कोड स्कैन करके फिर कोशिश करें!",
+    certEyebrow: "आपका प्रमाणपत्र",
+    certPreparingLabel: "आपका प्रमाणपत्र तैयार किया जा रहा है…",
+    downloadCertLabel: "प्रमाणपत्र डाउनलोड करें",
+    shareCertLabel: "शेयर करें",
+    certErrorLabel: "प्रमाणपत्र नहीं बन सका — कृपया फिर से कोशिश करें।",
+    certTitleText: "उपलब्धि प्रमाणपत्र",
+    certSubtitleText: "द फ्रीडम ट्रेल · स्वतंत्रता दिवस समारोह",
+    certCertifiesText: "यह प्रमाणित करता है कि",
+    certBodyLine1: "ने द फ्रीडम ट्रेल की पहेली #{id} को सफलतापूर्वक हल किया",
+    certBodyLine2: "और इस वीर स्वतंत्रता सेनानी को सही पहचाना",
+    certBodyLine3: "गोपाल शर्मा मेमोरियल स्कूल के 79वें स्वतंत्रता दिवस समारोह के भाग के रूप में",
+    certDateText: "15 अगस्त 2026",
+    certIssuedText: "डिजिटल रूप से जारी",
+    certSignatureText: "संयोजक, GSMS",
+    certHashtagText: "#GSMS79 · फ्रीडम ट्रेल"
+  }
+};
+
+/* ============================================================
+   3. RIDDLE DATA — centralized, edit freely.
+   To add a riddle: copy an object, give it the next `id`, and
+   make sure a QR code is printed pointing to ?riddle=<id>.
+   `image` accepts any public URL; swap placeholders any time.
+   Each riddle carries both English and Hindi text; `answer` and
+   each option's `en` value are the canonical (language-independent)
+   strings used to check correctness and to store in the database.
+   ============================================================ */
+const riddles = [
+  {
+    id: 1,
+    image: "https://placehold.co/400x300/FF9933/142027?text=Riddle+1",
+    fighter: { en: "Mahatma Gandhi", hi: "महात्मा गांधी" },
+    hint: {
+      en: "I led the Salt March to the sea and taught a nation that truth and non-violence could break an empire. Who am I?",
+      hi: "मैंने नमक बनाने के लिए समुद्र तक 'डांडी मार्च' किया और देश को सिखाया कि सच और अहिंसा से भी बड़ी लड़ाई जीती जा सकती है। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Mahatma Gandhi", hi: "महात्मा गांधी" },
+      { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" }
+    ],
+    answer: "Mahatma Gandhi",
+    description: {
+      en: "Led the Dandi Salt March and the philosophy of Satyagraha (non-violent resistance).",
+      hi: "डांडी नमक मार्च का नेतृत्व किया और सत्याग्रह (अहिंसक प्रतिरोध) का रास्ता दिखाया।"
+    }
+  },
+  {
+    id: 2,
+    image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+2",
+    fighter: { en: "Bhagat Singh", hi: "भगत सिंह" },
+    hint: {
+      en: "At just 23, I embraced the gallows with a smile, believing my sacrifice would awaken the youth of India. Who am I?",
+      hi: "मैंने सिर्फ 23 साल की उम्र में मुस्कुराते हुए फांसी को गले लगाया, यह सोचकर कि मेरा बलिदान देश के युवाओं को जगा देगा। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Khudiram Bose", hi: "खुदीराम बोस" },
+      { en: "Bhagat Singh", hi: "भगत सिंह" },
+      { en: "Udham Singh", hi: "उधम सिंह" },
+      { en: "Rajguru", hi: "राजगुरु" }
+    ],
+    answer: "Bhagat Singh",
+    description: {
+      en: "Revolutionary executed at 23 whose fearless defiance inspired a generation of freedom fighters.",
+      hi: "23 साल की उम्र में शहीद हुए क्रांतिकारी, जिनकी निडरता ने पूरी पीढ़ी को प्रेरित किया।"
+    }
+  },
+  {
+    id: 3,
+    image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+3",
+    fighter: { en: "Subhas Chandra Bose", hi: "सुभाष चंद्र बोस" },
+    hint: {
+      en: "I promised my soldiers freedom in exchange for blood, and led the Indian National Army from foreign soil. Who am I?",
+      hi: "मैंने अपने सैनिकों से कहा 'तुम मुझे खून दो, मैं तुम्हें आज़ादी दूंगा' और विदेशी धरती से आज़ाद हिंद फौज का नेतृत्व किया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Subhas Chandra Bose", hi: "सुभाष चंद्र बोस" },
+      { en: "Sardar Patel", hi: "सरदार पटेल" },
+      { en: "Jawaharlal Nehru", hi: "जवाहरलाल नेहरू" },
+      { en: "Rash Behari Bose", hi: "रास बिहारी बोस" }
+    ],
+    answer: "Subhas Chandra Bose",
+    description: {
+      en: "Founded and led the Indian National Army (INA) with the cry 'Give me blood, and I shall give you freedom.'",
+      hi: "आज़ाद हिंद फौज (INA) की स्थापना की और नारा दिया — 'तुम मुझे खून दो, मैं तुम्हें आज़ादी दूंगा।'"
+    }
+  },
+  {
+    id: 4,
+    image: "https://placehold.co/400x300/E9711C/FFF8ED?text=Riddle+4",
+    fighter: { en: "Rani Lakshmibai", hi: "रानी लक्ष्मीबाई" },
+    hint: {
+      en: "I strapped my son to my back and rode into battle on horseback, refusing to give up my kingdom of Jhansi. Who am I?",
+      hi: "मैंने अपने बेटे को पीठ पर बांधकर घोड़े पर सवार होकर युद्ध लड़ा और अपने झांसी राज्य को नहीं छोड़ा। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Rani Lakshmibai", hi: "रानी लक्ष्मीबाई" },
+      { en: "Begum Hazrat Mahal", hi: "बेगम हज़रत महल" },
+      { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+      { en: "Kittur Chennamma", hi: "कित्तूर चेन्नम्मा" }
+    ],
+    answer: "Rani Lakshmibai",
+    description: {
+      en: "The Rani of Jhansi who fought valiantly against the British during the Revolt of 1857.",
+      hi: "झांसी की रानी, जिन्होंने 1857 के विद्रोह में अंग्रेज़ों से बहादुरी से लड़ाई की।"
+    }
+  },
+  {
+    id: 5,
+    image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+5",
+    fighter: { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+    hint: {
+      en: "I declared 'Freedom is my birthright, and I shall have it,' turning a simple slogan into a national roar. Who am I?",
+      hi: "मैंने कहा था 'स्वराज मेरा जन्मसिद्ध अधिकार है, और मैं इसे लेकर रहूंगा' — यह नारा पूरे देश की आवाज़ बन गया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Gopal Krishna Gokhale", hi: "गोपाल कृष्ण गोखले" },
+      { en: "Bal Gangadhar Tilak", hi: "बाल गंगाधर तिलक" },
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Bipin Chandra Pal", hi: "बिपिन चंद्र पाल" }
+    ],
+    answer: "Bal Gangadhar Tilak",
+    description: {
+      en: "Popularised the slogan 'Swaraj is my birthright' and revived public Ganesh festivals as unity gatherings.",
+      hi: "'स्वराज मेरा जन्मसिद्ध अधिकार है' का नारा दिया और गणेश उत्सव को एकता का पर्व बनाया।"
+    }
+  },
+  {
+    id: 6,
+    image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+6",
+    fighter: { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" },
+    hint: {
+      en: "I vowed I would die a free man, and when surrounded by the police, I kept my word with my own last bullet. Who am I?",
+      hi: "मैंने कसम खाई थी कि मैं आज़ाद ही मरूंगा, और पुलिस से घिरे होने पर अपनी ही आख़िरी गोली से अपना वचन निभाया। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Chandrashekhar Azad", hi: "चंद्रशेखर आज़ाद" },
+      { en: "Ram Prasad Bismil", hi: "राम प्रसाद बिस्मिल" },
+      { en: "Ashfaqulla Khan", hi: "अशफ़ाक़उल्ला खान" },
+      { en: "Batukeshwar Dutt", hi: "बटुकेश्वर दत्त" }
+    ],
+    answer: "Chandrashekhar Azad",
+    description: {
+      en: "Vowed never to be captured alive and took his own life at Alfred Park, Allahabad, in 1931.",
+      hi: "कभी जिंदा गिरफ्तार न होने की कसम खाई और 1931 में इलाहाबाद के अल्फ्रेड पार्क में अपनी जान दे दी।"
+    }
+  },
+  {
+    id: 7,
+    image: "https://placehold.co/400x300/FF9933/142027?text=Riddle+7",
+    fighter: { en: "Sardar Vallabhbhai Patel", hi: "सरदार वल्लभभाई पटेल" },
+    hint: {
+      en: "I stitched over 500 princely states into one nation and earned the title 'Iron Man of India.' Who am I?",
+      hi: "मैंने 500 से ज़्यादा छोटे-छोटे राज्यों को जोड़कर एक भारत बनाया, इसलिए मुझे 'भारत का लौह पुरुष' कहा जाता है। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Jawaharlal Nehru", hi: "जवाहरलाल नेहरू" },
+      { en: "Sardar Vallabhbhai Patel", hi: "सरदार वल्लभभाई पटेल" },
+      { en: "Rajendra Prasad", hi: "राजेंद्र प्रसाद" },
+      { en: "C. Rajagopalachari", hi: "सी. राजगोपालाचारी" }
+    ],
+    answer: "Sardar Vallabhbhai Patel",
+    description: {
+      en: "Known as the 'Iron Man of India' for unifying princely states into the Indian Union after independence.",
+      hi: "आज़ादी के बाद रियासतों को जोड़कर भारत को एक करने के कारण 'भारत का लौह पुरुष' कहलाए।"
+    }
+  },
+  {
+    id: 8,
+    image: "https://placehold.co/400x300/E9711C/FFF8ED?text=Riddle+8",
+    fighter: { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+    hint: {
+      en: "Known as the 'Nightingale of India,' I was also the first woman to become the President of the Indian National Congress. Who am I?",
+      hi: "मुझे 'भारत कोकिला' कहा जाता है, और मैं भारतीय राष्ट्रीय कांग्रेस की पहली महिला अध्यक्ष बनी। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Sarojini Naidu", hi: "सरोजिनी नायडू" },
+      { en: "Vijaya Lakshmi Pandit", hi: "विजय लक्ष्मी पंडित" },
+      { en: "Kasturba Gandhi", hi: "कस्तूरबा गांधी" },
+      { en: "Annie Besant", hi: "एनी बेसेंट" }
+    ],
+    answer: "Sarojini Naidu",
+    description: {
+      en: "Poet and freedom fighter, fondly called the 'Nightingale of India,' and first woman president of the INC.",
+      hi: "कवयित्री और स्वतंत्रता सेनानी, जिन्हें प्यार से 'भारत कोकिला' कहा जाता है।"
+    }
+  },
+  {
+    id: 9,
+    image: "https://placehold.co/400x300/128807/FFF8ED?text=Riddle+9",
+    fighter: { en: "Mangal Pandey", hi: "मंगल पांडे" },
+    hint: {
+      en: "My defiance at the Barrackpore parade ground in 1857 lit the very first spark of India's struggle for freedom. Who am I?",
+      hi: "1857 में बैरकपुर की परेड में मेरे विद्रोह ने भारत की आज़ादी की लड़ाई की पहली चिंगारी जलाई। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Mangal Pandey", hi: "मंगल पांडे" },
+      { en: "Tantia Tope", hi: "तात्या टोपे" },
+      { en: "Nana Saheb", hi: "नाना साहेब" },
+      { en: "Veer Kunwar Singh", hi: "वीर कुंवर सिंह" }
+    ],
+    answer: "Mangal Pandey",
+    description: {
+      en: "Sepoy whose act of rebellion in 1857 is often seen as the spark that ignited the First War of Independence.",
+      hi: "सिपाही जिनके 1857 के विद्रोह ने भारत के पहले स्वतंत्रता संग्राम को जन्म दिया।"
+    }
+  },
+  {
+    id: 10,
+    image: "https://placehold.co/400x300/0B1F4D/FFF8ED?text=Riddle+10",
+    fighter: { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+    hint: {
+      en: "Known as 'Punjab Kesari' — the Lion of Punjab — I lost my life to injuries from a protest march against a foreign commission. Who am I?",
+      hi: "मुझे 'पंजाब केसरी' कहा जाता है, और साइमन कमीशन के विरोध में हुई चोटों के कारण मेरी जान चली गई। मैं कौन हूँ?"
+    },
+    options: [
+      { en: "Lala Lajpat Rai", hi: "लाला लाजपत राय" },
+      { en: "Bipin Chandra Pal", hi: "बिपिन चंद्र पाल" },
+      { en: "Madan Mohan Malaviya", hi: "मदन मोहन मालवीय" },
+      { en: "Ajit Singh", hi: "अजीत सिंह" }
+    ],
+    answer: "Lala Lajpat Rai",
+    description: {
+      en: "The 'Lion of Punjab' who succumbed to injuries sustained while leading a protest against the Simon Commission.",
+      hi: "'पंजाब केसरी' जिन्होंने साइमन कमीशन के विरोध में घायल होकर अपनी जान गंवाई।"
+    }
+  }
+];
+
+/* ============================================================
+   4. STATE
+   ============================================================ */
+let currentRiddle = null;
+let selectedAnswer = null;
+let selectedRole = null;
+let selectedLang = null; // 'en' | 'hi'
+
+const els = {
+  noRiddle: document.getElementById('noRiddleScreen'),
+  profile: document.getElementById('profileScreen'),
+  form: document.getElementById('quizForm'),
+  success: document.getElementById('successScreen'),
+  wrong: document.getElementById('wrongScreen'),
+  riddleBadge: document.getElementById('riddleBadge'),
+  riddleImage: document.getElementById('riddleImage'),
+  riddleHint: document.getElementById('riddleHint'),
+  optionsContainer: document.getElementById('optionsContainer'),
+  submitBtn: document.getElementById('submitBtn'),
+  submitBtnLabel: document.getElementById('submitBtnLabel'),
+  participantName: document.getElementById('participantName'),
+  studentName: document.getElementById('studentName'),
+  studentNameField: document.getElementById('studentNameField'),
+  successMsg: document.getElementById('successMsg'),
+  fighterReveal: document.getElementById('fighterReveal'),
+  certPlaceholder: document.getElementById('certPlaceholder'),
+  certPreviewImg: document.getElementById('certPreviewImg'),
+  certCanvas: document.getElementById('certCanvas'),
+  downloadCertBtn: document.getElementById('downloadCertBtn'),
+  shareCertBtn: document.getElementById('shareCertBtn'),
+  certStatus: document.getElementById('certStatus')
+};
+
+function showOnly(el){
+  [els.noRiddle, els.profile, els.form, els.success, els.wrong].forEach(s => s.classList.add('hidden'));
+  el.classList.remove('hidden');
+}
+
+/* ============================================================
+   5. LANGUAGE — swap all static UI text + <html lang> + font class
+   ============================================================ */
+function applyLanguage(lang){
+  selectedLang = lang;
+  const t = UI[lang];
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.body.classList.toggle('lang-hi', lang === 'hi');
+
+  document.getElementById('heroH1').textContent = t.heroH1;
+  document.getElementById('heroTag').textContent = t.heroTag;
+  document.getElementById('noRiddleH2').textContent = t.noRiddleH2;
+  document.getElementById('noRiddleP').innerHTML = t.noRiddleP;
+  document.getElementById('profileHeading').textContent = t.profileHeading;
+  document.getElementById('profileSub').textContent = t.profileSub;
+  document.getElementById('profileContinueLabel').textContent = t.profileContinueLabel;
+
+  document.getElementById('roleLabel').innerHTML = `<i class="fa-solid fa-user-group"></i> ${t.roleLabel}`;
+  document.querySelector('[data-role="Teacher"] span').textContent = t.roleTeacher;
+  document.querySelector('[data-role="Parent"] span').textContent = t.roleParent;
+  document.querySelector('[data-role="Student"] span').textContent = t.roleStudent;
+  document.querySelector('[data-role="Guest"] span').textContent = t.roleGuest;
+
+  document.getElementById('langLabel').innerHTML = `<i class="fa-solid fa-language"></i> ${t.langLabel}`;
+  document.querySelector('[data-lang-choice="en"] span').textContent = t.langEnglish;
+  document.querySelector('[data-lang-choice="hi"] span').textContent = t.langHindi;
+
+  document.getElementById('nameFieldLabel').textContent = t.nameFieldLabel;
+  els.participantName.placeholder = t.namePlaceholder;
+  document.getElementById('studentFieldLabel').childNodes[0].textContent = t.studentFieldLabel + " ";
+  document.getElementById('studentFieldOptionalTag').textContent = t.studentFieldOptionalTag;
+  els.studentName.placeholder = t.studentPlaceholder;
+  document.getElementById('studentFieldHint').textContent = t.studentFieldHint;
+
+  els.riddleBadge.innerHTML = `<i class="fa-solid fa-scroll"></i> ${t.riddleBadge}` + (currentRiddle ? ` #${currentRiddle.id}` : '');
+  els.submitBtnLabel.textContent = t.submitBtnLabel;
+
+  document.getElementById('successH2').textContent = t.successH2;
+  document.getElementById('successMsg').textContent = t.successMsg;
+  document.getElementById('nextHint').textContent = t.nextHint;
+  document.getElementById('wrongH2').textContent = t.wrongH2;
+  document.getElementById('wrongP').textContent = t.wrongP;
+
+  document.getElementById('certEyebrow').textContent = t.certEyebrow;
+  document.getElementById('certPreparingLabel').textContent = t.certPreparingLabel;
+  document.getElementById('downloadCertLabel').textContent = t.downloadCertLabel;
+  document.getElementById('shareCertLabel').textContent = t.shareCertLabel;
+
+  // language switcher pill state
+  document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
+  document.getElementById('langBtnHi').classList.toggle('active', lang === 'hi');
+
+  // re-render riddle text in the new language if one is showing
+  if (currentRiddle && !els.form.classList.contains('hidden')){
+    renderRiddle(currentRiddle);
+  }
+}
+
+/* top-of-page language pill also works even before the profile choice is made */
+document.getElementById('langBtnEn').addEventListener('click', () => applyLanguage('en'));
+document.getElementById('langBtnHi').addEventListener('click', () => applyLanguage('hi'));
+
+/* ============================================================
+   6. PROFILE SCREEN — role + language pickers
+   ============================================================ */
+const profileContinueBtn = document.getElementById('profileContinueBtn');
+
+function checkProfileReady(){
+  profileContinueBtn.disabled = !(selectedRole && selectedLang);
+}
+
+document.querySelectorAll('#roleOptions .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#roleOptions .choice-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedRole = btn.getAttribute('data-role');
+    checkProfileReady();
+  });
+});
+
+document.querySelectorAll('#langOptions .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#langOptions .choice-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    applyLanguage(btn.getAttribute('data-lang-choice'));
+    checkProfileReady();
+  });
+});
+
+profileContinueBtn.addEventListener('click', () => {
+  if (!selectedRole || !selectedLang) return;
+
+  // Rule 2: only Parents see/fill the student name field
+  if (selectedRole === 'Parent'){
+    els.studentNameField.classList.remove('hidden');
+  } else {
+    els.studentNameField.classList.add('hidden');
+    els.studentName.value = '';
+  }
+
+  renderRiddle(currentRiddle);
+  showOnly(els.form);
+});
+
+/* ============================================================
+   7. INITIALISE — read ?riddle= from the URL
+   ============================================================ */
+function init(){
+  applyLanguage('en'); // sensible default until the user picks one
+
+  const params = new URLSearchParams(window.location.search);
+  const riddleId = parseInt(params.get('riddle'), 10);
+
+  currentRiddle = riddles.find(r => r.id === riddleId);
+
+  if (!currentRiddle){
+    showOnly(els.noRiddle);
+    return;
+  }
+
+  showOnly(els.profile);
+}
+
+function renderRiddle(riddle){
+  const lang = selectedLang || 'en';
+  const t = UI[lang];
+
+  els.riddleBadge.innerHTML = `<i class="fa-solid fa-scroll"></i> ${t.riddleBadge} #${riddle.id}`;
+  els.riddleImage.src = riddle.image;
+  els.riddleImage.alt = "Mystery freedom fighter";
+  els.riddleHint.textContent = riddle.hint[lang] || riddle.hint.en;
+
+  els.optionsContainer.innerHTML = '';
+  selectedAnswer = null;
+  els.submitBtn.disabled = true;
+
+  // Shuffle a copy of the options so the correct answer isn't always in the same slot
+  const shuffled = [...riddle.options].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach(option => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="radio-dot"></span><span>${option[lang] || option.en}</span>`;
+    btn.addEventListener('click', () => selectOption(btn, option.en));
+    els.optionsContainer.appendChild(btn);
+  });
+}
+
+function selectOption(btn, optionEnText){
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAnswer = optionEnText; // canonical English value, independent of displayed language
+  els.submitBtn.disabled = false;
+}
+
+/* ============================================================
+   8. SUBMISSION
+   ============================================================ */
+els.form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!selectedAnswer || !currentRiddle) return;
+
+  const participantName = els.participantName.value.trim();
+  const studentName = selectedRole === 'Parent' ? els.studentName.value.trim() : '';
+
+  if (!participantName){
+    els.participantName.focus();
+    return;
+  }
+
+  const t = UI[selectedLang || 'en'];
+  els.submitBtn.disabled = true;
+  els.submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t.submittingLabel}`;
+
+  const isCorrect = selectedAnswer === currentRiddle.answer;
+
+  try{
+    const { error } = await supabaseClient
+      .from('submissions')
+      .insert([{
+        participant_name: participantName,
+        student_name: studentName || null,
+        riddle_number: currentRiddle.id,
+        selected_answer: selectedAnswer,
+        correct_answer: currentRiddle.answer,
+        freedom_fighter_name: currentRiddle.fighter.en,
+        is_correct: isCorrect,
+        participant_role: selectedRole,
+        language: selectedLang
+      }]);
+
+    if (error) console.error('Supabase insert error:', error);
+  } catch(err){
+    console.error('Network / Supabase error:', err);
+  }
+
+  if (isCorrect){
+    showSuccess();
+  } else {
+    showOnly(els.wrong);
+  }
+});
+
+function showSuccess(){
+  const lang = selectedLang || 'en';
+  els.fighterReveal.innerHTML = `
+    <img src="${currentRiddle.image}" alt="${currentRiddle.fighter[lang] || currentRiddle.fighter.en}">
+    <div>
+      <div class="name">${currentRiddle.fighter[lang] || currentRiddle.fighter.en}</div>
+      <div class="desc">${currentRiddle.description[lang] || currentRiddle.description.en}</div>
+    </div>
+  `;
+  showOnly(els.success);
+  fireConfetti();
+  renderCertificateUI();
+}
+
+function fireConfetti(){
+  if (typeof confetti !== 'function') return;
+  const colors = ['#FF9933', '#FFFFFF', '#128807'];
+  confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 }, colors });
+  setTimeout(() => confetti({ particleCount: 60, spread: 120, origin: { y: 0.4 }, colors }), 300);
+}
+
+/* ============================================================
+   9. DIGITAL CERTIFICATE
+   Drawn entirely on a <canvas>, branded with the school name,
+   logo (or a graceful fallback monogram if the logo can't be
+   loaded), the participant's name, and the freedom fighter they
+   correctly identified. Exposed as a downloadable / shareable PNG.
+   ============================================================ */
+const LOGO_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1rWveziFKznsuC8vpORc2j_aUyt6Dx-3cp8E5V4JNiBp7wWrcUkLXLKut&s=10";
+let logoImgCache = null;
+let logoLoadAttempted = false;
+let lastCertDataUrl = null;
+
+function loadImageSafe(src){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawChakra(ctx, cx, cy, r, color, alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha != null ? alpha : 1;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = Math.max(1, r * 0.045);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.12, 0, Math.PI * 2);
+  ctx.fill();
+  for (let i = 0; i < 24; i++){
+    const angle = (Math.PI * 2 * i) / 24;
+    const x1 = cx + Math.cos(angle) * r * 0.12;
+    const y1 = cy + Math.sin(angle) * r * 0.12;
+    const x2 = cx + Math.cos(angle) * r * 0.92;
+    const y2 = cy + Math.sin(angle) * r * 0.92;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function wrapCenteredText(ctx, text, cx, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+  for (let i = 0; i < words.length; i++){
+    const test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxWidth && line){
+      lines.push(line);
+      line = words[i];
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineHeight));
+  return lines.length;
+}
+
+async function generateCertificate(){
+  const canvas = els.certCanvas;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const lang = selectedLang || 'en';
+  const t = UI[lang];
+
+  const rawStudent = els.studentName.value.trim();
+  const rawParticipant = els.participantName.value.trim();
+  const displayName = (selectedRole === 'Parent' && rawStudent) ? rawStudent : rawParticipant;
+  const parentLine = (selectedRole === 'Parent' && rawStudent) ? rawParticipant : null;
+  const fighterName = currentRiddle.fighter[lang] || currentRiddle.fighter.en;
+  const certificateId = 'GSMS-FT-' + String(currentRiddle.id).padStart(2, '0') + '-' +
+    Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  if (!logoLoadAttempted){
+    logoLoadAttempted = true;
+    logoImgCache = await loadImageSafe(LOGO_URL);
+  }
+
+  try{
+    if (document.fonts){
+      await Promise.all([
+        document.fonts.load('800 90px "Baloo 2"'),
+        document.fonts.load('700 46px "Baloo 2"'),
+        document.fonts.load('600 30px "Baloo 2"'),
+        document.fonts.load('400 40px "Yatra One"'),
+        document.fonts.load('600 28px "Inter"'),
+        document.fonts.load('700 30px "Hind"'),
+        document.fonts.load('600 26px "Hind"')
+      ]);
+      if (document.fonts.ready) await document.fonts.ready;
+    }
+  } catch(e){ /* proceed with whatever fonts are available */ }
+
+  const nameFont = lang === 'hi' ? 'Hind' : 'Baloo 2';
+  const bodyFont = lang === 'hi' ? 'Hind' : 'Inter';
+
+  function paint(useLogo){
+    ctx.clearRect(0, 0, W, H);
+
+    // background
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#FFF8ED');
+    bg.addColorStop(0.4, '#FFEFD6');
+    bg.addColorStop(0.7, '#EAF7E8');
+    bg.addColorStop(1, '#E7F0FF');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // ambient corner washes
+    const wash1 = ctx.createRadialGradient(W * 0.1, H * 0.05, 10, W * 0.1, H * 0.05, W * 0.35);
+    wash1.addColorStop(0, 'rgba(255,153,51,0.28)');
+    wash1.addColorStop(1, 'rgba(255,153,51,0)');
+    ctx.fillStyle = wash1;
+    ctx.fillRect(0, 0, W, H);
+    const wash2 = ctx.createRadialGradient(W * 0.92, H * 0.05, 10, W * 0.92, H * 0.05, W * 0.32);
+    wash2.addColorStop(0, 'rgba(18,136,7,0.22)');
+    wash2.addColorStop(1, 'rgba(18,136,7,0)');
+    ctx.fillStyle = wash2;
+    ctx.fillRect(0, 0, W, H);
+
+    // watermark chakra
+    drawChakra(ctx, W / 2, H / 2 + 40, H * 0.34, '#0B1F4D', 0.05);
+
+    // outer + tricolour ribbon border
+    ctx.save();
+    ctx.strokeStyle = 'rgba(11,31,77,0.55)';
+    ctx.lineWidth = 3;
+    roundRectPath(ctx, 34, 34, W - 68, H - 68, 22);
+    ctx.stroke();
+    ['#FF9933', '#FFF8ED', '#128807'].forEach((c, i) => {
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 4;
+      roundRectPath(ctx, 46 + i * 7, 46 + i * 7, W - 92 - i * 14, H - 92 - i * 14, 18);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // corner flourishes
+    [[95, 95], [W - 95, 95], [95, H - 95], [W - 95, H - 95]].forEach(([cx, cy]) => {
+      drawChakra(ctx, cx, cy, 26, '#E9711C', 0.5);
+    });
+
+    let cursorY = 150;
+
+    // logo (or monogram fallback) + school name
+    const logoR = 46;
+    const logoCX = W / 2 - 220;
+    if (useLogo && logoImgCache){
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(logoImgCache, logoCX - logoR, cursorY - logoR, logoR * 2, logoR * 2);
+      ctx.restore();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.stroke();
+    } else {
+      ctx.save();
+      const monoGrad = ctx.createLinearGradient(logoCX - logoR, cursorY - logoR, logoCX + logoR, cursorY + logoR);
+      monoGrad.addColorStop(0, '#E9711C');
+      monoGrad.addColorStop(1, '#0B1F4D');
+      ctx.fillStyle = monoGrad;
+      ctx.beginPath();
+      ctx.arc(logoCX, cursorY, logoR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 40px "Baloo 2"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('GSMS', logoCX, cursorY + 2);
+      ctx.restore();
+    }
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 34px "Baloo 2"';
+    ctx.fillText('Gopal Sharma Memorial School', logoCX + logoR + 20, cursorY - 4);
+    ctx.fillStyle = '#E9711C';
+    ctx.font = '600 20px "Inter"';
+    ctx.fillText('79 YEARS OF INDEPENDENCE · 15 AUG 2026', logoCX + logoR + 20, cursorY + 24);
+
+    cursorY += 100;
+
+    // title
+    ctx.textAlign = 'center';
+    const titleGrad = ctx.createLinearGradient(W / 2 - 380, 0, W / 2 + 380, 0);
+    titleGrad.addColorStop(0, '#E9711C');
+    titleGrad.addColorStop(0.55, '#0B1F4D');
+    titleGrad.addColorStop(1, '#0B5D14');
+    ctx.fillStyle = titleGrad;
+    ctx.font = '800 58px "Baloo 2"';
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '4px';
+    ctx.fillText(t.certTitleText, W / 2, cursorY);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+
+    cursorY += 42;
+    ctx.fillStyle = '#0B5D14';
+    ctx.font = '400 28px "Yatra One"';
+    ctx.fillText(t.certSubtitleText, W / 2, cursorY);
+
+    cursorY += 52;
+    ctx.strokeStyle = 'rgba(11,31,77,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 260, cursorY); ctx.lineTo(W / 2 - 40, cursorY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W / 2 + 40, cursorY); ctx.lineTo(W / 2 + 260, cursorY); ctx.stroke();
+    drawChakra(ctx, W / 2, cursorY, 16, '#0B1F4D', 0.8);
+
+    cursorY += 56;
+    ctx.fillStyle = '#444';
+    ctx.font = '600 24px "Inter"';
+    ctx.fillText(t.certCertifiesText, W / 2, cursorY);
+
+    // participant / student name — auto-fit width
+    cursorY += 76;
+    let nameSize = 78;
+    ctx.font = `800 ${nameSize}px "${nameFont}"`;
+    const maxNameWidth = W - 340;
+    while (ctx.measureText(displayName).width > maxNameWidth && nameSize > 34){
+      nameSize -= 2;
+      ctx.font = `800 ${nameSize}px "${nameFont}"`;
+    }
+    const nameGrad = ctx.createLinearGradient(W / 2 - 300, 0, W / 2 + 300, 0);
+    nameGrad.addColorStop(0, '#E9711C');
+    nameGrad.addColorStop(0.55, '#0B1F4D');
+    nameGrad.addColorStop(1, '#0B5D14');
+    ctx.fillStyle = nameGrad;
+    ctx.fillText(displayName, W / 2, cursorY);
+
+    const uw = Math.min(maxNameWidth, ctx.measureText(displayName).width + 60);
+    ctx.strokeStyle = '#FF9933';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - uw / 2, cursorY + 18);
+    ctx.lineTo(W / 2 + uw / 2, cursorY + 18);
+    ctx.stroke();
+
+    if (parentLine){
+      cursorY += 44;
+      ctx.fillStyle = '#666';
+      ctx.font = '600 20px "Inter"';
+      ctx.fillText((lang === 'hi' ? 'अभिभावक: ' : 'Parent/Guardian: ') + parentLine, W / 2, cursorY);
+    }
+
+    // body copy
+    cursorY += 66;
+    ctx.fillStyle = '#333';
+    ctx.font = `600 26px "${bodyFont}"`;
+    ctx.fillText(t.certBodyLine1.replace('{id}', currentRiddle.id), W / 2, cursorY);
+    cursorY += 38;
+    ctx.fillText(t.certBodyLine2, W / 2, cursorY);
+    cursorY += 48;
+    ctx.font = `700 34px "${nameFont}"`;
+    ctx.fillStyle = '#E9711C';
+    ctx.fillText(fighterName, W / 2, cursorY);
+    cursorY += 46;
+    ctx.font = `600 24px "${bodyFont}"`;
+    ctx.fillStyle = '#333';
+    wrapCenteredText(ctx, t.certBodyLine3, W / 2, cursorY, W - 420, 32);
+
+    // footer
+    const footerY = H - 150;
+    ctx.textAlign = 'left';
+    drawChakra(ctx, 150, footerY, 30, '#0B1F4D', 0.85);
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 20px "Inter"';
+    ctx.fillText(t.certIssuedText, 195, footerY - 4);
+    ctx.fillStyle = '#777';
+    ctx.font = '500 16px "Inter"';
+    ctx.fillText(certificateId, 195, footerY + 18);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '700 24px "Baloo 2"';
+    ctx.fillText(t.certDateText, W / 2, footerY);
+
+    ctx.textAlign = 'right';
+    ctx.strokeStyle = 'rgba(11,31,77,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W - 340, footerY - 6); ctx.lineTo(W - 150, footerY - 6); ctx.stroke();
+    ctx.fillStyle = '#0B1F4D';
+    ctx.font = '600 20px "Inter"';
+    ctx.fillText(t.certSignatureText, W - 150, footerY + 20);
+
+    // bottom hashtag
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#888';
+    ctx.font = '600 18px "Inter"';
+    ctx.fillText(t.certHashtagText, W / 2, H - 56);
+  }
+
+  paint(true);
+  try{
+    lastCertDataUrl = canvas.toDataURL('image/png');
+  } catch(e){
+    // Logo image lacked CORS headers and tainted the canvas — redraw with the
+    // vector monogram instead so the download/share still works reliably.
+    paint(false);
+    lastCertDataUrl = canvas.toDataURL('image/png');
+  }
+  return lastCertDataUrl;
+}
+
+async function renderCertificateUI(){
+  const t = UI[selectedLang || 'en'];
+
+  els.certPlaceholder.classList.remove('hidden');
+  els.certPreviewImg.classList.add('hidden');
+  els.downloadCertBtn.disabled = true;
+  els.shareCertBtn.disabled = true;
+  els.certStatus.classList.add('hidden');
+
+  try{
+    const dataUrl = await generateCertificate();
+    els.certPreviewImg.src = dataUrl;
+    els.certPreviewImg.classList.remove('hidden');
+    els.certPlaceholder.classList.add('hidden');
+    els.downloadCertBtn.disabled = false;
+
+    if (navigator.share){
+      els.shareCertBtn.classList.remove('hidden');
+      els.shareCertBtn.disabled = false;
+    }
+  } catch(err){
+    console.error('Certificate generation failed:', err);
+    els.certStatus.textContent = t.certErrorLabel;
+    els.certStatus.classList.remove('hidden');
+    els.certPlaceholder.classList.add('hidden');
+  }
+}
+
+els.downloadCertBtn.addEventListener('click', () => {
+  if (!lastCertDataUrl) return;
+  const safeName = (els.participantName.value.trim() || 'GSMS').replace(/[^a-z0-9]+/gi, '-');
+  const a = document.createElement('a');
+  a.href = lastCertDataUrl;
+  a.download = `GSMS-Freedom-Trail-Certificate-${safeName}.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+els.shareCertBtn.addEventListener('click', () => {
+  els.certCanvas.toBlob(async (blob) => {
+    if (!blob) return;
+    const file = new File([blob], 'gsms-freedom-trail-certificate.png', { type: 'image/png' });
+    const shareText = 'I earned my Freedom Trail certificate at GSMS Independence Day Celebration! 🇮🇳';
+    try{
+      if (navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ files: [file], title: 'GSMS Freedom Trail Certificate', text: shareText });
+      } else {
+        await navigator.share({ title: 'GSMS Freedom Trail Certificate', text: shareText });
+      }
+    } catch(err){
+      /* user cancelled the share sheet — nothing to do */
+    }
+  }, 'image/png');
+});
+
+init();
+</script>
+</body>
+</html>
