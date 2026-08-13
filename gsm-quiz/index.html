@@ -914,6 +914,7 @@ const els = {
   certCanvas: document.getElementById('certCanvas'),
   downloadCertBtn: document.getElementById('downloadCertBtn'),
   shareCertBtn: document.getElementById('shareCertBtn'),
+  whatsappStatusBtn: document.getElementById('whatsappStatusBtn'),
   certStatus: document.getElementById('certStatus')
 };
 
@@ -1512,6 +1513,23 @@ els.downloadCertBtn.addEventListener('click', () => {
 });
 
 els.shareCertBtn.addEventListener('click', () => {
+  els.certCanvas.toBlob(async (blob) => {
+    if (!blob) return;
+    const file = new File([blob], 'gsms-freedom-trail-certificate.png', { type: 'image/png' });
+    const shareText = 'I earned my Freedom Trail certificate at GSMS Independence Day Celebration! 🇮🇳';
+    try{
+      if (navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ files: [file], title: 'GSMS Freedom Trail Certificate', text: shareText });
+      } else {
+        await navigator.share({ title: 'GSMS Freedom Trail Certificate', text: shareText });
+      }
+    } catch(err){
+      /* user cancelled the share sheet — nothing to do */
+    }
+  }, 'image/png');
+});
+
+els.whatsappStatusBtn.addEventListener('click', () => {
   els.certCanvas.toBlob(async (blob) => {
     if (!blob) return;
     const file = new File([blob], 'gsms-freedom-trail-certificate.png', { type: 'image/png' });
