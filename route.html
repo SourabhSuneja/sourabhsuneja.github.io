@@ -35,6 +35,7 @@ button,select{font:inherit;color:inherit}
 .btn{min-height:52px;border-radius:14px;border:1px solid var(--line);background:transparent;font-weight:700;font-size:16px;cursor:pointer}
 .btn.pri{background:var(--accent);color:var(--accent-ink);border-color:transparent}
 .btn.ok{background:var(--ok);color:#fff;border-color:transparent}
+.wide{grid-column:1/-1}
 .list{overflow:auto;margin-top:8px;display:none;flex:1}
 .sheet.open .list{display:block}
 .row{display:flex;gap:12px;align-items:center;padding:10px 4px;border-top:1px solid var(--line)}
@@ -92,7 +93,8 @@ button,select{font:inherit;color:inherit}
     <div class="dist"><b id="nDist">–</b><span id="nEta"></span></div>
   </div>
   <div class="btns">
-    <button class="btn pri" id="navBtn">Navigate to stop</button>
+    <button class="btn pri wide" id="navAllBtn">Navigate all stops in Maps</button>
+    <button class="btn" id="navBtn">Next stop only</button>
     <button class="btn ok" id="doneBtn">Done, next stop</button>
   </div>
   <div class="list" id="list"></div>
@@ -122,11 +124,23 @@ button,select{font:inherit;color:inherit}
    "＋ Add stop here" at every real stop, or replace the numbers.               */
 const SCHOOL={name:"School",lat:26.9124,lng:75.7873};
 const DEFAULT_ROUTES={
- "vidhyadhar":{name:"Vidhyadhar Nagar",stops:[
-  {name:"Vidhyadhar Nagar Sector 5",lat:26.9700,lng:75.7790,type:"Pickup/Drop"},
-  {name:"Kanwar Nagar Circle",lat:26.9600,lng:75.7830,type:"Pickup/Drop"},
-  {name:"Nirman Nagar",lat:26.9470,lng:75.7830,type:"Pickup/Drop"},
-  {name:"Sikar Road Crossing",lat:26.9350,lng:75.7860,type:"Pickup/Drop"}]},
+  "vidhyadhar": {
+    name: "Vidhyadhar Nagar",
+    stops: [
+      {
+        name: "Manipal Hospital Jaipur",
+        lat: 26.9688610,
+        lng: 75.7734203,
+        type: "Pickup/Drop"
+      },     
+      {
+        name: "Shekhawati Hospital",
+        lat: 26.9599811,
+        lng: 75.7773485,
+        type: "Pickup/Drop"
+      }
+    ]
+  },
  "murlipura":{name:"Murlipura",stops:[
   {name:"Murlipura Scheme",lat:26.9520,lng:75.7560,type:"Pickup/Drop"},
   {name:"Vishwakarma Industrial Area",lat:26.9600,lng:75.7620,type:"Pickup/Drop"},
@@ -194,20 +208,52 @@ function render(){
     +`<div class="btns"><button class="btn" id="resetBtn">Restart route</button><button class="btn" id="expBtn">Export / import</button></div>`;
   $("resetBtn").onclick=()=>{passed.clear();render();updateNext()};
   $("expBtn").onclick=exportImport;
-  updateNext();drawRoute();
+  updateNext();fetchLeg(true);drawRoute();
 }
 function updateNext(){
   const s=stops(),ci=curIdx();
   if(ci<0){$("nNum").textContent="✓";$("nName").textContent="Route complete";$("nMeta").textContent=dir==="in"?"Head to school":"All drops finished";$("nDist").textContent="";$("nEta").textContent="";return}
   const st=s[ci];$("nNum").textContent=ci+1;$("nName").textContent=st.name;
-  $("nMeta").textContent=`${st.type} · stop ${ci+1} of ${s.length}`;
-  if(me){const d=hav(me,st);$("nDist").textContent=fmtD(d);const v=Math.max(speed*3.6,15);$("nEta").textContent=Math.max(1,Math.round(d/1000/v*60))+" min";
-    if(d<50&&speed<3)toast("Arrived: "+st.name)}
-  else{$("nDist").textContent="–";$("nEta").textContent="waiting for GPS"}
+  $("nMeta").textContent=`${st.type} · stop ${ci+1} of ${s.length}`+(me&&me.acc>60?" · weak GPS":"");
+  const left=s.slice(ci).length+(dir==="in"?1:0);
+  $("navAllBtn").textContent=`Navigate all ${left} remaining in Maps`;
+  if(!me){$("nDist").textContent="–";$("nEta").textContent="waiting for GPS";return}
+  const key=st.idx+"|"+routeId;let d,sec,approx=false;
+  if(leg&&legKey===key){const walked=hav(legFrom,me);d=Math.max(hav(me,st),leg.d-walked);sec=leg.t*d/leg.d}
+  else{d=hav(me,st)*1.3;sec=d/8.3;approx=true}
+  sec*=BUS_FACTOR;
+  if(speed>3&&!approx)sec=0.6*sec+0.4*(d/speed);
+  const min=Math.round(sec/60);
+  $("nDist").textContent=(approx?"~":"")+fmtD(d);
+  $("nEta").textContent=(approx?"~":"")+(min<1?"<1 min":min+" min")+" · "+new Date(Date.now()+sec*1000).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  if(hav(me,st)<50&&speed<3)toast("Arrived: "+st.name);
 }
+/* Road distance + drive time from the bus to the next stop (free OSRM server) */
+const BUS_FACTOR=1.25; /* buses are slower than cars: raise if ETAs run early, lower if they run late */
+let leg=null,legKey="",legFrom=null,legAt=0,legTry=0,legBusy=false;
+async function fetchLeg(force){
+  const s=stops(),ci=curIdx();if(!me||ci<0||legBusy)return;
+  const t=s[ci],key=t.idx+"|"+routeId,now=Date.now();
+  if(!force){if(now-legTry<8000)return;if(key===legKey&&leg&&hav(me,legFrom)<40&&now-legAt<60000)return}
+  legTry=now;legBusy=true;
+  try{const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${me.lng},${me.lat};${t.lng},${t.lat}?overview=false`);
+    const j=await r.json();
+    if(j.routes&&j.routes[0]&&j.routes[0].distance>0){leg={d:j.routes[0].distance,t:j.routes[0].duration};legKey=key;legFrom={lat:me.lat,lng:me.lng};legAt=now}
+  }catch(e){}
+  legBusy=false;updateNext();
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchLeg(true)});
 $("doneBtn").onclick=()=>{const s=stops(),ci=curIdx();if(ci<0)return;passed.add(s[ci].idx);render();const n=curIdx();if(n>=0&&follow===false)map.flyTo([s[n].lat,s[n].lng],16)};
 $("navBtn").onclick=()=>{const s=stops(),ci=curIdx();if(ci<0)return;const t=s[ci];
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}&travelmode=driving${me?`&origin=${me.lat},${me.lng}`:""}`,"_blank")};
+$("navAllBtn").onclick=()=>{
+  const s=stops(),ci=curIdx();if(ci<0){toast("Route already complete");return}
+  let pts=s.slice(ci);if(dir==="in")pts=[...pts,SCHOOL];
+  const more=pts.length>10;if(more)pts=pts.slice(0,10); /* Google Maps allows 10 points per link */
+  const dest=pts[pts.length-1],wps=pts.slice(0,-1).map(p=>p.lat+","+p.lng).join("|");
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lng}&travelmode=driving`+(wps?`&waypoints=${encodeURIComponent(wps)}`:"")+(me?`&origin=${me.lat},${me.lng}`:""),"_blank");
+  if(more)toast("Maps takes 10 points at a time. Come back here and tap again for the rest.");
+};
 $("list").onclick=e=>{
   const b=e.target.closest("[data-up],[data-dn],[data-del],[data-fly]");if(!b)return;
   const arr=routes[routeId].stops,g=k=>+b.dataset[k];
@@ -239,8 +285,9 @@ function startGPS(){
     speed=p.coords.speed||0;if(p.coords.heading!=null&&!isNaN(p.coords.heading))heading=p.coords.heading;
     if(!meMarker)meMarker=L.marker([me.lat,me.lng],{icon:meIcon(),zIndexOffset:2000}).addTo(map);
     else{meMarker.setLatLng([me.lat,me.lng]);meMarker.setIcon(meIcon())}
-    const ci=curIdx(),s=stops();
-    if(ci>=0&&hav(me,s[ci])<40){passed.add(s[ci].idx);render();toast("✓ "+s[ci].name)}else updateNext();
+    const s=stops(),c0=curIdx();let hit=-1;
+    for(let i=c0;c0>=0&&i<Math.min(s.length,c0+3);i++){if(hav(me,s[i])<40){hit=i;break}}
+    if(hit>=0){for(let i=0;i<=hit;i++)passed.add(s[i].idx);render();toast("✓ "+s[hit].name)}else{updateNext();fetchLeg()}
     if(follow)map.setView([me.lat,me.lng],Math.max(map.getZoom(),16),{animate:true});
   },e=>toast(e.code===1?"Allow location access to see your position":"Waiting for GPS signal…"),{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
 }
