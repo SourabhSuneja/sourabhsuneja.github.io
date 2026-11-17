@@ -1,0 +1,1097 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sorting Town</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Layout concept: a cheerful village path (stepping-stone progress bar) leading
+     to a single "play-zone" stage whose content morphs per challenge type (spot/match/sort/count/compare),
+     wrapped in the same card-and-mascot chrome as the rest of the portal's learning games. ---------- */
+  :root{
+    color-scheme: light;
+
+    /* ---------- Brand palette (light) — matches the parent portal ---------- */
+    --teal-900:#0d3841;
+    --teal-800:#124f59;
+    --teal-700:#1b6b78;
+    --teal-600:#227d8b;
+    --teal-100:#e3eef0;
+    --gold-600:#e2941a;
+    --gold-500:#f5a623;
+    --gold-400:#ffc65c;
+    --gold-100:#fdf1dc;
+    --cream:#faf8f3;
+    --ink-900:#1c2626;
+    --ink-500:#5f6f70;
+    --white:#ffffff;
+
+    --bg-tint-gold: rgba(245,166,35,.10);
+    --bg-tint-teal: rgba(27,107,120,.10);
+    --border-card: rgba(13,56,65,.08);
+
+    /* ---------- Kid-friendly accents (mascot, path, confetti, celebrations) ---------- */
+    --fun-red:#f2555a;
+    --fun-orange:#ff9f45;
+    --fun-yellow:#ffd85c;
+    --fun-green:#4fc98a;
+    --fun-blue:#4aa8e0;
+    --fun-purple:#a679e0;
+    --fun-pink:#ff8fc0;
+    --char-line:#2a2a2a;
+
+    --grass:var(--fun-green);
+    --grass-dark:#399c6c;
+    --sun:var(--gold-500);
+    --sun-dark:var(--gold-600);
+    --berry:var(--fun-red);
+    --berry-dark:#d1454a;
+    --plum:var(--ink-900);
+    --ink-soft:var(--ink-500);
+    --stone-locked: var(--teal-100);
+    --stone-locked-ink: var(--ink-500);
+    --purple: var(--fun-purple);
+
+    --panel-tint: var(--bg-tint-teal);
+    --bubble-tint: var(--bg-tint-gold);
+    --input-bg: color-mix(in srgb, var(--white) 97%, var(--ink-900) 3%);
+    --input-border: color-mix(in srgb, var(--ink-900) 16%, transparent);
+    --cloud-tint: rgba(255,255,255,.85);
+    --overlay-tint: color-mix(in srgb, var(--teal-900) 55%, transparent);
+    --overlay-tint-strong: color-mix(in srgb, var(--teal-900) 62%, transparent);
+    --edge-shadow: rgba(13,56,65,.14);
+    --edge-shadow-soft: rgba(13,56,65,.08);
+
+    --basket-wood:#c98a4b;
+    --basket-wood-dark:#a8692f;
+    --basket-wood-light:#e0ab6f;
+
+    --r-lg:26px;
+    --r-md:18px;
+    --r-sm:14px;
+    --ease:cubic-bezier(.22,1,.36,1);
+
+    --font-display:'Fraunces',Georgia,serif;
+    --font-body:'Manrope',system-ui,sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --teal-900:#092227; --teal-800:#8fe1ec; --teal-700:#5fd0de; --teal-600:#7fdbe6; --teal-100:#173338;
+      --gold-600:#ffb648; --gold-500:#ffc65c; --gold-400:#ffd685; --gold-100:#2b2110;
+      --cream:#0d1517; --ink-900:#eef3f2; --ink-500:#a4b6b7; --white:#182425;
+      --bg-tint-gold: rgba(255,182,72,.08); --bg-tint-teal: rgba(95,208,222,.12); --border-card: rgba(255,255,255,.10);
+      --char-line:#0d1517;
+      --grass-dark:#2c8f60; --berry-dark:#c23b41;
+      --basket-wood:#9c6a3c; --basket-wood-dark:#6e481f; --basket-wood-light:#b98a56;
+      --input-bg: color-mix(in srgb, var(--white) 90%, black 10%);
+      --input-border: color-mix(in srgb, var(--white) 22%, transparent);
+      --cloud-tint: rgba(255,255,255,.14);
+      --edge-shadow: rgba(0,0,0,.5); --edge-shadow-soft: rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --teal-900:#092227; --teal-800:#8fe1ec; --teal-700:#5fd0de; --teal-600:#7fdbe6; --teal-100:#173338;
+    --gold-600:#ffb648; --gold-500:#ffc65c; --gold-400:#ffd685; --gold-100:#2b2110;
+    --cream:#0d1517; --ink-900:#eef3f2; --ink-500:#a4b6b7; --white:#182425;
+    --bg-tint-gold: rgba(255,182,72,.08); --bg-tint-teal: rgba(95,208,222,.12); --border-card: rgba(255,255,255,.10);
+    --char-line:#0d1517;
+    --grass-dark:#2c8f60; --berry-dark:#c23b41;
+    --basket-wood:#9c6a3c; --basket-wood-dark:#6e481f; --basket-wood-light:#b98a56;
+    --input-bg: color-mix(in srgb, var(--white) 90%, black 10%);
+    --input-border: color-mix(in srgb, var(--white) 22%, transparent);
+    --cloud-tint: rgba(255,255,255,.14);
+    --edge-shadow: rgba(0,0,0,.5); --edge-shadow-soft: rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100%;
+    font-family:var(--font-body);
+    color:var(--plum);
+    background:linear-gradient(180deg,var(--bg-tint-teal) 0%, var(--cream) 55%, var(--bg-tint-gold) 100%);
+    overflow-x:hidden;
+    position:relative;
+    transition:background .3s var(--ease), color .3s var(--ease);
+  }
+
+  .side-pad{ padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+
+  /* ---------- decorative sky ---------- */
+  .sky-decor{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .sun-decor{
+    position:absolute;top:-40px;right:6%;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, var(--gold-400), var(--sun) 70%);
+    box-shadow:0 0 60px 20px rgba(245,166,35,.35);
+    animation:pulse 4s ease-in-out infinite;
+  }
+  .cloud{position:absolute;background:var(--cloud-tint);border-radius:50px;}
+  .cloud::before,.cloud::after{content:"";position:absolute;background:var(--cloud-tint);border-radius:50%;}
+  .cloud1{width:110px;height:36px;top:8%;left:5%;animation:drift 34s linear infinite;}
+  .cloud1::before{width:55px;height:55px;top:-26px;left:12px;}
+  .cloud1::after{width:40px;height:40px;top:-18px;left:55px;}
+  .cloud2{width:90px;height:30px;top:16%;left:70%;animation:drift 26s linear infinite reverse;}
+  .cloud2::before{width:44px;height:44px;top:-20px;left:8px;}
+  .cloud2::after{width:34px;height:34px;top:-14px;left:44px;}
+  .cloud3{width:70px;height:24px;top:32%;left:40%;animation:drift 40s linear infinite;}
+  .cloud3::before{width:34px;height:34px;top:-16px;left:6px;}
+  .cloud3::after{width:26px;height:26px;top:-10px;left:34px;}
+  @keyframes drift{from{transform:translateX(-10vw);}to{transform:translateX(110vw);}}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+  /* ---------- top bar ---------- */
+  .top-bar{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:space-between;
+    padding-block:14px;gap:12px;flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(20px,3vw,28px);color:var(--plum);
+  }
+  .brand .mascot-mini{font-size:1.4em;animation:bob 2.4s ease-in-out infinite;display:inline-block;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-6px) rotate(3deg);}}
+
+  .top-right{display:flex;align-items:center;gap:10px;}
+  .stars-counter{
+    display:flex;align-items:center;gap:6px;
+    background:var(--white);border:3px solid var(--sun);
+    border-radius:999px;padding:8px 16px;
+    font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--edge-shadow-soft);
+    color:var(--plum); font-variant-numeric:tabular-nums;
+  }
+  .icon-btn{
+    width:46px;height:46px;border-radius:50%;border:3px solid var(--white);
+    background:var(--white);font-size:20px;cursor:pointer;box-shadow:0 4px 0 var(--edge-shadow-soft);
+    display:flex;align-items:center;justify-content:center;transition:transform .15s ease;
+  }
+  .icon-btn:hover{transform:translateY(-2px) scale(1.05);}
+  .icon-btn:active{transform:translateY(1px) scale(.97);}
+  .icon-btn:focus-visible, .tool-btn:focus-visible, .basket:focus-visible, .match-card:focus-visible, .odd-card:focus-visible, .choice-btn:focus-visible, .name-chip:focus-visible, .drag-item:focus-visible, .compare-basket:focus-visible{
+    outline:3px solid var(--teal-600); outline-offset:2px;
+  }
+
+  /* ---------- path of stepping stones ---------- */
+  .path-wrap{
+    position:relative;z-index:2;
+    margin:6px auto 10px;max-width:1000px;
+    overflow-x:auto;overflow-y:hidden;
+    padding-block:14px 22px;
+  }
+  .path{
+    display:flex;align-items:flex-end;gap:14px;min-width:max-content;padding:0 6px;
+    position:relative;
+  }
+  .path::before{
+    content:"";position:absolute;left:0;right:0;top:50%;height:0;
+    border-top:5px dashed var(--border-card);z-index:0;
+  }
+  .stone{
+    position:relative;z-index:1;
+    width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-weight:700;font-size:14px;
+    background:var(--stone-locked);color:var(--stone-locked-ink);
+    border:4px solid var(--white);box-shadow:0 4px 0 var(--edge-shadow-soft);
+    flex:0 0 auto;transition:transform .2s ease, background .2s ease;
+  }
+  .stone:nth-child(odd){transform:translateY(-6px);}
+  .stone:nth-child(even){transform:translateY(6px);}
+  .stone.done{background:var(--grass);color:#fff;}
+  .stone.current{background:var(--sun);color:#5a3c00;transform:translateY(-6px) scale(1.2);box-shadow:0 0 0 5px rgba(245,166,35,.35), 0 4px 0 var(--edge-shadow-soft);animation:stonepulse 1.6s ease-in-out infinite;}
+  @keyframes stonepulse{0%,100%{box-shadow:0 0 0 5px rgba(245,166,35,.35),0 4px 0 var(--edge-shadow-soft);}50%{box-shadow:0 0 0 9px rgba(245,166,35,.16),0 4px 0 var(--edge-shadow-soft);}}
+  .stone.trophy{background:linear-gradient(160deg,var(--sun),var(--berry));color:#fff;font-size:20px;}
+
+  /* ---------- main stage ---------- */
+  .stage{
+    position:relative;z-index:2;
+    max-width:980px;margin:0 auto;padding-block:10px 60px;
+    display:grid;grid-template-columns:210px 1fr;gap:22px;align-items:start;
+  }
+  @media (max-width:760px){ .stage{grid-template-columns:1fr;} }
+
+  .mascot-card{
+    background:var(--white);border-radius:var(--r-lg);padding:18px 16px;
+    text-align:center;box-shadow:0 8px 0 var(--edge-shadow-soft);
+    position:sticky;top:14px;border:1px solid var(--border-card);
+  }
+  .mascot{
+    font-size:58px;display:inline-block;
+    animation:bob 3s ease-in-out infinite;
+    filter:drop-shadow(0 6px 6px rgba(0,0,0,.12));
+  }
+  .mascot.happy{animation:jump .6s ease-in-out 2;}
+  @keyframes jump{0%,100%{transform:translateY(0) rotate(0);}30%{transform:translateY(-18px) rotate(-8deg);}60%{transform:translateY(0) rotate(6deg);}}
+  .speech-bubble{
+    margin-top:10px;background:var(--bubble-tint);border-radius:var(--r-md);padding:12px;
+    font-size:14px;font-weight:700;color:var(--plum);line-height:1.35;
+    min-height:56px;display:flex;align-items:center;justify-content:center;
+  }
+  .mascot-name{font-family:var(--font-display);font-weight:700;color:var(--purple);font-size:13px;margin-top:6px;}
+
+  .task-card{
+    background:var(--white);border-radius:var(--r-lg);padding:22px 22px 20px;
+    box-shadow:0 10px 0 var(--edge-shadow-soft);
+    position:relative;overflow:hidden;border:1px solid var(--border-card);
+    min-width:0;
+  }
+  .task-badge{
+    display:inline-block;background:var(--sun);color:#5a3c00;font-weight:800;
+    font-family:var(--font-display);font-size:12px;letter-spacing:.3px;
+    padding:5px 14px;border-radius:999px;margin-bottom:10px;
+  }
+  .task-title{
+    font-family:var(--font-display);font-weight:700;font-size:clamp(22px,4vw,30px);
+    margin:2px 0 6px;color:var(--plum); text-wrap:balance;
+  }
+  .task-instruction{
+    font-size:16px;font-weight:600;line-height:1.5;margin:0 0 18px;color:var(--ink-soft);
+    display:flex; align-items:center; gap:8px;
+  }
+  .tap-hint{font-size:20px; animation:tapbob 1.3s ease-in-out infinite;}
+  @keyframes tapbob{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-4px) rotate(-12deg);}}
+
+  .play-zone{min-height:200px;display:flex;flex-direction:column;gap:16px;}
+  .hint-msg{margin-top:4px;font-weight:800;font-size:15px;min-height:22px;text-align:center;}
+  .hint-msg.err{color:var(--berry-dark);}
+  .hint-msg.ok{color:var(--grass-dark);}
+
+  /* ---------- icon chip (shared visual for every object) ---------- */
+  .obj-icon{display:block; filter:drop-shadow(0 3px 2px rgba(0,0,0,.14));}
+  .obj-icon svg{display:block;width:100%;height:100%;}
+  @keyframes wiggle{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg);}}
+  .obj-wiggle{animation:wiggle 2.6s ease-in-out infinite;}
+
+  /* ---------- odd-one-out ---------- */
+  .odd-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:340px;margin:0 auto;width:100%;}
+  .odd-card{
+    aspect-ratio:1;border:none;border-radius:var(--r-md);background:var(--panel-tint);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;padding:18px;
+    box-shadow:0 5px 0 var(--border-card); transition:transform .12s ease;
+  }
+  .odd-card:hover{transform:translateY(-3px);}
+  .odd-card:active{transform:translateY(2px);}
+  .odd-card.wrong-flash{animation:shake .5s ease;}
+  .odd-card.right-flash{background:var(--bg-tint-gold); box-shadow:0 0 0 4px var(--sun);}
+  @keyframes shake{10%,90%{transform:translateX(-3px);}20%,80%{transform:translateX(6px);}30%,50%,70%{transform:translateX(-10px);}40%,60%{transform:translateX(10px);}}
+
+  /* ---------- match pairs ---------- */
+  .match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:420px;margin:0 auto;width:100%;}
+  .match-card{
+    aspect-ratio:1;border:3px solid var(--border-card);border-radius:var(--r-md);
+    background:var(--panel-tint);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;padding:14px;transition:transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .match-card .obj-icon{opacity:0;transition:opacity .15s ease;}
+  .match-card.revealed .obj-icon, .match-card.matched .obj-icon{opacity:1;}
+  .match-card.revealed{border-color:var(--sun); background:var(--bubble-tint); transform:scale(1.04);}
+  .match-card.matched{background:var(--bg-tint-teal); border-color:var(--grass); cursor:default;}
+  .match-card.shake{animation:shake .45s ease;}
+  .card-back{width:40%;height:40%;border-radius:50%;background:var(--white); border:3px solid var(--border-card);}
+  .match-card.revealed .card-back, .match-card.matched .card-back{display:none;}
+
+  /* ---------- sort boards ---------- */
+  .sort-board{display:flex;flex-direction:column;gap:16px;}
+  .tray{
+    display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;
+    min-height:96px;background:var(--panel-tint);border-radius:var(--r-md);padding:14px;
+  }
+  .tray:empty::after{content:"🎉 All sorted!";font-weight:800;color:var(--grass-dark);font-family:var(--font-display);font-size:16px;}
+  .drag-item{
+    width:62px;height:62px;cursor:pointer;background:none;border:none;padding:6px;border-radius:14px;
+    transition:transform .18s var(--ease), box-shadow .18s ease; position:relative;
+  }
+  .drag-item:hover{transform:translateY(-2px) scale(1.05);}
+  .drag-item.lifted{transform:translateY(-10px) scale(1.18) rotate(-4deg); box-shadow:0 10px 16px rgba(0,0,0,.18); z-index:5; background:var(--bg-tint-gold); border-radius:16px;}
+  .drag-item.flying{transition:transform .45s cubic-bezier(.3,.9,.4,1.3), opacity .3s ease .25s;}
+  .drag-item.placed{width:46px;height:46px;cursor:default;}
+  .drag-item.placed:hover{transform:none;}
+  .drag-item.bump{animation:bump .4s ease;}
+  @keyframes bump{30%{transform:translateX(-14px) rotate(-6deg);}60%{transform:translateX(10px) rotate(4deg);}100%{transform:translateX(0) rotate(0);}}
+
+  .baskets{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+  .basket{
+    flex:1 1 150px;max-width:260px;background:var(--bubble-tint);border:3px dashed var(--sun-dark);
+    border-radius:var(--r-md);padding:12px;text-align:center;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; min-width:0;
+  }
+  .basket:hover{transform:translateY(-2px);}
+  .basket.invite{box-shadow:0 0 0 5px rgba(166,121,224,.35); border-color:var(--purple); animation:invite 1s ease-in-out infinite;}
+  @keyframes invite{0%,100%{box-shadow:0 0 0 4px rgba(166,121,224,.3);}50%{box-shadow:0 0 0 9px rgba(166,121,224,.12);}}
+  .basket.reject{animation:shake .45s ease; border-color:var(--berry-dark);}
+  .basket-icon{width:54px;height:30px;margin:0 auto 6px;}
+  .basket-label{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--plum);display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;}
+  .basket-count{display:inline-flex;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--grass);color:#fff;font-size:11px;align-items:center;justify-content:center;font-weight:800;}
+  .basket-items{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:52px;margin-top:8px;align-items:center;}
+
+  /* ---------- count & compare ---------- */
+  .count-display, .compare-basket .basket-items{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .count-stage{background:var(--panel-tint);border-radius:var(--r-md);padding:18px;display:flex;justify-content:center;}
+  .count-stage .obj-icon{width:50px;height:50px;}
+  .count-choices{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .choice-btn{
+    width:58px;height:58px;border-radius:50%;font-size:22px;font-weight:800;border:none;cursor:pointer;
+    background:var(--white);color:var(--plum);box-shadow:0 5px 0 var(--border-card);
+    font-family:var(--font-display); transition:transform .12s ease;
+  }
+  .choice-btn:hover{transform:translateY(-2px);}
+  .choice-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--border-card);}
+  .choice-btn.wrong{animation:shake .45s ease;}
+  .choice-btn.right{background:var(--grass); color:#fff; box-shadow:0 5px 0 var(--grass-dark);}
+
+  .compare-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+  .compare-basket{
+    flex:1 1 160px;max-width:260px;background:var(--bubble-tint);border:3px solid var(--sun-dark);
+    border-radius:var(--r-md);padding:14px;text-align:center;cursor:pointer; min-width:0;
+    transition:transform .15s ease;
+  }
+  .compare-basket:hover{transform:translateY(-3px);}
+  .compare-basket.wrong-flash{animation:shake .45s ease;}
+  .compare-basket.right-flash{box-shadow:0 0 0 5px var(--grass); border-color:var(--grass);}
+  .compare-basket .obj-icon{width:34px;height:34px;}
+
+  /* ---------- name entry ---------- */
+  .name-form{display:flex;flex-direction:column;gap:14px;align-items:center;}
+  .name-input{
+    width:100%;max-width:320px;font-size:22px;font-family:var(--font-display);font-weight:700;
+    text-align:center;padding:14px 18px;border-radius:999px;border:3px solid var(--input-border);
+    background:var(--input-bg);color:var(--plum);outline:none;
+  }
+  .name-input:focus{border-color:var(--teal-600);box-shadow:0 0 0 5px var(--bg-tint-teal);}
+  .name-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:380px;}
+  .name-chip{
+    border:none;border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;cursor:pointer;
+    background:var(--panel-tint);color:var(--plum);transition:transform .12s ease;font-family:var(--font-body);
+  }
+  .name-chip:hover{transform:translateY(-2px);background:var(--bubble-tint);}
+
+  .btn-primary,.btn-secondary,.btn-big{
+    font-family:var(--font-body);font-weight:800;font-size:16px;
+    border:none;border-radius:999px;padding:13px 26px;cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn-primary{background:var(--grass);color:#fff;box-shadow:0 5px 0 var(--grass-dark);}
+  .btn-primary:hover{filter:brightness(1.05);transform:translateY(-2px);}
+  .btn-primary:active{transform:translateY(3px);box-shadow:0 2px 0 var(--grass-dark);}
+  .btn-secondary{background:var(--panel-tint);color:var(--plum);box-shadow:0 5px 0 var(--border-card);}
+  .btn-big{background:var(--berry);color:#fff;font-size:18px;padding:15px 32px;box-shadow:0 5px 0 var(--berry-dark);}
+  .btn-big:hover{transform:translateY(-2px);}
+  .btn-big:active{transform:translateY(3px);box-shadow:0 2px 0 var(--berry-dark);}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;filter:none;transform:none;}
+
+  /* ---------- confetti ---------- */
+  .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden;}
+  .confetti-piece{position:absolute;top:-20px;border-radius:3px;animation:fall linear forwards;}
+  @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(105vh) rotate(540deg);opacity:.9;}}
+
+  /* ---------- celebration overlay ---------- */
+  .celebrate-overlay{
+    position:fixed;inset:0;background:var(--overlay-tint);
+    display:none;align-items:center;justify-content:center;z-index:60;
+    padding-block:20px; padding-left:max(20px, env(safe-area-inset-left,0px)); padding-right:max(20px, env(safe-area-inset-right,0px));
+  }
+  .celebrate-overlay.show{display:flex;}
+  .celebrate-card{
+    background:var(--white);border-radius:var(--r-lg);padding:30px 28px;text-align:center;
+    max-width:380px;width:100%;box-shadow:0 12px 0 var(--edge-shadow);
+    animation:pop .35s cubic-bezier(.34,1.56,.64,1);border:1px solid var(--border-card);
+  }
+  @keyframes pop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .celebrate-emoji{font-size:62px;animation:jump .6s ease-in-out 3;display:inline-block;}
+  .celebrate-title{font-family:var(--font-display);font-weight:700;font-size:24px;margin:8px 0 4px;color:var(--plum);}
+  .celebrate-msg{font-weight:700;color:var(--ink-soft);margin-bottom:18px;}
+
+  /* ---------- final certificate ---------- */
+  .final-overlay{
+    position:fixed;inset:0;background:var(--overlay-tint-strong);
+    display:none;align-items:center;justify-content:center;z-index:70;
+    padding-block:20px; padding-left:max(20px, env(safe-area-inset-left,0px)); padding-right:max(20px, env(safe-area-inset-right,0px));
+  }
+  .final-overlay.show{display:flex;}
+  .certificate{
+    background:var(--cream);border-radius:var(--r-lg);padding:38px 30px;text-align:center;
+    max-width:480px;width:100%;border:10px solid var(--sun);
+    box-shadow:0 14px 0 var(--edge-shadow);animation:pop .4s cubic-bezier(.34,1.56,.64,1);
+    position:relative; overflow:hidden;
+  }
+  .certificate .ribbon-row{display:flex;justify-content:center;gap:10px;margin-bottom:6px;}
+  .certificate .trophy-emoji{font-size:66px;}
+  .certificate h2{font-family:var(--font-display);font-weight:700;font-size:25px;color:var(--plum);margin:4px 0;}
+  .certificate .cert-name{font-family:var(--font-display);font-weight:700;font-size:32px;color:var(--berry-dark);margin:8px 0;}
+  .certificate p{font-weight:700;color:var(--ink-soft);margin:6px 0;}
+  .cert-badges{display:flex;justify-content:center;gap:14px;margin:14px 0;flex-wrap:wrap;}
+  .cert-badge{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:800;color:var(--ink-soft);}
+  .cert-badge .obj-icon{width:34px;height:34px;}
+
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important;} }
+
+  @media (max-width:480px){
+    .task-card{padding:18px 16px 16px;}
+    .odd-grid{max-width:280px;}
+    .match-grid{gap:9px;}
+    .drag-item{width:54px;height:54px;}
+  }
+</style>
+
+<div class="sky-decor">
+  <div class="sun-decor"></div>
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+</div>
+
+<div class="top-bar side-pad">
+  <div class="brand"><span class="mascot-mini">🦝</span> Sorting Town</div>
+  <div class="top-right">
+    <div class="stars-counter">⭐ <span id="starCount">0</span></div>
+    <button class="icon-btn" id="muteBtn" title="Sound on/off">🔊</button>
+  </div>
+</div>
+
+<div class="path-wrap side-pad">
+  <div class="path" id="pathTrack"></div>
+</div>
+
+<main class="stage side-pad">
+  <div class="mascot-card">
+    <div class="mascot" id="mascotFace">🦝</div>
+    <div class="speech-bubble" id="speechBubble">Hi! I'm Remy the Raccoon. Let's group some things together!</div>
+    <div class="mascot-name">Remy the Raccoon</div>
+  </div>
+
+  <div class="task-card" id="taskCard">
+    <div class="task-badge" id="taskBadge">Level 1</div>
+    <h2 class="task-title" id="taskTitle"></h2>
+    <p class="task-instruction" id="taskInstruction"></p>
+    <div class="play-zone" id="playZone"></div>
+    <div class="hint-msg" id="hintMsg"></div>
+  </div>
+</main>
+
+<div class="confetti-layer" id="confettiLayer"></div>
+
+<div class="celebrate-overlay" id="celebrateOverlay">
+  <div class="celebrate-card">
+    <div class="celebrate-emoji" id="celebrateEmoji">🎉</div>
+    <div class="celebrate-title" id="celebrateTitle">Awesome job!</div>
+    <div class="celebrate-msg" id="celebrateMsg">You did it!</div>
+    <button class="btn-big" id="nextBtn">Next ▶️</button>
+  </div>
+</div>
+
+<div class="final-overlay" id="finalOverlay">
+  <div class="certificate">
+    <div class="ribbon-row">🎀🏅🎀</div>
+    <div class="trophy-emoji">🏆</div>
+    <h2>Certificate of Super Sorting</h2>
+    <div class="cert-name" id="certName">Star Sorter</div>
+    <p>has learned to label, match, group, count and compare like a pro!</p>
+    <div class="cert-badges" id="certBadges"></div>
+    <p>Earned <span id="certStars">0</span> stars! 🌟</p>
+    <button class="btn-big" id="restartBtn" style="margin-top:6px;">Play Again 🔁</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= ICON LIBRARY (custom SVG objects) ================= */
+  var SL = 'var(--char-line)';
+  function svgWrap(inner){ return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>'; }
+
+  var SHAPE_DRAW = {
+    circle: function(c){ return svgWrap('<circle cx="50" cy="50" r="38" fill="'+c+'" stroke="'+SL+'" stroke-width="5"/><ellipse cx="37" cy="35" rx="10" ry="6" fill="rgba(255,255,255,.5)"/>'); },
+    square: function(c){ return svgWrap('<rect x="14" y="14" width="72" height="72" rx="14" fill="'+c+'" stroke="'+SL+'" stroke-width="5"/><rect x="24" y="24" width="20" height="9" rx="4" fill="rgba(255,255,255,.45)"/>'); },
+    triangle: function(c){ return svgWrap('<polygon points="50,12 90,84 10,84" fill="'+c+'" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'); },
+    star: function(c){ return svgWrap('<path d="M50 8 L61 38 L94 38 L67 57 L78 90 L50 70 L22 90 L33 57 L6 38 L39 38 Z" fill="'+c+'" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'); },
+    heart: function(c){ return svgWrap('<path d="M50 88 C10 62 4 34 24 20 C38 10 50 20 50 32 C50 20 62 10 76 20 C96 34 90 62 50 88 Z" fill="'+c+'" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'); },
+    diamond: function(c){ return svgWrap('<polygon points="50,8 88,50 50,92 12,50" fill="'+c+'" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'); }
+  };
+
+  var FRUIT_DRAW = {
+    apple: function(){ return svgWrap(
+      '<path d="M50 30 C20 30 10 55 15 72 C19 86 35 92 50 84 C65 92 81 86 85 72 C90 55 80 30 50 30 Z" fill="var(--fun-red)" stroke="'+SL+'" stroke-width="5"/>'+
+      '<path d="M50 30 C48 20 52 14 60 10" fill="none" stroke="#8a5a34" stroke-width="5" stroke-linecap="round"/>'+
+      '<path d="M58 14 C66 10 72 16 68 22 C62 26 56 22 58 14 Z" fill="var(--fun-green)" stroke="'+SL+'" stroke-width="3"/>'+
+      '<ellipse cx="33" cy="48" rx="8" ry="5" fill="rgba(255,255,255,.4)"/>'); },
+    banana: function(){ return svgWrap(
+      '<path d="M22 76 C18 50 34 22 63 13 C70 11 73 18 68 22 C47 31 37 53 40 75 C42 85 30 91 22 76 Z" fill="var(--fun-yellow)" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'+
+      '<path d="M63 13 C66 11 69 12 70 15" stroke="#8a5a34" stroke-width="4" fill="none" stroke-linecap="round"/>'); },
+    grape: function(){ return svgWrap(
+      '<path d="M48 10 L48 24" stroke="var(--fun-green)" stroke-width="5" stroke-linecap="round"/>'+
+      '<g fill="var(--fun-purple)" stroke="'+SL+'" stroke-width="4">'+
+      '<circle cx="38" cy="38" r="12"/><circle cx="58" cy="38" r="12"/>'+
+      '<circle cx="30" cy="56" r="12"/><circle cx="50" cy="56" r="12"/><circle cx="70" cy="56" r="12"/>'+
+      '<circle cx="40" cy="74" r="12"/><circle cx="60" cy="74" r="12"/>'+
+      '</g>'); },
+    orange: function(){ return svgWrap(
+      '<path d="M50 16 L50 26" stroke="var(--fun-green)" stroke-width="5" stroke-linecap="round"/>'+
+      '<circle cx="50" cy="56" r="35" fill="var(--fun-orange)" stroke="'+SL+'" stroke-width="5"/>'+
+      '<ellipse cx="38" cy="42" rx="9" ry="5" fill="rgba(255,255,255,.4)"/>'); }
+  };
+
+  var ANIMAL_DRAW = {
+    cat: function(){ return svgWrap(
+      '<polygon points="25,30 14,4 41,23" fill="var(--fun-orange)" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'+
+      '<polygon points="75,30 86,4 59,23" fill="var(--fun-orange)" stroke="'+SL+'" stroke-width="5" stroke-linejoin="round"/>'+
+      '<circle cx="50" cy="56" r="35" fill="var(--fun-orange)" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="38" cy="53" r="5" fill="var(--char-line)"/><circle cx="62" cy="53" r="5" fill="var(--char-line)"/>'+
+      '<path d="M50 61 l-5 6 h10 z" fill="var(--char-line)"/>'+
+      '<circle cx="29" cy="67" r="6" fill="rgba(255,120,130,.45)"/><circle cx="71" cy="67" r="6" fill="rgba(255,120,130,.45)"/>'); },
+    dog: function(){ return svgWrap(
+      '<ellipse cx="19" cy="42" rx="13" ry="21" fill="#c98a4b" stroke="'+SL+'" stroke-width="5" transform="rotate(-22 19 42)"/>'+
+      '<ellipse cx="81" cy="42" rx="13" ry="21" fill="#c98a4b" stroke="'+SL+'" stroke-width="5" transform="rotate(22 81 42)"/>'+
+      '<circle cx="50" cy="57" r="35" fill="#e3b27c" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="38" cy="54" r="5" fill="var(--char-line)"/><circle cx="62" cy="54" r="5" fill="var(--char-line)"/>'+
+      '<ellipse cx="50" cy="66" rx="7" ry="5" fill="var(--char-line)"/>'); },
+    bunny: function(){ return svgWrap(
+      '<ellipse cx="37" cy="18" rx="9" ry="24" fill="#ffffff" stroke="'+SL+'" stroke-width="5"/>'+
+      '<ellipse cx="63" cy="18" rx="9" ry="24" fill="#ffffff" stroke="'+SL+'" stroke-width="5"/>'+
+      '<ellipse cx="37" cy="18" rx="4" ry="15" fill="var(--fun-pink)"/>'+
+      '<ellipse cx="63" cy="18" rx="4" ry="15" fill="var(--fun-pink)"/>'+
+      '<circle cx="50" cy="60" r="33" fill="#ffffff" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="40" cy="57" r="5" fill="var(--char-line)"/><circle cx="60" cy="57" r="5" fill="var(--char-line)"/>'+
+      '<circle cx="50" cy="66" r="4" fill="var(--fun-pink)"/>'); },
+    bear: function(){ return svgWrap(
+      '<circle cx="21" cy="26" r="14" fill="#a9754a" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="79" cy="26" r="14" fill="#a9754a" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="50" cy="57" r="35" fill="#c98a4b" stroke="'+SL+'" stroke-width="5"/>'+
+      '<circle cx="38" cy="54" r="5" fill="var(--char-line)"/><circle cx="62" cy="54" r="5" fill="var(--char-line)"/>'+
+      '<ellipse cx="50" cy="68" rx="14" ry="10" fill="#e3c08f" stroke="'+SL+'" stroke-width="3"/>'+
+      '<ellipse cx="50" cy="66" rx="5" ry="4" fill="var(--char-line)"/>'); }
+  };
+
+  var SHAPE_KINDS = ['circle','square','triangle','star','heart','diamond'];
+  var FRUIT_KINDS = ['apple','banana','grape','orange'];
+  var ANIMAL_KINDS = ['cat','dog','bunny','bear'];
+
+  function iconMarkup(kind, color){
+    if(SHAPE_DRAW[kind]) return SHAPE_DRAW[kind](color || 'var(--fun-blue)');
+    if(FRUIT_DRAW[kind]) return FRUIT_DRAW[kind]();
+    if(ANIMAL_DRAW[kind]) return ANIMAL_DRAW[kind]();
+    return '';
+  }
+  function makeIconEl(kind, color, size, wiggle){
+    var d = document.createElement('div');
+    d.className = 'obj-icon' + (wiggle ? ' obj-wiggle' : '');
+    d.style.width = size + 'px'; d.style.height = size + 'px';
+    d.innerHTML = iconMarkup(kind, color);
+    if(wiggle) d.style.animationDelay = (Math.random()*1.5) + 's';
+    return d;
+  }
+  function basketIconSvg(){
+    return '<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">'+
+      '<path d="M30 20 C30 2 70 2 70 20" fill="none" stroke="var(--basket-wood-dark)" stroke-width="6" stroke-linecap="round"/>'+
+      '<path d="M6 22 H94 L84 56 H16 Z" fill="var(--basket-wood)" stroke="'+SL+'" stroke-width="4" stroke-linejoin="round"/>'+
+      '<path d="M20 30 H80 M18 40 H82" stroke="var(--basket-wood-dark)" stroke-width="3"/>'+
+      '</svg>';
+  }
+
+  /* ================= UTIL ================= */
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j = Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function el(tag, cls, html){ var e = document.createElement(tag); if(cls) e.className = cls; if(html!=null) e.innerHTML = html; return e; }
+
+  /* ================= AUDIO ================= */
+  var audioCtx = null, muted = false;
+  function getCtx(){ if(!audioCtx){ var C = window.AudioContext||window.webkitAudioContext; if(C) audioCtx = new C(); } return audioCtx; }
+  function beep(freq,dur,delay,vol){
+    if(muted) return;
+    var ctx = getCtx(); if(!ctx) return;
+    var t0 = ctx.currentTime + (delay||0);
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol||.12,t0+.02); g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+    o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+dur+.02);
+  }
+  function playTap(){ beep(500,.07,0,.07); }
+  function playYes(){ beep(523.25,.14,0); beep(659.25,.14,.1); beep(783.99,.22,.2); }
+  function playNo(){ beep(300,.16,0,.08); beep(230,.18,.08,.08); }
+
+  /* ================= CONFETTI ================= */
+  var confettiColors = ['#f2555a','#ffd85c','#4fc98a','#4aa8e0','#a679e0','#ff8fc0'];
+  function burstConfetti(count){
+    count = count || 34;
+    var layer = document.getElementById('confettiLayer');
+    for(var i=0;i<count;i++){
+      var p = document.createElement('div'); p.className='confetti-piece';
+      var size = 6+Math.random()*8;
+      p.style.width=size+'px'; p.style.height=(size*.6)+'px'; p.style.left=(Math.random()*100)+'vw';
+      p.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+      var dur = 2.2+Math.random()*1.6;
+      p.style.animationDuration = dur+'s'; p.style.animationDelay=(Math.random()*.3)+'s';
+      layer.appendChild(p);
+      (function(node,life){ setTimeout(function(){ if(node.parentNode) node.parentNode.removeChild(node); },(life+.5)*1000); })(p,dur);
+    }
+  }
+
+  /* ================= TASK DATA ================= */
+  var tasks = [
+    { id:'odd1', type:'odd', title:'Spot the Odd One!', instr:'Tap the one that is NOT like the others.' },
+    { id:'match1', type:'match', title:'Find the Twins!', instr:'Tap two cards to find a matching pair.' },
+    { id:'sortcolor', type:'sort', title:'Color Groups', instr:'Tap an item, then tap its color basket.',
+      baskets:[{key:'red',label:'Red Group'},{key:'blue',label:'Blue Group'}],
+      items:(function(){
+        var r=[]; for(var i=0;i<3;i++) r.push({kind:'circle',color:'var(--fun-red)',group:'red'});
+        for(var i=0;i<3;i++) r.push({kind:'circle',color:'var(--fun-blue)',group:'blue'});
+        return shuffle(r);
+      })() },
+    { id:'sortshape', type:'sort', title:'Shape Groups', instr:'Tap an item, then tap its matching basket.',
+      baskets:[{key:'circle',label:'Circles'},{key:'square',label:'Squares'},{key:'star',label:'Stars'}],
+      items:(function(){
+        var cols=['var(--fun-red)','var(--fun-green)','var(--fun-blue)','var(--fun-purple)','var(--fun-pink)','var(--fun-orange)','var(--fun-yellow)'];
+        var kinds=['circle','square','star']; var r=[];
+        kinds.forEach(function(k){ for(var i=0;i<3;i++) r.push({kind:k, color:pick(cols), group:k}); });
+        return shuffle(r);
+      })() },
+    { id:'count1', type:'count', title:'Count the Group', instr:'Count the fruit, then tap the right number!',
+      rounds:[ {kind:'apple', count:5}, {kind:'grape', count:3} ] },
+    { id:'sortcat', type:'sort', title:'Fruits & Animals', instr:'Tap an item, then tap its basket.',
+      baskets:[{key:'fruit',label:'Fruits', emoji:'🍎'},{key:'animal',label:'Animals', emoji:'🐾'}],
+      items:(function(){
+        var r=[];
+        FRUIT_KINDS.forEach(function(k){ r.push({kind:k, group:'fruit'}); });
+        ANIMAL_KINDS.forEach(function(k){ r.push({kind:k, group:'animal'}); });
+        return shuffle(r);
+      })() },
+    { id:'compare1', type:'compare', title:'Which Has More?', instr:'Tap the basket that has MORE.',
+      rounds:[ {kind:'grape', a:3, b:6, ask:'more'}, {kind:'orange', a:5, b:2, ask:'fewer'} ] },
+    { id:'sortsize', type:'sort', title:'Big & Small', instr:'Tap an item, then tap its basket.',
+      baskets:[{key:'big',label:'Big'},{key:'small',label:'Small'}],
+      items:(function(){
+        var r=[];
+        for(var i=0;i<3;i++) r.push({kind:'star', color:'var(--fun-purple)', group:'big', size:76});
+        for(var i=0;i<3;i++) r.push({kind:'star', color:'var(--fun-purple)', group:'small', size:38});
+        return shuffle(r);
+      })() },
+    { id:'sortfinal', type:'sort', title:'Grand Sort Challenge!', instr:'Sort everything into its basket!',
+      baskets:[{key:'fruit',label:'Fruits', emoji:'🍎'},{key:'shape',label:'Shapes', emoji:'⭐'},{key:'animal',label:'Animals', emoji:'🐾'}],
+      items:(function(){
+        var cols=['var(--fun-red)','var(--fun-green)','var(--fun-blue)','var(--fun-purple)','var(--fun-pink)'];
+        var r=[];
+        FRUIT_KINDS.forEach(function(k){ r.push({kind:k, group:'fruit'}); });
+        ANIMAL_KINDS.forEach(function(k){ r.push({kind:k, group:'animal'}); });
+        ['circle','square','star','heart'].forEach(function(k){ r.push({kind:k, color:pick(cols), group:'shape'}); });
+        return shuffle(r);
+      })() }
+  ];
+
+  var encourage = ["Wow, super sorting! 🌟","Yes! You've got it! 🎉","Amazing grouping! 🥳","Great eye! 🚀","Perfect match! 🙌","Fantastic job! 🎈","You nailed it! ✨"];
+  var tryAgainMsgs = ["Almost! Try again. 🦝","So close! One more try. 💪","Not quite — you can do it! 🌈","Keep going, you're learning fast! ✨"];
+
+  /* ================= STATE ================= */
+  var state = { index:-1, stars:0, playerName:'' }; // -1 = name screen
+
+  /* ================= ELEMENTS ================= */
+  var $ = function(id){ return document.getElementById(id); };
+  var pathTrack = $('pathTrack'), starCount = $('starCount'), muteBtn = $('muteBtn'),
+      mascotFace = $('mascotFace'), speechBubble = $('speechBubble'),
+      taskBadge = $('taskBadge'), taskTitle = $('taskTitle'), taskInstruction = $('taskInstruction'),
+      playZone = $('playZone'), hintMsg = $('hintMsg'),
+      celebrateOverlay = $('celebrateOverlay'), celebrateEmoji = $('celebrateEmoji'), celebrateTitle = $('celebrateTitle'), celebrateMsg = $('celebrateMsg'), nextBtn = $('nextBtn'),
+      finalOverlay = $('finalOverlay'), certName = $('certName'), certStars = $('certStars'), certBadges = $('certBadges'), restartBtn = $('restartBtn');
+
+  /* ================= PATH STONES ================= */
+  function buildPath(){
+    pathTrack.innerHTML = '';
+    var nameStone = el('div','stone'); nameStone.textContent = '👋'; nameStone.id='stone-name';
+    pathTrack.appendChild(nameStone);
+    tasks.forEach(function(t,i){
+      var s = el('div','stone'); s.textContent = (i+1); s.id='stone-'+i;
+      pathTrack.appendChild(s);
+    });
+    var trophy = el('div','stone trophy','🏆'); trophy.id='stone-trophy';
+    pathTrack.appendChild(trophy);
+  }
+  function updatePath(){
+    var nameStone = $('stone-name');
+    nameStone.classList.toggle('done', state.index > -1);
+    nameStone.classList.toggle('current', state.index === -1);
+    tasks.forEach(function(t,i){
+      var s = $('stone-'+i);
+      s.classList.remove('done','current');
+      if(i < state.index) s.classList.add('done');
+      else if(i === state.index) s.classList.add('current');
+    });
+  }
+
+  function setHint(msg, cls){ hintMsg.textContent = msg || ''; hintMsg.className = 'hint-msg' + (cls?(' '+cls):''); }
+  function setSpeech(msg){ speechBubble.textContent = msg; }
+
+  /* ================= NAME SCREEN ================= */
+  var NAME_OPTIONS = ['Maya','Leo','Zara','Sam','Arjun','Priya','Noah','Mia'];
+  function renderNameScreen(){
+    taskBadge.textContent = 'Welcome!';
+    taskTitle.textContent = "What's Your Name?";
+    taskInstruction.innerHTML = '<span class="tap-hint">👋</span> Pick a name or type your own!';
+    setSpeech("Hi there! I'm Remy the Raccoon. What should I call you?");
+    mascotFace.textContent = '🦝'; mascotFace.classList.remove('happy');
+    setHint('');
+    updatePath();
+
+    var wrap = el('div','name-form');
+    var chips = el('div','name-chips');
+    NAME_OPTIONS.forEach(function(n){
+      var b = el('button','name-chip', n);
+      b.type='button';
+      b.addEventListener('click', function(){ playTap(); input.value = n; input.focus(); });
+      chips.appendChild(b);
+    });
+    var input = el('input','name-input');
+    input.type='text'; input.placeholder='Type your name...'; input.maxLength=20; input.id='nameInput';
+    var go = el('button','btn-primary','Let\'s Play! 🚀');
+    go.type='button';
+    go.addEventListener('click', function(){
+      var v = input.value.trim();
+      if(!v){ setHint('Please tell me your name first! 😊','err'); playNo(); return; }
+      state.playerName = v;
+      playYes();
+      mascotFace.textContent='🥳'; mascotFace.classList.add('happy');
+      setSpeech('Hooray, ' + v + '! Let\'s get grouping!');
+      burstConfetti(18);
+      setTimeout(function(){ state.index = 0; renderTask(); }, 650);
+    });
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+
+    wrap.appendChild(chips); wrap.appendChild(input); wrap.appendChild(go);
+    playZone.innerHTML=''; playZone.appendChild(wrap);
+    setTimeout(function(){ input.focus(); }, 200);
+  }
+
+  /* ================= TASK ROUTER ================= */
+  function renderTask(){
+    if(state.index === -1){ renderNameScreen(); return; }
+    if(state.index >= tasks.length){ showFinal(); return; }
+    var t = tasks[state.index];
+    taskBadge.textContent = 'Level ' + (state.index+1) + ' of ' + tasks.length;
+    taskTitle.textContent = t.title;
+    taskInstruction.innerHTML = '<span class="tap-hint">👆</span> ' + t.instr;
+    setHint('');
+    mascotFace.textContent = '🦝'; mascotFace.classList.remove('happy');
+    setSpeech(t.title + '!');
+    updatePath();
+    playZone.innerHTML = '';
+
+    if(t.type === 'odd') renderOdd(t);
+    else if(t.type === 'match') renderMatch(t);
+    else if(t.type === 'sort') renderSort(t);
+    else if(t.type === 'count') renderCount(t);
+    else if(t.type === 'compare') renderCompare(t);
+  }
+
+  function taskComplete(){
+    playYes();
+    state.stars += 1;
+    starCount.textContent = state.stars;
+    mascotFace.textContent = '🥳'; mascotFace.classList.add('happy');
+    var line = pick(encourage);
+    setSpeech(line);
+    burstConfetti();
+    celebrateEmoji.textContent = pick(['🎉','🌟','🥳','🎈','🚀','🏅','✨']);
+    celebrateTitle.textContent = line;
+    celebrateMsg.textContent = (state.index === tasks.length-1) ? 'You finished every group!' : 'Ready for the next challenge?';
+    celebrateOverlay.classList.add('show');
+  }
+  nextBtn.addEventListener('click', function(){
+    celebrateOverlay.classList.remove('show');
+    state.index += 1;
+    renderTask();
+  });
+
+  /* ================= 1. ODD ONE OUT ================= */
+  function renderOdd(t){
+    var cols=['var(--fun-red)','var(--fun-green)','var(--fun-blue)','var(--fun-purple)'];
+    var baseColor = pick(cols);
+    var baseShape = pick(SHAPE_KINDS);
+    var oddByColor = Math.random() < 0.5;
+    var oddColor = baseColor, oddShape = baseShape;
+    if(oddByColor){ var others = cols.filter(function(c){return c!==baseColor;}); oddColor = pick(others); }
+    else { var otherShapes = SHAPE_KINDS.filter(function(s){return s!==baseShape;}); oddShape = pick(otherShapes); }
+
+    var items = [];
+    var oddPos = Math.floor(Math.random()*4);
+    for(var i=0;i<4;i++){
+      if(i===oddPos) items.push({kind:oddShape, color:oddColor, odd:true});
+      else items.push({kind:baseShape, color:baseColor, odd:false});
+    }
+
+    var grid = el('div','odd-grid');
+    items.forEach(function(item){
+      var card = el('button','odd-card');
+      card.type='button';
+      card.appendChild(makeIconEl(item.kind, item.color, 72, true));
+      card.addEventListener('click', function(){
+        if(item.odd){
+          card.classList.add('right-flash');
+          setHint('Yes! That one is different! 🎉','ok');
+          setTimeout(taskComplete, 450);
+        } else {
+          playNo();
+          card.classList.remove('wrong-flash'); void card.offsetWidth; card.classList.add('wrong-flash');
+          setHint(pick(tryAgainMsgs),'err');
+        }
+      });
+      grid.appendChild(card);
+    });
+    playZone.appendChild(grid);
+  }
+
+  /* ================= 2. MATCH PAIRS ================= */
+  function renderMatch(t){
+    var kinds = shuffle(SHAPE_KINDS).slice(0,3);
+    var color = 'var(--fun-purple)';
+    var cards = [];
+    kinds.forEach(function(k){ cards.push({kind:k}); cards.push({kind:k}); });
+    cards = shuffle(cards);
+
+    var grid = el('div','match-grid');
+    var selected = null; var matchedCount = 0; var busy = false;
+    cards.forEach(function(data, idx){
+      var card = el('button','match-card');
+      card.type='button';
+      var back = el('div','card-back');
+      var icon = makeIconEl(data.kind, color, 56, false);
+      card.appendChild(back); card.appendChild(icon);
+      card.dataset.kind = data.kind;
+      card.addEventListener('click', function(){
+        if(busy || card.classList.contains('matched') || card.classList.contains('revealed')) return;
+        playTap();
+        card.classList.add('revealed');
+        if(!selected){ selected = card; return; }
+        if(selected === card) return;
+        if(selected.dataset.kind === card.dataset.kind){
+          selected.classList.add('matched'); card.classList.add('matched');
+          selected = null; matchedCount += 2;
+          if(matchedCount === cards.length){ setHint('All twins found! 🎉','ok'); setTimeout(taskComplete, 350); }
+        } else {
+          busy = true;
+          var s = selected;
+          setHint(pick(tryAgainMsgs),'err');
+          setTimeout(function(){
+            playNo();
+            s.classList.add('shake'); card.classList.add('shake');
+            setTimeout(function(){
+              s.classList.remove('revealed','shake'); card.classList.remove('revealed','shake');
+              selected = null; busy = false;
+            }, 500);
+          }, 450);
+        }
+      });
+      grid.appendChild(card);
+    });
+    playZone.appendChild(grid);
+  }
+
+  /* ================= 3. SORT (color / shape / category / size / final) ================= */
+  function renderSort(t){
+    var board = el('div','sort-board');
+    var tray = el('div','tray');
+    var basketsWrap = el('div','baskets');
+
+    var basketEls = {};
+    t.baskets.forEach(function(b){
+      var basket = el('div','basket');
+      basket.tabIndex = 0;
+      basket.dataset.key = b.key;
+      var bi = el('div','basket-icon'); bi.innerHTML = basketIconSvg();
+      var label = el('div','basket-label');
+      label.innerHTML = (b.emoji ? b.emoji+' ' : '') + b.label + ' <span class="basket-count" data-count-for="'+b.key+'">0</span>';
+      var items = el('div','basket-items'); items.dataset.itemsFor = b.key;
+      basket.appendChild(bi); basket.appendChild(label); basket.appendChild(items);
+      basketEls[b.key] = basket;
+      basketsWrap.appendChild(basket);
+    });
+
+    var remaining = t.items.length;
+    var selectedChip = null;
+
+    function updateCount(key){
+      var n = basketEls[key].querySelectorAll('.basket-items > .drag-item').length;
+      var span = basketEls[key].querySelector('[data-count-for="'+key+'"]');
+      span.textContent = n;
+    }
+    function clearInvites(){
+      Object.keys(basketEls).forEach(function(k){ basketEls[k].classList.remove('invite'); });
+    }
+    function deselect(){
+      if(selectedChip){ selectedChip.classList.remove('lifted'); selectedChip = null; }
+      clearInvites();
+    }
+
+    t.items.forEach(function(item, i){
+      var chip = el('button','drag-item');
+      chip.type='button';
+      var sz = item.size || 62;
+      chip.style.width = sz+'px'; chip.style.height = sz+'px';
+      chip.appendChild(makeIconEl(item.kind, item.color, sz-12, true));
+      chip.dataset.group = item.group;
+      chip.addEventListener('click', function(){
+        if(selectedChip === chip){ playTap(); deselect(); return; }
+        playTap();
+        if(selectedChip) selectedChip.classList.remove('lifted');
+        selectedChip = chip; chip.classList.add('lifted');
+        clearInvites();
+        Object.keys(basketEls).forEach(function(k){ basketEls[k].classList.add('invite'); });
+        setHint('Now tap a basket!','');
+      });
+      tray.appendChild(chip);
+    });
+
+    Object.keys(basketEls).forEach(function(key){
+      basketEls[key].addEventListener('click', function(){
+        if(!selectedChip) return;
+        var chip = selectedChip;
+        if(chip.dataset.group === key){
+          playYes();
+          clearInvites();
+          chip.classList.remove('lifted');
+          chip.classList.add('placed');
+          var sz = 44;
+          chip.style.width = sz+'px'; chip.style.height = sz+'px';
+          basketEls[key].querySelector('.basket-items').appendChild(chip);
+          updateCount(key);
+          selectedChip = null;
+          remaining -= 1;
+          setHint('Great job! 🎉','ok');
+          if(remaining <= 0){ setTimeout(taskComplete, 400); }
+        } else {
+          playNo();
+          var b = basketEls[key];
+          b.classList.remove('reject'); void b.offsetWidth; b.classList.add('reject');
+          chip.classList.remove('lifted'); chip.classList.add('bump');
+          setTimeout(function(){ chip.classList.remove('bump'); }, 420);
+          setHint(pick(tryAgainMsgs),'err');
+          selectedChip = null;
+          clearInvites();
+        }
+      });
+    });
+
+    board.appendChild(tray); board.appendChild(basketsWrap);
+    playZone.appendChild(board);
+  }
+
+  /* ================= 4. COUNT ================= */
+  function renderCount(t){
+    var roundIdx = 0;
+    function renderRound(){
+      var r = t.rounds[roundIdx];
+      var stage = el('div','count-stage');
+      for(var i=0;i<r.count;i++) stage.appendChild(makeIconEl(r.kind, null, 50, true));
+      var choicesWrap = el('div','count-choices');
+      var options = [r.count];
+      while(options.length < 4){
+        var delta = pick([-2,-1,1,2]);
+        var cand = Math.max(1, Math.min(9, r.count+delta));
+        if(options.indexOf(cand) === -1) options.push(cand);
+      }
+      options = shuffle(options);
+      options.forEach(function(n){
+        var btn = el('button','choice-btn', String(n));
+        btn.type='button';
+        btn.addEventListener('click', function(){
+          if(n === r.count){
+            playYes(); btn.classList.add('right');
+            setHint('Yes, ' + n + ' is right! 🎉','ok');
+            roundIdx += 1;
+            if(roundIdx >= t.rounds.length){ setTimeout(taskComplete, 450); }
+            else { setTimeout(function(){ playZone.innerHTML=''; renderRound(); setHint(''); }, 650); }
+          } else {
+            playNo(); btn.classList.add('wrong');
+            setTimeout(function(){ btn.classList.remove('wrong'); }, 420);
+            setHint(pick(tryAgainMsgs),'err');
+          }
+        });
+        choicesWrap.appendChild(btn);
+      });
+      playZone.innerHTML='';
+      playZone.appendChild(stage);
+      playZone.appendChild(choicesWrap);
+    }
+    renderRound();
+  }
+
+  /* ================= 5. COMPARE ================= */
+  function renderCompare(t){
+    var roundIdx = 0;
+    function renderRound(){
+      var r = t.rounds[roundIdx];
+      taskInstruction.innerHTML = '<span class="tap-hint">👆</span> Tap the basket with ' + (r.ask==='more' ? 'MORE' : 'FEWER') + '.';
+      var row = el('div','compare-row');
+      var groups = [{key:'A', count:r.a},{key:'B', count:r.b}];
+      var correctKey = r.ask==='more' ? (r.a>r.b?'A':'B') : (r.a<r.b?'A':'B');
+      groups.forEach(function(g){
+        var basket = el('div','compare-basket');
+        var bi = el('div','basket-icon'); bi.innerHTML = basketIconSvg();
+        var items = el('div','basket-items');
+        for(var i=0;i<g.count;i++) items.appendChild(makeIconEl(r.kind, null, 34, false));
+        basket.appendChild(bi); basket.appendChild(items);
+        basket.addEventListener('click', function(){
+          if(g.key === correctKey){
+            playYes(); basket.classList.add('right-flash');
+            setHint('That one has ' + (r.ask==='more'?'more':'fewer') + '! 🎉','ok');
+            roundIdx += 1;
+            if(roundIdx >= t.rounds.length){ setTimeout(taskComplete, 450); }
+            else { setTimeout(function(){ renderRound(); setHint(''); }, 650); }
+          } else {
+            playNo();
+            basket.classList.remove('wrong-flash'); void basket.offsetWidth; basket.classList.add('wrong-flash');
+            setHint(pick(tryAgainMsgs),'err');
+          }
+        });
+        row.appendChild(basket);
+      });
+      playZone.innerHTML=''; playZone.appendChild(row);
+    }
+    renderRound();
+  }
+
+  /* ================= FINAL CERTIFICATE ================= */
+  function showFinal(){
+    certName.textContent = state.playerName || 'Star Sorter';
+    certStars.textContent = state.stars;
+    certBadges.innerHTML = '';
+    [['circle',null,'Shapes'],['apple',null,'Fruits'],['cat',null,'Animals']].forEach(function(b){
+      var wrap = el('div','cert-badge');
+      wrap.appendChild(makeIconEl(b[0], b[1]||'var(--fun-blue)', 34, false));
+      var lbl = el('div',null,b[2]); wrap.appendChild(lbl);
+      certBadges.appendChild(wrap);
+    });
+    finalOverlay.classList.add('show');
+    burstConfetti(60);
+  }
+  restartBtn.addEventListener('click', function(){
+    state.index = -1; state.stars = 0; starCount.textContent = 0;
+    finalOverlay.classList.remove('show');
+    renderTask();
+  });
+
+  /* ================= MUTE ================= */
+  muteBtn.addEventListener('click', function(){
+    muted = !muted; muteBtn.textContent = muted ? '🔇' : '🔊';
+  });
+
+  /* ================= INIT ================= */
+  function boot(data){
+    buildPath();
+    renderTask();
+  }
+  if(window.claude && window.claude.hot){
+    window.claude.hot.ready ? window.claude.hot.ready(boot) : boot(window.claude.hot.data||{});
+  } else {
+    boot({});
+  }
+})();
+</script>
+
+</body></html>
