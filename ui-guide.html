@@ -1,0 +1,1236 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Interface Explorer's Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+
+<style>
+/* ---------- Layout concept: a nature field-guide to interface "species", organized into 7 color-coded habitats, each holding 5 numbered specimens with a live, touchable demo ---------- */
+:root{
+  --bg:#eef3fb;
+  --surface:#ffffff;
+  --surface-2:#f6f9fd;
+  --ink:#16213a;
+  --muted:#5c6b8a;
+  --border:#dbe4f3;
+  --shadow:rgba(22,33,58,.10);
+  --accent:#ff6b5e;
+  --accent-ink:#ffffff;
+
+  --h-input:#0d9488;
+  --h-choice:#7c5cff;
+  --h-slider:#c9870a;
+  --h-action:#ff6b5e;
+  --h-nav:#2f6fed;
+  --h-feedback:#d6356f;
+  --h-container:#15803d;
+
+  --font-display:'Baloo 2','Segoe UI',system-ui,sans-serif;
+  --font-body:'Nunito','Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1424; --surface:#171d33; --surface-2:#1c2440;
+    --ink:#eef2fb; --muted:#aab6d6; --border:#2b3458; --shadow:rgba(0,0,0,.45);
+    --accent:#ff8a7e;
+    --h-input:#2dd4bf; --h-choice:#a78bfa; --h-slider:#f3b63d;
+    --h-action:#ff8a7e; --h-nav:#6fa0ff; --h-feedback:#f472a4; --h-container:#4ade80;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1424; --surface:#171d33; --surface-2:#1c2440;
+  --ink:#eef2fb; --muted:#aab6d6; --border:#2b3458; --shadow:rgba(0,0,0,.45);
+  --accent:#ff8a7e;
+  --h-input:#2dd4bf; --h-choice:#a78bfa; --h-slider:#f3b63d;
+  --h-action:#ff8a7e; --h-nav:#6fa0ff; --h-feedback:#f472a4; --h-container:#4ade80;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+  z-index:30; background:var(--bg);
+}
+h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; color:var(--ink)}
+p{margin:0}
+img,svg{max-width:100%}
+a{color:inherit}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px; border-radius:8px}
+@media (prefers-reduced-motion:reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important} }
+
+.wrap{max-width:1180px; margin:0 auto; padding-inline:4px}
+
+/* ---- hero ---- */
+.hero{padding-block:28px 20px; display:flex; flex-wrap:wrap; gap:24px; align-items:center}
+.hero-text{flex:1 1 360px; min-width:0}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:.72rem;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:600;
+}
+.hero h1{font-size:clamp(1.8rem,4.2vw,2.6rem); line-height:1.1; margin-block:8px 10px}
+.hero p.lede{color:var(--muted); font-size:1.02rem; max-width:52ch; line-height:1.55}
+.hero-stats{display:flex; gap:18px; margin-top:16px; flex-wrap:wrap}
+.hero-stat{font-family:var(--font-mono); font-size:.78rem; color:var(--muted)}
+.hero-stat b{display:block; font-family:var(--font-display); font-size:1.3rem; color:var(--ink)}
+.hero-art{flex:0 0 auto; width:min(220px,40vw); aspect-ratio:1; position:relative}
+
+/* ---- sticky habitat nav ---- */
+.habitat-nav{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+  background:var(--surface); border-block:1px solid var(--border);
+  display:flex; gap:8px; overflow-x:auto; padding:10px max(16px,env(safe-area-inset-left,0px)) 10px max(16px,env(safe-area-inset-left,0px));
+  margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px))) calc(-1*max(16px,env(safe-area-inset-right,0px)));
+  scrollbar-width:thin;
+}
+.habitat-nav a{
+  flex:0 0 auto; font-family:var(--font-display); font-weight:600; font-size:.85rem;
+  padding:8px 14px; border-radius:999px; background:var(--surface-2); color:var(--muted);
+  text-decoration:none; border:1px solid var(--border); white-space:nowrap; transition:all .15s ease;
+}
+.habitat-nav a.active{background:var(--h,var(--accent)); color:#fff; border-color:transparent}
+
+main{padding-block:36px 80px}
+
+/* ---- habitat section ---- */
+.habitat{margin-top:52px; scroll-margin-top:70px}
+.habitat:first-of-type{margin-top:28px}
+.habitat-head{display:flex; gap:16px; align-items:flex-start; margin-bottom:20px}
+.habitat-icon{
+  flex:0 0 auto; width:52px; height:52px; border-radius:16px; display:grid; place-items:center;
+  background:color-mix(in srgb, var(--h) 16%, var(--surface)); font-size:1.5rem;
+}
+.habitat-eyebrow{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--h); font-weight:600}
+.habitat-head h2{font-size:1.5rem; margin-block:3px 4px}
+.habitat-blurb{color:var(--muted); font-size:.95rem; max-width:60ch}
+
+.specimen-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px}
+
+.specimen{
+  background:var(--surface); border:1px solid var(--border); border-radius:18px;
+  padding:18px 18px 20px; box-shadow:0 1px 2px var(--shadow); position:relative; overflow:hidden;
+  display:flex; flex-direction:column; gap:12px; min-width:0;
+}
+.specimen::before{content:""; position:absolute; inset:0 0 auto 0; height:4px; background:var(--h)}
+.specimen-top{display:flex; align-items:baseline; gap:10px; margin-top:4px}
+.tag{font-family:var(--font-mono); font-size:.68rem; color:var(--h); font-weight:600; letter-spacing:.04em}
+.specimen h3{font-size:1.05rem}
+.blurb{color:var(--muted); font-size:.87rem; line-height:1.45}
+.demo{
+  margin-top:auto; padding-top:12px; border-top:1px dashed var(--border);
+  display:flex; flex-direction:column; gap:10px; min-width:0;
+}
+.readout{
+  font-family:var(--font-mono); font-size:.78rem; color:var(--h); min-height:1.2em; word-break:break-word;
+}
+
+/* ---- shared form bits ---- */
+.field-label{font-size:.78rem; font-weight:700; color:var(--muted)}
+.input, .textarea, .select{
+  width:100%; font-family:var(--font-body); font-size:.92rem; color:var(--ink);
+  background:var(--surface-2); border:1.5px solid var(--border); border-radius:10px;
+  padding:9px 12px; transition:border-color .15s ease;
+}
+.input:focus, .textarea:focus, .select:focus{border-color:var(--h); outline:none}
+.textarea{resize:vertical; min-height:70px}
+.input-row{position:relative; display:flex; align-items:center}
+.input-row .input{padding-right:40px}
+.input-row.pad-left .input{padding-left:38px}
+.icon-in-input{position:absolute; width:18px; height:18px; color:var(--muted)}
+.icon-in-input.left{left:10px}
+.icon-in-input.right{right:10px; cursor:pointer; background:none; border:none; padding:0; display:grid; place-items:center}
+.stepper{display:flex; align-items:center; gap:0; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; width:fit-content}
+.stepper button{width:34px; height:34px; border:none; background:var(--surface-2); color:var(--h); font-size:1.1rem; font-weight:700; cursor:pointer}
+.stepper button:hover{background:color-mix(in srgb, var(--h) 18%, var(--surface-2))}
+.stepper .val{width:46px; text-align:center; font-family:var(--font-mono); font-weight:600}
+
+.chip-row{display:flex; flex-wrap:wrap; gap:6px; min-height:28px}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; background:color-mix(in srgb, var(--h) 16%, var(--surface));
+  color:var(--ink); border-radius:999px; padding:5px 10px 5px 12px; font-size:.82rem; font-weight:600;
+}
+.chip button{background:none; border:none; color:var(--muted); cursor:pointer; width:16px; height:16px; display:grid; place-items:center; padding:0}
+
+.check-list{display:flex; flex-direction:column; gap:9px}
+.check-row{display:flex; align-items:center; gap:10px; font-size:.9rem; cursor:pointer}
+.check-row input{accent-color:var(--h); width:18px; height:18px; cursor:pointer}
+.radio-row{display:flex; align-items:center; gap:10px; font-size:.9rem; cursor:pointer}
+.radio-row input{accent-color:var(--h); width:18px; height:18px; cursor:pointer}
+
+.switch{position:relative; display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none}
+.switch input{position:absolute; opacity:0; width:1px; height:1px}
+.switch .track{width:46px; height:26px; border-radius:999px; background:var(--border); position:relative; transition:background .2s ease; flex:0 0 auto}
+.switch .thumb{position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .2s ease; display:grid; place-items:center; font-size:.7rem}
+.switch input:checked + .track{background:var(--h)}
+.switch input:checked + .track .thumb{transform:translateX(20px)}
+
+.slider-wrap{display:flex; align-items:center; gap:10px}
+input[type="range"]{-webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:999px; background:var(--border); outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--h); border:3px solid var(--surface); box-shadow:0 1px 3px var(--shadow); cursor:pointer}
+input[type="range"]::-moz-range-thumb{width:16px; height:16px; border-radius:50%; background:var(--h); border:3px solid var(--surface); cursor:pointer}
+
+input[type="color"]{width:46px; height:40px; border:1.5px solid var(--border); border-radius:10px; padding:2px; background:var(--surface-2); cursor:pointer}
+input[type="date"], input[type="time"]{font-family:var(--font-body)}
+
+.star-row{display:flex; gap:4px}
+.star-row button{background:none; border:none; cursor:pointer; padding:2px; color:var(--border)}
+.star-row button svg{width:26px; height:26px; display:block}
+.star-row button.on{color:var(--h-slider)}
+
+.btn{
+  font-family:var(--font-display); font-weight:600; font-size:.9rem; border-radius:12px; padding:10px 18px;
+  border:2px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:transform .12s ease, filter .15s ease;
+}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn-primary{background:var(--h-action); color:#fff}
+.btn-primary:hover{filter:brightness(1.07)}
+.btn-outline{background:transparent; border-color:var(--h-action); color:var(--h-action)}
+.btn-outline:hover{background:color-mix(in srgb, var(--h-action) 12%, transparent)}
+.btn-disabled{background:var(--border); color:var(--muted); cursor:not-allowed}
+.btn-icon{width:42px; height:42px; border-radius:50%; background:var(--surface-2); border:1.5px solid var(--border); padding:0; justify-content:center; color:var(--muted)}
+.btn-icon.liked{color:#fff; background:#e0356b; border-color:transparent}
+.btn-icon svg{width:19px; height:19px}
+.tooltip-wrap{position:relative; display:inline-flex}
+.tooltip-wrap:hover .tooltip, .tooltip-wrap:focus-within .tooltip{opacity:1; transform:translate(-50%,-4px)}
+.tooltip{
+  position:absolute; bottom:calc(100% + 8px); left:50%; transform:translate(-50%,0); opacity:0;
+  background:var(--ink); color:var(--bg); font-size:.76rem; padding:7px 10px; border-radius:8px; white-space:nowrap;
+  transition:all .15s ease; pointer-events:none; z-index:5; font-weight:600;
+}
+.tooltip::after{content:""; position:absolute; top:100%; left:50%; margin-left:-5px; border:5px solid transparent; border-top-color:var(--ink)}
+
+.fab-area{position:relative; height:84px}
+.fab{
+  position:absolute; right:4px; bottom:4px; width:52px; height:52px; border-radius:50%; background:var(--h-action);
+  color:#fff; border:none; display:grid; place-items:center; box-shadow:0 6px 14px var(--shadow); cursor:pointer;
+}
+.fab svg{width:24px; height:24px; transition:transform .2s ease}
+.fab.open svg{transform:rotate(45deg)}
+.fab-menu{
+  position:absolute; right:4px; bottom:64px; background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  box-shadow:0 8px 20px var(--shadow); padding:6px; display:flex; flex-direction:column; gap:2px; min-width:150px;
+  opacity:0; pointer-events:none; transform:translateY(6px); transition:all .15s ease;
+}
+.fab-menu.open{opacity:1; pointer-events:auto; transform:translateY(0)}
+.fab-menu button{background:none; border:none; text-align:left; padding:8px 10px; border-radius:8px; font-size:.85rem; cursor:pointer; color:var(--ink); display:flex; gap:8px; align-items:center}
+.fab-menu button:hover{background:var(--surface-2)}
+
+.tabs-row{display:flex; gap:4px; border-bottom:2px solid var(--border)}
+.tab-btn{background:none; border:none; padding:8px 12px; font-family:var(--font-display); font-weight:600; font-size:.85rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px}
+.tab-btn.active{color:var(--h); border-color:var(--h)}
+.tab-panel{font-size:.88rem; padding-top:8px; min-height:40px}
+
+.crumb-row{display:flex; align-items:center; gap:6px; font-size:.85rem; flex-wrap:wrap}
+.crumb{background:none; border:none; color:var(--muted); cursor:pointer; font-family:inherit; font-size:inherit; padding:2px 4px; border-radius:6px}
+.crumb.active{color:var(--h); font-weight:700}
+.crumb-sep{color:var(--border)}
+
+.page-row{display:flex; gap:6px; align-items:center; flex-wrap:wrap}
+.page-btn{width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface-2); font-family:var(--font-mono); font-size:.8rem; cursor:pointer; color:var(--ink)}
+.page-btn.active{background:var(--h); color:#fff; border-color:transparent}
+.page-btn.next{width:auto; padding:0 12px}
+
+.menu-wrap{position:relative; display:inline-block}
+.menu-pop{
+  position:absolute; top:calc(100% + 6px); left:0; background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; box-shadow:0 8px 20px var(--shadow); min-width:170px; padding:6px; z-index:4;
+  opacity:0; pointer-events:none; transform:translateY(-4px); transition:all .15s ease;
+}
+.menu-pop.open{opacity:1; pointer-events:auto; transform:translateY(0)}
+.menu-pop button{display:flex; gap:8px; align-items:center; width:100%; background:none; border:none; text-align:left; padding:8px 10px; border-radius:8px; font-size:.85rem; cursor:pointer; color:var(--ink)}
+.menu-pop button:hover{background:var(--surface-2)}
+
+.navbar-demo{display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:9px 12px}
+.navbar-demo .logo{font-family:var(--font-display); font-weight:700; font-size:.9rem; color:var(--h)}
+.navbar-demo .links{display:flex; gap:4px}
+.navbar-demo .links button{background:none; border:none; font-size:.8rem; font-weight:600; color:var(--muted); padding:6px 9px; border-radius:8px; cursor:pointer}
+.navbar-demo .links button.active{background:var(--h); color:#fff}
+
+.progress-track{height:12px; border-radius:999px; background:var(--border); overflow:hidden}
+.progress-fill{height:100%; width:0%; background:var(--h); border-radius:999px; transition:width .25s ease}
+
+.spinner{width:28px; height:28px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--h); animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.alert{display:flex; gap:10px; align-items:flex-start; padding:11px 12px; border-radius:12px; font-size:.85rem; border:1.5px solid transparent}
+.alert svg{width:19px; height:19px; flex:0 0 auto; margin-top:1px}
+.alert button{margin-left:auto; background:none; border:none; cursor:pointer; color:inherit; opacity:.7}
+.alert-success{background:color-mix(in srgb, #15803d 16%, var(--surface)); color:#0f5132; border-color:color-mix(in srgb,#15803d 30%,transparent)}
+:root[data-theme="dark"] .alert-success, @media (prefers-color-scheme:dark){.alert-success{color:#bdf2cf}}
+.alert-warning{background:color-mix(in srgb, #c9870a 18%, var(--surface)); color:#7a5300; border-color:color-mix(in srgb,#c9870a 30%,transparent)}
+.alert-error{background:color-mix(in srgb, #d6356f 16%, var(--surface)); color:#7a1942; border-color:color-mix(in srgb,#d6356f 30%,transparent)}
+
+.toast-host{position:fixed; left:0; right:0; bottom:calc(16px + env(safe-area-inset-bottom,0px)); display:flex; justify-content:center; z-index:50; pointer-events:none}
+.toast{background:var(--ink); color:var(--bg); font-size:.85rem; font-weight:600; padding:11px 18px; border-radius:999px; box-shadow:0 8px 20px var(--shadow); display:flex; align-items:center; gap:8px; opacity:0; transform:translateY(10px); transition:all .25s ease}
+.toast.show{opacity:1; transform:translateY(0)}
+
+.card-demo{border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--surface-2)}
+.card-demo .banner{height:54px; background:linear-gradient(135deg, var(--h), color-mix(in srgb, var(--h) 60%, #fff))}
+.card-demo .body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px}
+.card-demo .name{font-family:var(--font-display); font-weight:700}
+.card-demo .stats{display:flex; gap:14px; margin-top:6px; font-family:var(--font-mono); font-size:.72rem; color:var(--muted)}
+.card-demo .stats b{color:var(--ink); display:block; font-size:.95rem; font-family:var(--font-display)}
+
+.accordion-item{border:1px solid var(--border); border-radius:10px; overflow:hidden}
+.accordion-item + .accordion-item{margin-top:6px}
+.accordion-head{width:100%; background:var(--surface-2); border:none; padding:10px 12px; text-align:left; font-weight:700; font-size:.85rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--ink)}
+.accordion-head svg{width:16px; height:16px; transition:transform .2s ease}
+.accordion-head.open svg{transform:rotate(180deg)}
+.accordion-panel{max-height:0; overflow:hidden; transition:max-height .22s ease}
+.accordion-panel .inner{padding:10px 12px; font-size:.82rem; color:var(--muted)}
+
+.avatar-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+.avatar{position:relative; width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-weight:700; font-family:var(--font-display); color:#fff; font-size:.85rem}
+.avatar .dot{position:absolute; right:-1px; bottom:-1px; width:12px; height:12px; border-radius:50%; border:2px solid var(--surface)}
+.dot-online{background:#2bb673}
+.dot-away{background:#c9870a}
+.dot-off{background:#9aa5c0}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:700; padding:3px 9px; border-radius:999px}
+.badge-new{background:color-mix(in srgb, var(--h) 20%, var(--surface)); color:var(--h)}
+
+table.data-table{width:100%; border-collapse:collapse; font-size:.84rem}
+.data-table th, .data-table td{padding:8px 10px; text-align:left; border-bottom:1px solid var(--border)}
+.data-table th{font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted)}
+.data-table tr:hover td{background:var(--surface-2)}
+.table-scroll{overflow-x:auto}
+
+.modal-overlay{position:fixed; inset:0; background:rgba(10,14,28,.55); display:flex; align-items:center; justify-content:center; z-index:60; opacity:0; pointer-events:none; transition:opacity .18s ease; padding:20px}
+.modal-overlay.open{opacity:1; pointer-events:auto}
+.modal-box{background:var(--surface); border-radius:18px; padding:22px; max-width:340px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.35); transform:scale(.94); transition:transform .18s ease}
+.modal-overlay.open .modal-box{transform:scale(1)}
+.modal-box h3{font-size:1.15rem; margin-bottom:8px}
+.modal-box p{color:var(--muted); font-size:.88rem; margin-bottom:16px}
+
+.confetti-piece{position:fixed; top:0; width:8px; height:8px; border-radius:2px; z-index:70; pointer-events:none}
+
+footer{padding:28px 0 40px; text-align:center; color:var(--muted); font-size:.8rem; font-family:var(--font-mono)}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-text">
+      <span class="eyebrow">🧭 Field Guide · Vol. 1</span>
+      <h1>The Interface Explorer's Field Guide</h1>
+      <p class="lede">Every app is a jungle of buttons, boxes and sliders. This guide catches 35 of the most common interface "species" so you can poke, click and drag each one and see exactly what it does.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><b>35</b>specimens</div>
+        <div class="hero-stat"><b>7</b>habitats</div>
+        <div class="hero-stat"><b>∞</b>clicks allowed</div>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 200 200" width="100%" height="100%">
+        <circle cx="100" cy="100" r="92" fill="color-mix(in srgb, var(--h-choice) 14%, var(--surface))"/>
+        <g id="cursor-float">
+          <rect x="60" y="56" width="80" height="54" rx="12" fill="var(--surface)" stroke="var(--h-nav)" stroke-width="3"/>
+          <circle cx="82" cy="83" r="6" fill="var(--h-nav)"/>
+          <circle cx="118" cy="83" r="6" fill="var(--h-nav)"/>
+          <path d="M84 96 Q100 106 116 96" stroke="var(--h-nav)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+        <path id="cursor-arrow" d="M118 128 L140 150 L132 152 L138 164 L130 168 L124 156 L118 162 Z" fill="var(--h-action)" stroke="var(--surface)" stroke-width="2"/>
+      </svg>
+    </div>
+  </header>
+
+  <nav class="habitat-nav" id="habitatNav" aria-label="Jump to a habitat">
+    <a href="#habitat-input" data-h="var(--h-input)">🔤 Type It Out</a>
+    <a href="#habitat-choice" data-h="var(--h-choice)">✅ Pick One</a>
+    <a href="#habitat-slider" data-h="var(--h-slider)">🎚️ Drag &amp; Set</a>
+    <a href="#habitat-action" data-h="var(--h-action)">🚀 Make It Happen</a>
+    <a href="#habitat-nav-sec" data-h="var(--h-nav)">🧭 Find Your Way</a>
+    <a href="#habitat-feedback" data-h="var(--h-feedback)">💬 Speak Up</a>
+    <a href="#habitat-container" data-h="var(--h-container)">🗂️ Hold Everything</a>
+  </nav>
+
+  <main>
+
+    <!-- HABITAT 1 -->
+    <section class="habitat" id="habitat-input" style="--h:var(--h-input)">
+      <div class="habitat-head">
+        <div class="habitat-icon">🔤</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 01 · Specimens 01–05</p>
+          <h2>Type It Out</h2>
+          <p class="habitat-blurb">Where words and numbers get typed in. These species collect exactly what you write.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 01</span><h3>Text Field</h3></div>
+          <p class="blurb">A single line box for short answers, like your name.</p>
+          <div class="demo">
+            <label class="field-label" for="sp01">What's your explorer name?</label>
+            <input class="input" id="sp01" type="text" placeholder="Captain Comet" maxlength="24">
+            <p class="readout" id="sp01out">Waiting for a name…</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 02</span><h3>Password Field</h3></div>
+          <p class="blurb">Hides what you type so nobody peeking can read your secret code.</p>
+          <div class="demo">
+            <label class="field-label" for="sp02">Secret clubhouse password</label>
+            <div class="input-row">
+              <input class="input" id="sp02" type="password" placeholder="••••••••">
+              <button class="icon-in-input right" id="sp02toggle" type="button" aria-label="Show password">
+                <svg id="sp02eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 03</span><h3>Search Field</h3></div>
+          <p class="blurb">Type part of a word and the list shrinks to match it — try "a"!</p>
+          <div class="demo">
+            <div class="input-row pad-left">
+              <svg class="icon-in-input left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input class="input" id="sp03" type="text" placeholder="Search animals…">
+              <button class="icon-in-input right" id="sp03clear" type="button" aria-label="Clear search" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="chip-row" id="sp03results"></div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 04</span><h3>Text Area</h3></div>
+          <p class="blurb">A bigger box for longer answers, like a whole adventure story.</p>
+          <div class="demo">
+            <label class="field-label" for="sp04">Write one sentence about today</label>
+            <textarea class="textarea" id="sp04" maxlength="100" placeholder="Today I discovered…"></textarea>
+            <p class="readout" id="sp04out">0 / 100</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 05</span><h3>Number Stepper</h3></div>
+          <p class="blurb">Click + or − to count up or down by a whole number.</p>
+          <div class="demo">
+            <label class="field-label">How many stickers do you want?</label>
+            <div class="stepper">
+              <button id="sp05minus" type="button" aria-label="decrease">−</button>
+              <span class="val" id="sp05val">3</span>
+              <button id="sp05plus" type="button" aria-label="increase">+</button>
+            </div>
+            <p class="readout" id="sp05out">⭐⭐⭐</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 2 -->
+    <section class="habitat" id="habitat-choice" style="--h:var(--h-choice)">
+      <div class="habitat-head">
+        <div class="habitat-icon">✅</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 02 · Specimens 06–10</p>
+          <h2>Pick One (or More)</h2>
+          <p class="habitat-blurb">Species built for choosing. Some let you grab several options, some let you grab just one.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 06</span><h3>Checkbox</h3></div>
+          <p class="blurb">A box you can tick — and you're allowed to tick more than one.</p>
+          <div class="demo">
+            <div class="check-list">
+              <label class="check-row"><input type="checkbox" class="sp06" id="sp06a" checked> Pack snacks</label>
+              <label class="check-row"><input type="checkbox" class="sp06" id="sp06b"> Bring sunscreen</label>
+              <label class="check-row"><input type="checkbox" class="sp06" id="sp06c"> Grab the map</label>
+            </div>
+            <p class="readout" id="sp06out">1 of 3 packed</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 07</span><h3>Radio Buttons</h3></div>
+          <p class="blurb">Round buttons in a group where only one can ever be picked.</p>
+          <div class="demo">
+            <div class="check-list">
+              <label class="radio-row"><input type="radio" name="sp07" value="🤾" checked> Dodgeball</label>
+              <label class="radio-row"><input type="radio" name="sp07" value="🪢"> Tug of war</label>
+              <label class="radio-row"><input type="radio" name="sp07" value="🏃"> Tag</label>
+            </div>
+            <p class="readout" id="sp07out">Favorite game: 🤾</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 08</span><h3>Toggle Switch</h3></div>
+          <p class="blurb">A sliding on/off button — not built into HTML, but everywhere in apps.</p>
+          <div class="demo">
+            <label class="switch">
+              <input type="checkbox" id="sp08">
+              <span class="track"><span class="thumb">☀️</span></span>
+              <span id="sp08label">Night mode: off</span>
+            </label>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 09</span><h3>Select Dropdown</h3></div>
+          <p class="blurb">Click to open a list, then pick exactly one thing from it.</p>
+          <div class="demo">
+            <label class="field-label" for="sp09">Choose your superpower</label>
+            <select class="select" id="sp09">
+              <option value="🛸">Flying</option>
+              <option value="🫥">Invisibility</option>
+              <option value="⚡">Super speed</option>
+              <option value="🧠">Mind reading</option>
+            </select>
+            <p class="readout" id="sp09out" style="font-size:1.4rem">🛸</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 10</span><h3>Tag Input</h3></div>
+          <p class="blurb">Type a word and press Enter to drop it in as its own little chip.</p>
+          <div class="demo">
+            <label class="field-label" for="sp10">Build a sandwich — type an ingredient, press Enter</label>
+            <input class="input" id="sp10" placeholder="e.g. cheese">
+            <div class="chip-row" id="sp10chips"></div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 3 -->
+    <section class="habitat" id="habitat-slider" style="--h:var(--h-slider)">
+      <div class="habitat-head">
+        <div class="habitat-icon">🎚️</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 03 · Specimens 11–15</p>
+          <h2>Drag &amp; Set</h2>
+          <p class="habitat-blurb">Species you drag, slide or spin to land on exactly the value you want.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 11</span><h3>Range Slider</h3></div>
+          <p class="blurb">Drag the dot left or right to pick a number between two limits.</p>
+          <div class="demo">
+            <label class="field-label" for="sp11">How loud is your roar?</label>
+            <div class="slider-wrap">
+              <span id="sp11emoji">🔉</span>
+              <input type="range" id="sp11" min="0" max="100" value="40">
+            </div>
+            <p class="readout" id="sp11out">Roar level: 40</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 12</span><h3>Color Picker</h3></div>
+          <p class="blurb">Click the swatch to open a rainbow of colors and pick one.</p>
+          <div class="demo">
+            <label class="field-label" for="sp12">Pick your rocket's color</label>
+            <div class="slider-wrap">
+              <input type="color" id="sp12" value="#ff6b5e">
+              <span class="readout" id="sp12out">#FF6B5E</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 13</span><h3>Date Picker</h3></div>
+          <p class="blurb">Opens a little calendar so you can tap a day instead of typing it.</p>
+          <div class="demo">
+            <label class="field-label" for="sp13">Pick your party date</label>
+            <input class="input" type="date" id="sp13">
+            <p class="readout" id="sp13out">No date chosen yet</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 14</span><h3>Star Rating</h3></div>
+          <p class="blurb">Click a star to rate something — every star up to it lights up too.</p>
+          <div class="demo">
+            <label class="field-label">Rate this field guide</label>
+            <div class="star-row" id="sp14"></div>
+            <p class="readout" id="sp14out">No rating yet</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 15</span><h3>Time Picker</h3></div>
+          <p class="blurb">Just like the date picker, but for picking an hour and minute.</p>
+          <div class="demo">
+            <label class="field-label" for="sp15">Set your alarm</label>
+            <input class="input" type="time" id="sp15" value="07:30">
+            <p class="readout" id="sp15out">Alarm set for 07:30</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 4 -->
+    <section class="habitat" id="habitat-action" style="--h:var(--h-action)">
+      <div class="habitat-head">
+        <div class="habitat-icon">🚀</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 04 · Specimens 16–20</p>
+          <h2>Make It Happen</h2>
+          <p class="habitat-blurb">Buttons: the species that actually do something the moment you press them.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 16</span><h3>Primary Button</h3></div>
+          <p class="blurb">The loudest, most important button on the screen — click it!</p>
+          <div class="demo">
+            <button class="btn btn-primary" id="sp16">🚀 Launch!</button>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 17</span><h3>Outline Button</h3></div>
+          <p class="blurb">A quieter, second-choice button for "maybe later" actions.</p>
+          <div class="demo">
+            <button class="btn btn-outline" id="sp17">Maybe later</button>
+            <p class="readout" id="sp17out"></p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 18</span><h3>Disabled Button</h3></div>
+          <p class="blurb">Greyed out so you know it can't be clicked — yet!</p>
+          <div class="demo">
+            <div class="tooltip-wrap">
+              <button class="btn btn-disabled" disabled tabindex="0">🔒 Locked</button>
+              <span class="tooltip">Finish Level 1 first!</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 19</span><h3>Icon Button</h3></div>
+          <p class="blurb">A button that's just a picture — tap the heart to like it.</p>
+          <div class="demo">
+            <div class="slider-wrap">
+              <button class="btn-icon" id="sp19" aria-label="like">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.4-9.5 9-9.5 9Z"/></svg>
+              </button>
+              <span class="readout" id="sp19out">0 likes</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 20</span><h3>Floating Action Button</h3></div>
+          <p class="blurb">A round button that floats in a corner and opens a tiny menu.</p>
+          <div class="demo">
+            <div class="fab-area">
+              <div class="fab-menu" id="sp20menu">
+                <button type="button">📷 Add photo</button>
+                <button type="button">📝 Add note</button>
+              </div>
+              <button class="fab" id="sp20" aria-label="add">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 5 -->
+    <section class="habitat" id="habitat-nav-sec" style="--h:var(--h-nav)">
+      <div class="habitat-head">
+        <div class="habitat-icon">🧭</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 05 · Specimens 21–25</p>
+          <h2>Find Your Way</h2>
+          <p class="habitat-blurb">Navigation species: they don't hold content themselves, they help you get to it.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 21</span><h3>Tabs</h3></div>
+          <p class="blurb">Click a label to swap which panel of content is showing.</p>
+          <div class="demo">
+            <div class="tabs-row" id="sp21tabs">
+              <button class="tab-btn active" data-tab="0">Dinosaurs</button>
+              <button class="tab-btn" data-tab="1">Robots</button>
+              <button class="tab-btn" data-tab="2">Unicorns</button>
+            </div>
+            <div class="tab-panel" id="sp21panel">🦖 Dinosaurs ruled Earth for 165 million years!</div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 22</span><h3>Breadcrumb</h3></div>
+          <p class="blurb">A trail of crumbs showing exactly where you are — click one to jump back.</p>
+          <div class="demo">
+            <div class="crumb-row" id="sp22">
+              <button class="crumb" data-i="0">Home</button><span class="crumb-sep">›</span>
+              <button class="crumb" data-i="1">Games</button><span class="crumb-sep">›</span>
+              <button class="crumb active" data-i="2">Puzzle</button>
+            </div>
+            <p class="readout" id="sp22out">You are in: Puzzle</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 23</span><h3>Pagination</h3></div>
+          <p class="blurb">Flips you between pages of a long list, one chunk at a time.</p>
+          <div class="demo">
+            <div class="page-row" id="sp23"></div>
+            <p class="readout" id="sp23out">Showing page 1</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 24</span><h3>Dropdown Menu</h3></div>
+          <p class="blurb">Click the button to pop open a small list of choices nearby.</p>
+          <div class="demo">
+            <div class="menu-wrap">
+              <button class="btn btn-outline" id="sp24btn" type="button">Choose avatar ▾</button>
+              <div class="menu-pop" id="sp24menu">
+                <button type="button" data-v="🦊">🦊 Fox</button>
+                <button type="button" data-v="🐙">🐙 Octopus</button>
+                <button type="button" data-v="🦉">🦉 Owl</button>
+              </div>
+            </div>
+            <p class="readout" id="sp24out">No avatar chosen</p>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 25</span><h3>Navbar</h3></div>
+          <p class="blurb">The strip at the top of most apps, holding a logo and the main links.</p>
+          <div class="demo">
+            <div class="navbar-demo">
+              <span class="logo">🪐 Orbit</span>
+              <div class="links" id="sp25">
+                <button class="active" data-v="Home">Home</button>
+                <button data-v="Map">Map</button>
+                <button data-v="Shop">Shop</button>
+              </div>
+            </div>
+            <p class="readout" id="sp25out">Viewing: Home</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 6 -->
+    <section class="habitat" id="habitat-feedback" style="--h:var(--h-feedback)">
+      <div class="habitat-head">
+        <div class="habitat-icon">💬</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 06 · Specimens 26–30</p>
+          <h2>Speak Up</h2>
+          <p class="habitat-blurb">Species that talk back to you — showing progress, status, or a quick little message.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 26</span><h3>Progress Bar</h3></div>
+          <p class="blurb">Fills up left to right to show how much of a job is finished.</p>
+          <div class="demo">
+            <div class="progress-track"><div class="progress-fill" id="sp26fill"></div></div>
+            <button class="btn btn-outline" id="sp26" type="button">Start loading</button>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 27</span><h3>Spinner / Loader</h3></div>
+          <p class="blurb">Spins forever to say "still thinking" when nobody knows how long it'll take.</p>
+          <div class="demo">
+            <div class="slider-wrap">
+              <div class="spinner" id="sp27spin" style="display:none"></div>
+              <span id="sp27text">Ready</span>
+            </div>
+            <button class="btn btn-outline" id="sp27" type="button">Think for 2 seconds</button>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 28</span><h3>Tooltip</h3></div>
+          <p class="blurb">A tiny bubble of extra info that pops up when you hover or focus.</p>
+          <div class="demo">
+            <div class="tooltip-wrap">
+              <button class="btn-icon" aria-describedby="sp28tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>
+              </button>
+              <span class="tooltip" id="sp28tip">Octopuses have 3 hearts!</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 29</span><h3>Alert Banner</h3></div>
+          <p class="blurb">A colored strip that shouts good news, a warning, or an oops.</p>
+          <div class="demo" style="gap:8px">
+            <div class="alert alert-success" id="sp29success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Great job, level complete!</span>
+              <button type="button" aria-label="dismiss" data-close>✕</button>
+            </div>
+            <div class="alert alert-warning" id="sp29warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+              <span>One life left — be careful!</span>
+              <button type="button" aria-label="dismiss" data-close>✕</button>
+            </div>
+            <div class="alert alert-error" id="sp29err">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+              <span>Oops, that answer was wrong.</span>
+              <button type="button" aria-label="dismiss" data-close>✕</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 30</span><h3>Toast Notification</h3></div>
+          <p class="blurb">A little message that slides up, waves hello, then disappears on its own.</p>
+          <div class="demo">
+            <button class="btn btn-primary" id="sp30" type="button">💾 Save my drawing</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- HABITAT 7 -->
+    <section class="habitat" id="habitat-container" style="--h:var(--h-container)">
+      <div class="habitat-head">
+        <div class="habitat-icon">🗂️</div>
+        <div>
+          <p class="habitat-eyebrow">Habitat 07 · Specimens 31–35</p>
+          <h2>Hold Everything</h2>
+          <p class="habitat-blurb">Containers: species built to organize and display other pieces of content.</p>
+        </div>
+      </div>
+      <div class="specimen-grid">
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 31</span><h3>Card</h3></div>
+          <p class="blurb">A tidy little box that groups a picture, title and facts together.</p>
+          <div class="demo">
+            <div class="card-demo">
+              <div class="banner"></div>
+              <div class="body">
+                <span class="name">Pip the Explorer</span>
+                <span style="font-size:.78rem; color:var(--muted)">Level 7 Trailblazer</span>
+                <div class="stats"><div><b>128</b>badges</div><div><b>42</b>trails</div></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 32</span><h3>Accordion</h3></div>
+          <p class="blurb">Click a question to fold it open — click again to fold it back up.</p>
+          <div class="demo" id="sp32">
+            <div class="accordion-item">
+              <button class="accordion-head" data-i="0">Why is the sky blue? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="accordion-panel"><div class="inner">Sunlight scatters off tiny bits of air, and blue light scatters the most!</div></div>
+            </div>
+            <div class="accordion-item">
+              <button class="accordion-head" data-i="1">Do fish sleep? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="accordion-panel"><div class="inner">Yes! Most fish rest with their eyes open since they have no eyelids.</div></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 33</span><h3>Avatar</h3></div>
+          <p class="blurb">A small round picture or initials that stands in for a person, plus a status dot.</p>
+          <div class="demo">
+            <div class="avatar-row">
+              <div class="avatar" style="background:var(--h-input)">AK<span class="dot dot-online" title="online"></span></div>
+              <div class="avatar" style="background:var(--h-choice)">MJ<span class="dot dot-away" title="away"></span></div>
+              <div class="avatar" style="background:var(--h-nav)">RT<span class="dot dot-off" title="offline"></span></div>
+              <span class="badge badge-new">● Online: 2</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 34</span><h3>Table</h3></div>
+          <p class="blurb">Rows and columns line up so you can compare facts side by side.</p>
+          <div class="demo">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr><th>Pet</th><th>Trick</th><th>Score</th></tr></thead>
+                <tbody>
+                  <tr><td>🐶 Biscuit</td><td>Roll over</td><td>98</td></tr>
+                  <tr><td>🐱 Mocha</td><td>High five</td><td>91</td></tr>
+                  <tr><td>🦜 Kiwi</td><td>Say "hi"</td><td>87</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="specimen">
+          <div class="specimen-top"><span class="tag">No. 35</span><h3>Modal / Dialog</h3></div>
+          <p class="blurb">A box that pops up over everything else and waits for you to answer it.</p>
+          <div class="demo">
+            <button class="btn btn-primary" id="sp35open" type="button">🗝️ Open treasure chest</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>made for curious explorers · tap everything</footer>
+</div>
+
+<div class="toast-host" id="toastHost"></div>
+
+<div class="modal-overlay" id="sp35overlay">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sp35title">
+    <h3 id="sp35title">✨ You found treasure!</h3>
+    <p>Inside the chest: 3 gold coins, a tiny compass, and a map to the next island.</p>
+    <button class="btn btn-primary" id="sp35close" type="button">Nice, close it</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- habitat nav active highlight ----------
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#habitatNav a'));
+  navLinks.forEach(function(a){ a.style.setProperty('--h', a.dataset.h); });
+  var sections = navLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          var id = '#' + e.target.id;
+          navLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    sections.forEach(function(s){ if(s) io.observe(s); });
+  }
+
+  // ---------- confetti ----------
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function confetti(x,y){
+    if(reduceMotion) return;
+    var colors = ['#ff6b5e','#0d9488','#7c5cff','#2f6fed','#c9870a','#d6356f'];
+    for(var i=0;i<16;i++){
+      var p = document.createElement('span');
+      p.className = 'confetti-piece';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = colors[i % colors.length];
+      var dx = (Math.random()-0.5) * 220;
+      var dy = 120 + Math.random()*160;
+      var rot = (Math.random()-0.5) * 600;
+      document.body.appendChild(p);
+      p.animate([
+        {transform:'translate(0,0) rotate(0deg)', opacity:1},
+        {transform:'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)', opacity:0}
+      ], {duration: 700 + Math.random()*300, easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish = function(){ p.remove(); };
+    }
+  }
+
+  // ---------- toast ----------
+  function toast(msg){
+    var host = document.getElementById('toastHost');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    host.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 2200);
+  }
+
+  // ---- 01 Text field ----
+  var sp01 = document.getElementById('sp01'), sp01out = document.getElementById('sp01out');
+  sp01.addEventListener('input', function(){
+    sp01out.textContent = sp01.value ? 'Hello, ' + sp01.value + '!' : 'Waiting for a name…';
+  });
+
+  // ---- 02 Password ----
+  var sp02 = document.getElementById('sp02'), sp02toggle = document.getElementById('sp02toggle'), sp02eye = document.getElementById('sp02eye');
+  sp02toggle.addEventListener('click', function(){
+    var show = sp02.type === 'password';
+    sp02.type = show ? 'text' : 'password';
+    sp02eye.innerHTML = show
+      ? '<path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.1A10.8 10.8 0 0 1 12 5c7 0 11 7 11 7a13.2 13.2 0 0 1-3.2 3.8M6.5 6.7C3.7 8.6 2 12 2 12s4 7 11 7a10.4 10.4 0 0 0 3.2-.5"/>'
+      : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>';
+  });
+
+  // ---- 03 Search ----
+  var animals = ['Axolotl','Badger','Chameleon','Dolphin','Elephant','Flamingo','Giraffe','Hedgehog'];
+  var sp03 = document.getElementById('sp03'), sp03results = document.getElementById('sp03results'), sp03clear = document.getElementById('sp03clear');
+  function renderAnimals(q){
+    var list = q ? animals.filter(function(a){ return a.toLowerCase().indexOf(q.toLowerCase()) > -1; }) : animals;
+    sp03results.innerHTML = '';
+    list.slice(0,6).forEach(function(a){
+      var c = document.createElement('span'); c.className = 'chip'; c.textContent = a; c.querySelector && 0;
+      sp03results.appendChild(c);
+    });
+    if(!list.length){ sp03results.innerHTML = '<span class="readout">No matches!</span>'; }
+  }
+  renderAnimals('');
+  sp03.addEventListener('input', function(){
+    sp03clear.style.display = sp03.value ? 'grid' : 'none';
+    renderAnimals(sp03.value);
+  });
+  sp03clear.addEventListener('click', function(){ sp03.value=''; sp03clear.style.display='none'; renderAnimals(''); sp03.focus(); });
+
+  // ---- 04 Textarea ----
+  var sp04 = document.getElementById('sp04'), sp04out = document.getElementById('sp04out');
+  sp04.addEventListener('input', function(){ sp04out.textContent = sp04.value.length + ' / 100'; });
+
+  // ---- 05 Stepper ----
+  var sp05val = document.getElementById('sp05val'), sp05out = document.getElementById('sp05out'), sp05count = 3;
+  function renderStickers(){ sp05val.textContent = sp05count; sp05out.textContent = '⭐'.repeat(sp05count); }
+  document.getElementById('sp05minus').addEventListener('click', function(){ sp05count = Math.max(0, sp05count-1); renderStickers(); });
+  document.getElementById('sp05plus').addEventListener('click', function(){ sp05count = Math.min(10, sp05count+1); renderStickers(); });
+
+  // ---- 06 Checkbox ----
+  var sp06boxes = document.querySelectorAll('.sp06'), sp06out = document.getElementById('sp06out');
+  function updateSp06(){
+    var n = Array.prototype.filter.call(sp06boxes, function(b){ return b.checked; }).length;
+    sp06out.textContent = n + ' of 3 packed';
+  }
+  sp06boxes.forEach(function(b){ b.addEventListener('change', updateSp06); });
+  updateSp06();
+
+  // ---- 07 Radio ----
+  var sp07out = document.getElementById('sp07out');
+  document.getElementsByName('sp07').forEach? null : null;
+  Array.prototype.forEach.call(document.getElementsByName('sp07'), function(r){
+    r.addEventListener('change', function(){ sp07out.textContent = 'Favorite game: ' + r.value; });
+  });
+
+  // ---- 08 Toggle ----
+  var sp08 = document.getElementById('sp08'), sp08label = document.getElementById('sp08label');
+  sp08.addEventListener('change', function(){
+    sp08label.textContent = 'Night mode: ' + (sp08.checked ? 'on 🌙' : 'off');
+    sp08.closest('.switch').querySelector('.thumb').textContent = sp08.checked ? '🌙' : '☀️';
+  });
+
+  // ---- 09 Select ----
+  var sp09 = document.getElementById('sp09'), sp09out = document.getElementById('sp09out');
+  sp09.addEventListener('change', function(){ sp09out.textContent = sp09.value; });
+
+  // ---- 10 Tag input ----
+  var sp10 = document.getElementById('sp10'), sp10chips = document.getElementById('sp10chips');
+  sp10.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && sp10.value.trim()){
+      e.preventDefault();
+      addChip(sp10.value.trim());
+      sp10.value = '';
+    }
+  });
+  function addChip(text){
+    var chip = document.createElement('span'); chip.className = 'chip';
+    var label = document.createElement('span'); label.textContent = text;
+    var btn = document.createElement('button'); btn.type='button'; btn.setAttribute('aria-label','remove ' + text); btn.textContent = '✕';
+    btn.addEventListener('click', function(){ chip.remove(); });
+    chip.appendChild(label); chip.appendChild(btn);
+    sp10chips.appendChild(chip);
+  }
+
+  // ---- 11 Range ----
+  var sp11 = document.getElementById('sp11'), sp11out = document.getElementById('sp11out'), sp11emoji = document.getElementById('sp11emoji');
+  function updateSp11(){
+    sp11out.textContent = 'Roar level: ' + sp11.value;
+    sp11emoji.textContent = sp11.value < 20 ? '🔈' : sp11.value < 60 ? '🔉' : '📢';
+    sp11.style.background = 'linear-gradient(to right, var(--h) ' + sp11.value + '%, var(--border) ' + sp11.value + '%)';
+  }
+  sp11.addEventListener('input', updateSp11); updateSp11();
+
+  // ---- 12 Color ----
+  var sp12 = document.getElementById('sp12'), sp12out = document.getElementById('sp12out');
+  sp12.addEventListener('input', function(){ sp12out.textContent = sp12.value.toUpperCase(); });
+  sp12out.textContent = sp12.value.toUpperCase();
+
+  // ---- 13 Date ----
+  var sp13 = document.getElementById('sp13'), sp13out = document.getElementById('sp13out');
+  sp13.addEventListener('change', function(){
+    if(!sp13.value){ sp13out.textContent = 'No date chosen yet'; return; }
+    var d = new Date(sp13.value + 'T00:00:00');
+    sp13out.textContent = 'Party on ' + d.toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
+  });
+
+  // ---- 14 Stars ----
+  var sp14 = document.getElementById('sp14'), sp14out = document.getElementById('sp14out'), sp14rating = 0;
+  for(var s=1; s<=5; s++){
+    (function(n){
+      var b = document.createElement('button'); b.type='button'; b.setAttribute('aria-label', n + ' stars');
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.6 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>';
+      b.addEventListener('click', function(){
+        sp14rating = n;
+        Array.prototype.forEach.call(sp14.children, function(btn,i){ btn.classList.toggle('on', i < n); });
+        sp14out.textContent = 'You rated: ' + n + ' / 5 stars';
+      });
+      sp14.appendChild(b);
+    })(s);
+  }
+
+  // ---- 15 Time ----
+  var sp15 = document.getElementById('sp15'), sp15out = document.getElementById('sp15out');
+  sp15.addEventListener('change', function(){ sp15out.textContent = 'Alarm set for ' + sp15.value; });
+
+  // ---- 16 Primary button ----
+  document.getElementById('sp16').addEventListener('click', function(e){
+    var r = e.target.getBoundingClientRect();
+    confetti(r.left + r.width/2, r.top);
+    toast('🚀 Blast off!');
+  });
+
+  // ---- 17 Outline button ----
+  document.getElementById('sp17').addEventListener('click', function(){
+    document.getElementById('sp17out').textContent = 'Okay, reminding you later!';
+  });
+
+  // ---- 19 Icon button (like) ----
+  var sp19 = document.getElementById('sp19'), sp19out = document.getElementById('sp19out'), sp19n = 0, liked = false;
+  sp19.addEventListener('click', function(){
+    liked = !liked; sp19n += liked ? 1 : -1;
+    sp19.classList.toggle('liked', liked);
+    sp19out.textContent = sp19n + (sp19n === 1 ? ' like' : ' likes');
+  });
+
+  // ---- 20 FAB ----
+  var sp20 = document.getElementById('sp20'), sp20menu = document.getElementById('sp20menu');
+  sp20.addEventListener('click', function(){
+    var open = sp20menu.classList.toggle('open');
+    sp20.classList.toggle('open', open);
+  });
+
+  // ---- 21 Tabs ----
+  var tabContent = [
+    '🦖 Dinosaurs ruled Earth for 165 million years!',
+    '🤖 The word "robot" comes from a Czech word meaning hard work.',
+    '🦄 Unicorns appear in myths going back over 2,000 years.'
+  ];
+  var sp21panel = document.getElementById('sp21panel');
+  document.querySelectorAll('#sp21tabs .tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#sp21tabs .tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      sp21panel.textContent = tabContent[+btn.dataset.tab];
+    });
+  });
+
+  // ---- 22 Breadcrumb ----
+  var crumbNames = ['Home','Games','Puzzle'];
+  var sp22out = document.getElementById('sp22out');
+  document.querySelectorAll('#sp22 .crumb').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('#sp22 .crumb').forEach(function(x){ x.classList.remove('active'); });
+      c.classList.add('active');
+      sp22out.textContent = 'You are in: ' + crumbNames[+c.dataset.i];
+    });
+  });
+
+  // ---- 23 Pagination ----
+  var sp23 = document.getElementById('sp23'), sp23out = document.getElementById('sp23out'), sp23page = 1, sp23total = 4;
+  function renderPagination(){
+    sp23.innerHTML = '';
+    for(var i=1;i<=sp23total;i++){
+      var b = document.createElement('button'); b.className = 'page-btn' + (i===sp23page?' active':''); b.textContent = i; b.type='button';
+      (function(n){ b.addEventListener('click', function(){ sp23page = n; renderPagination(); }); })(i);
+      sp23.appendChild(b);
+    }
+    var next = document.createElement('button'); next.className='page-btn next'; next.type='button'; next.textContent='Next ›';
+    next.addEventListener('click', function(){ sp23page = sp23page % sp23total + 1; renderPagination(); });
+    sp23.appendChild(next);
+    sp23out.textContent = 'Showing page ' + sp23page;
+  }
+  renderPagination();
+
+  // ---- 24 Dropdown menu ----
+  var sp24btn = document.getElementById('sp24btn'), sp24menu = document.getElementById('sp24menu'), sp24out = document.getElementById('sp24out');
+  sp24btn.addEventListener('click', function(e){ e.stopPropagation(); sp24menu.classList.toggle('open'); });
+  sp24menu.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click', function(){
+      sp24out.textContent = 'Avatar chosen: ' + b.dataset.v;
+      sp24menu.classList.remove('open');
+    });
+  });
+  document.addEventListener('click', function(){ sp24menu.classList.remove('open'); sp20menu.classList.remove('open'); sp20.classList.remove('open'); });
+
+  // ---- 25 Navbar ----
+  var sp25out = document.getElementById('sp25out');
+  document.querySelectorAll('#sp25 button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#sp25 button').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      sp25out.textContent = 'Viewing: ' + b.dataset.v;
+    });
+  });
+
+  // ---- 26 Progress ----
+  var sp26fill = document.getElementById('sp26fill');
+  document.getElementById('sp26').addEventListener('click', function(btn){
+    var pct = 0; sp26fill.style.width = '0%';
+    var timer = setInterval(function(){
+      pct += 8;
+      if(pct >= 100){ pct = 100; clearInterval(timer); }
+      sp26fill.style.width = pct + '%';
+    }, 120);
+  });
+
+  // ---- 27 Spinner ----
+  var sp27spin = document.getElementById('sp27spin'), sp27text = document.getElementById('sp27text');
+  document.getElementById('sp27').addEventListener('click', function(){
+    sp27spin.style.display = 'block'; sp27text.textContent = 'Thinking…';
+    setTimeout(function(){ sp27spin.style.display='none'; sp27text.textContent = '✅ Done!'; }, 2000);
+  });
+
+  // ---- 29 Alerts dismiss ----
+  document.querySelectorAll('.alert [data-close]').forEach(function(b){
+    b.addEventListener('click', function(){ b.closest('.alert').style.display = 'none'; });
+  });
+
+  // ---- 30 Toast trigger ----
+  document.getElementById('sp30').addEventListener('click', function(){ toast('💾 Saved! Nice drawing.'); });
+
+  // ---- 32 Accordion ----
+  document.querySelectorAll('#sp32 .accordion-head').forEach(function(head){
+    head.addEventListener('click', function(){
+      var panel = head.nextElementSibling;
+      var isOpen = head.classList.contains('open');
+      head.classList.toggle('open', !isOpen);
+      panel.style.maxHeight = isOpen ? '0px' : panel.scrollHeight + 'px';
+    });
+  });
+
+  // ---- 35 Modal ----
+  var sp35overlay = document.getElementById('sp35overlay');
+  document.getElementById('sp35open').addEventListener('click', function(){ sp35overlay.classList.add('open'); });
+  document.getElementById('sp35close').addEventListener('click', function(){ sp35overlay.classList.remove('open'); });
+  sp35overlay.addEventListener('click', function(e){ if(e.target === sp35overlay) sp35overlay.classList.remove('open'); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') sp35overlay.classList.remove('open'); });
+
+})();
+</script>
+
+</body></html>
